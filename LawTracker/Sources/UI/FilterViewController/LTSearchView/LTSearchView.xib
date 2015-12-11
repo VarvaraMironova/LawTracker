@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="LTSearchView" customModule="LawTracker" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="280" height="150"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" translatesAutoresizingMaskIntoConstraints="NO" id="1et-CG-WUd">
+                    <rect key="frame" x="0.0" y="0.0" width="280" height="150"/>
+                    <subviews>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="30" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="Vfp-ZB-Sn8">
+                            <rect key="frame" x="0.0" y="-90" width="280" height="120"/>
+                            <animations/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </tableView>
+                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="bezel" placeholder="Назва комітету" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VwT-ai-Fsk">
+                            <rect key="frame" x="0.0" y="0.0" width="280" height="30"/>
+                            <animations/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="30" id="Xgy-Di-Vhz"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="13"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                        </textField>
+                    </subviews>
+                    <animations/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="Vfp-ZB-Sn8" firstAttribute="bottom" secondItem="VwT-ai-Fsk" secondAttribute="bottom" id="0NQ-Tr-ckW"/>
+                        <constraint firstItem="VwT-ai-Fsk" firstAttribute="leading" secondItem="1et-CG-WUd" secondAttribute="leading" id="Drz-2j-gmx"/>
+                        <constraint firstItem="Vfp-ZB-Sn8" firstAttribute="height" secondItem="1et-CG-WUd" secondAttribute="height" constant="-30" id="GPA-D6-2rr"/>
+                        <constraint firstAttribute="trailing" secondItem="VwT-ai-Fsk" secondAttribute="trailing" id="Syw-us-QT3"/>
+                        <constraint firstItem="VwT-ai-Fsk" firstAttribute="top" secondItem="1et-CG-WUd" secondAttribute="top" id="fuY-zE-yB7"/>
+                        <constraint firstItem="Vfp-ZB-Sn8" firstAttribute="leading" secondItem="1et-CG-WUd" secondAttribute="leading" id="jXx-Z0-GvH"/>
+                        <constraint firstAttribute="trailing" secondItem="Vfp-ZB-Sn8" secondAttribute="trailing" id="vdd-as-CM6"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <animations/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="1et-CG-WUd" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="TBU-Ao-uAx"/>
+                <constraint firstAttribute="trailing" secondItem="1et-CG-WUd" secondAttribute="trailing" id="eGw-Dz-OWg"/>
+                <constraint firstItem="1et-CG-WUd" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="lzz-pF-ofW"/>
+                <constraint firstAttribute="bottom" secondItem="1et-CG-WUd" secondAttribute="bottom" id="t9Q-jY-iby"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="searchTextField" destination="VwT-ai-Fsk" id="obv-ci-ere"/>
+                <outlet property="tableView" destination="Vfp-ZB-Sn8" id="bhY-eD-fwn"/>
+            </connections>
+            <point key="canvasLocation" x="266" y="374"/>
+        </view>
+    </objects>
+</document>

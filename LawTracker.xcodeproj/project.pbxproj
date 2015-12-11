@@ -1,0 +1,579 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C72800ED1C1053270090C2B8 /* LTMainContentViewControllerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800EC1C1053270090C2B8 /* LTMainContentViewControllerViewController.swift */; };
+		C72800EF1C1053410090C2B8 /* LTMainContentRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800EE1C1053410090C2B8 /* LTMainContentRootView.swift */; };
+		C72800F11C10558F0090C2B8 /* LTMainContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F01C10558F0090C2B8 /* LTMainContentTableViewCell.swift */; };
+		C72800F31C10ADA50090C2B8 /* LTNewsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F21C10ADA50090C2B8 /* LTNewsTableViewCell.swift */; };
+		C72800F51C10B7EB0090C2B8 /* LTSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F41C10B7EB0090C2B8 /* LTSwitchButton.swift */; };
+		C72800F71C10FD090090C2B8 /* LTNewsTableViewDadaSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F61C10FD090090C2B8 /* LTNewsTableViewDadaSource.swift */; };
+		C72800F91C1194010090C2B8 /* LTNewsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F81C1194010090C2B8 /* LTNewsModel.swift */; };
+		C72800FB1C11ABBE0090C2B8 /* LTUILabelExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800FA1C11ABBE0090C2B8 /* LTUILabelExtensions.swift */; };
+		C72800FD1C11BBDA0090C2B8 /* LTSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800FC1C11BBDA0090C2B8 /* LTSectionModel.swift */; };
+		C72800FF1C11CF280090C2B8 /* LTStringHeightExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800FE1C11CF280090C2B8 /* LTStringHeightExtensions.swift */; };
+		C72801031C11E7A80090C2B8 /* LTTableViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72801021C11E7A80090C2B8 /* LTTableViewExtensions.swift */; };
+		C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */; };
+		C7A29E4F1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E4D1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld */; };
+		C7A29E561C0C9EAD001B0EF5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E541C0C9EAD001B0EF5 /* Main.storyboard */; };
+		C7A29E581C0C9EAD001B0EF5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E571C0C9EAD001B0EF5 /* Assets.xcassets */; };
+		C7A29E5B1C0C9EAD001B0EF5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E591C0C9EAD001B0EF5 /* LaunchScreen.storyboard */; };
+		C7A29E661C0C9EAD001B0EF5 /* LawTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E651C0C9EAD001B0EF5 /* LawTrackerTests.swift */; };
+		C7E7928D1C158B220031C55A /* LTUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E7928C1C158B220031C55A /* LTUtility.swift */; };
+		C7E7928F1C159E820031C55A /* LTCellHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E7928E1C159E820031C55A /* LTCellHeaderView.xib */; };
+		C7E792911C159EA40031C55A /* LTCellHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792901C159EA40031C55A /* LTCellHeaderView.swift */; };
+		C7E792931C15A33B0031C55A /* LTFontSizeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792921C15A33B0031C55A /* LTFontSizeExtensions.swift */; };
+		C7E792A51C18644B0031C55A /* LTChildViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A41C18644B0031C55A /* LTChildViewControllerExtensions.swift */; };
+		C7E792B01C18672C0031C55A /* LTFilterRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A71C18672C0031C55A /* LTFilterRootView.swift */; };
+		C7E792B11C18672C0031C55A /* LTFilterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */; };
+		C7E792B21C18672C0031C55A /* LTFilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A91C18672C0031C55A /* LTFilterViewController.swift */; };
+		C7E792B31C18672C0031C55A /* LTSearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792AB1C18672C0031C55A /* LTSearchTableViewCell.swift */; };
+		C7E792B41C18672C0031C55A /* LTSearchTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E792AC1C18672C0031C55A /* LTSearchTableViewCell.xib */; };
+		C7E792B51C18672C0031C55A /* LTSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792AD1C18672C0031C55A /* LTSearchView.swift */; };
+		C7E792B61C18672C0031C55A /* LTSearchView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E792AE1C18672C0031C55A /* LTSearchView.xib */; };
+		C7E792B71C18672C0031C55A /* LTSearchViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792AF1C18672C0031C55A /* LTSearchViewDelegate.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C7A29E621C0C9EAD001B0EF5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7A29E401C0C9EAD001B0EF5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C7A29E471C0C9EAD001B0EF5;
+			remoteInfo = LawTracker;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		C72800EC1C1053270090C2B8 /* LTMainContentViewControllerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentViewControllerViewController.swift; sourceTree = "<group>"; };
+		C72800EE1C1053410090C2B8 /* LTMainContentRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentRootView.swift; sourceTree = "<group>"; };
+		C72800F01C10558F0090C2B8 /* LTMainContentTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentTableViewCell.swift; sourceTree = "<group>"; };
+		C72800F21C10ADA50090C2B8 /* LTNewsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsTableViewCell.swift; sourceTree = "<group>"; };
+		C72800F41C10B7EB0090C2B8 /* LTSwitchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButton.swift; sourceTree = "<group>"; };
+		C72800F61C10FD090090C2B8 /* LTNewsTableViewDadaSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsTableViewDadaSource.swift; sourceTree = "<group>"; };
+		C72800F81C1194010090C2B8 /* LTNewsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsModel.swift; sourceTree = "<group>"; };
+		C72800FA1C11ABBE0090C2B8 /* LTUILabelExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUILabelExtensions.swift; sourceTree = "<group>"; };
+		C72800FC1C11BBDA0090C2B8 /* LTSectionModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSectionModel.swift; sourceTree = "<group>"; };
+		C72800FE1C11CF280090C2B8 /* LTStringHeightExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTStringHeightExtensions.swift; sourceTree = "<group>"; };
+		C72801021C11E7A80090C2B8 /* LTTableViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTTableViewExtensions.swift; sourceTree = "<group>"; };
+		C7A29E481C0C9EAD001B0EF5 /* LawTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LawTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C7A29E4E1C0C9EAD001B0EF5 /* LawTracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LawTracker.xcdatamodel; sourceTree = "<group>"; };
+		C7A29E551C0C9EAD001B0EF5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C7A29E571C0C9EAD001B0EF5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C7A29E5A1C0C9EAD001B0EF5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C7A29E5C1C0C9EAD001B0EF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7A29E611C0C9EAD001B0EF5 /* LawTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LawTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7A29E651C0C9EAD001B0EF5 /* LawTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LawTrackerTests.swift; sourceTree = "<group>"; };
+		C7A29E671C0C9EAD001B0EF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7E7928C1C158B220031C55A /* LTUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUtility.swift; sourceTree = "<group>"; };
+		C7E7928E1C159E820031C55A /* LTCellHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTCellHeaderView.xib; sourceTree = "<group>"; };
+		C7E792901C159EA40031C55A /* LTCellHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTCellHeaderView.swift; sourceTree = "<group>"; };
+		C7E792921C15A33B0031C55A /* LTFontSizeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFontSizeExtensions.swift; sourceTree = "<group>"; };
+		C7E792A41C18644B0031C55A /* LTChildViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChildViewControllerExtensions.swift; sourceTree = "<group>"; };
+		C7E792A71C18672C0031C55A /* LTFilterRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterRootView.swift; sourceTree = "<group>"; };
+		C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterTableViewCell.swift; sourceTree = "<group>"; };
+		C7E792A91C18672C0031C55A /* LTFilterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterViewController.swift; sourceTree = "<group>"; };
+		C7E792AB1C18672C0031C55A /* LTSearchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSearchTableViewCell.swift; sourceTree = "<group>"; };
+		C7E792AC1C18672C0031C55A /* LTSearchTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSearchTableViewCell.xib; sourceTree = "<group>"; };
+		C7E792AD1C18672C0031C55A /* LTSearchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSearchView.swift; sourceTree = "<group>"; };
+		C7E792AE1C18672C0031C55A /* LTSearchView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSearchView.xib; sourceTree = "<group>"; };
+		C7E792AF1C18672C0031C55A /* LTSearchViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSearchViewDelegate.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C7A29E451C0C9EAD001B0EF5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7A29E5E1C0C9EAD001B0EF5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C7A29E3F1C0C9EAD001B0EF5 = {
+			isa = PBXGroup;
+			children = (
+				C7A29E4A1C0C9EAD001B0EF5 /* LawTracker */,
+				C7A29E641C0C9EAD001B0EF5 /* LawTrackerTests */,
+				C7A29E491C0C9EAD001B0EF5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C7A29E491C0C9EAD001B0EF5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C7A29E481C0C9EAD001B0EF5 /* LawTracker.app */,
+				C7A29E611C0C9EAD001B0EF5 /* LawTrackerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C7A29E4A1C0C9EAD001B0EF5 /* LawTracker */ = {
+			isa = PBXGroup;
+			children = (
+				C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */,
+				C7A29E541C0C9EAD001B0EF5 /* Main.storyboard */,
+				C7A29E571C0C9EAD001B0EF5 /* Assets.xcassets */,
+				C7A29E591C0C9EAD001B0EF5 /* LaunchScreen.storyboard */,
+				C7A29E5C1C0C9EAD001B0EF5 /* Info.plist */,
+				C7A29E4D1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld */,
+				C7A29E701C0C9F97001B0EF5 /* Sources */,
+				C7A29E711C0C9F97001B0EF5 /* Extensions */,
+				C7A29E741C0C9F97001B0EF5 /* Resources */,
+			);
+			path = LawTracker;
+			sourceTree = "<group>";
+		};
+		C7A29E641C0C9EAD001B0EF5 /* LawTrackerTests */ = {
+			isa = PBXGroup;
+			children = (
+				C7A29E651C0C9EAD001B0EF5 /* LawTrackerTests.swift */,
+				C7A29E671C0C9EAD001B0EF5 /* Info.plist */,
+			);
+			path = LawTrackerTests;
+			sourceTree = "<group>";
+		};
+		C7A29E701C0C9F97001B0EF5 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				C7A29E721C0C9F97001B0EF5 /* Models */,
+				C7A29E731C0C9F97001B0EF5 /* UI */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		C7A29E711C0C9F97001B0EF5 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				C72801021C11E7A80090C2B8 /* LTTableViewExtensions.swift */,
+				C72800FA1C11ABBE0090C2B8 /* LTUILabelExtensions.swift */,
+				C72800FE1C11CF280090C2B8 /* LTStringHeightExtensions.swift */,
+				C7E7928C1C158B220031C55A /* LTUtility.swift */,
+				C7E792921C15A33B0031C55A /* LTFontSizeExtensions.swift */,
+				C7E792A41C18644B0031C55A /* LTChildViewControllerExtensions.swift */,
+			);
+			name = Extensions;
+			path = Sources/Extensions;
+			sourceTree = "<group>";
+		};
+		C7A29E721C0C9F97001B0EF5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C72800F81C1194010090C2B8 /* LTNewsModel.swift */,
+				C72800FC1C11BBDA0090C2B8 /* LTSectionModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		C7A29E731C0C9F97001B0EF5 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				C7A29E791C0CCF6A001B0EF5 /* LTMainContentViewController */,
+				C7E792A61C18672C0031C55A /* FilterViewController */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		C7A29E741C0C9F97001B0EF5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		C7A29E791C0CCF6A001B0EF5 /* LTMainContentViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C72800EC1C1053270090C2B8 /* LTMainContentViewControllerViewController.swift */,
+				C72800EE1C1053410090C2B8 /* LTMainContentRootView.swift */,
+				C72800F01C10558F0090C2B8 /* LTMainContentTableViewCell.swift */,
+				C72800F21C10ADA50090C2B8 /* LTNewsTableViewCell.swift */,
+				C72800F41C10B7EB0090C2B8 /* LTSwitchButton.swift */,
+				C72800F61C10FD090090C2B8 /* LTNewsTableViewDadaSource.swift */,
+				C7E792901C159EA40031C55A /* LTCellHeaderView.swift */,
+				C7E7928E1C159E820031C55A /* LTCellHeaderView.xib */,
+			);
+			path = LTMainContentViewController;
+			sourceTree = "<group>";
+		};
+		C7E792A61C18672C0031C55A /* FilterViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C7E792A91C18672C0031C55A /* LTFilterViewController.swift */,
+				C7E792A71C18672C0031C55A /* LTFilterRootView.swift */,
+				C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */,
+				C7E792AA1C18672C0031C55A /* LTSearchView */,
+			);
+			path = FilterViewController;
+			sourceTree = "<group>";
+		};
+		C7E792AA1C18672C0031C55A /* LTSearchView */ = {
+			isa = PBXGroup;
+			children = (
+				C7E792AD1C18672C0031C55A /* LTSearchView.swift */,
+				C7E792AE1C18672C0031C55A /* LTSearchView.xib */,
+				C7E792AF1C18672C0031C55A /* LTSearchViewDelegate.swift */,
+				C7E792AB1C18672C0031C55A /* LTSearchTableViewCell.swift */,
+				C7E792AC1C18672C0031C55A /* LTSearchTableViewCell.xib */,
+			);
+			path = LTSearchView;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C7A29E471C0C9EAD001B0EF5 /* LawTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C7A29E6A1C0C9EAD001B0EF5 /* Build configuration list for PBXNativeTarget "LawTracker" */;
+			buildPhases = (
+				C7A29E441C0C9EAD001B0EF5 /* Sources */,
+				C7A29E451C0C9EAD001B0EF5 /* Frameworks */,
+				C7A29E461C0C9EAD001B0EF5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LawTracker;
+			productName = LawTracker;
+			productReference = C7A29E481C0C9EAD001B0EF5 /* LawTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C7A29E601C0C9EAD001B0EF5 /* LawTrackerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C7A29E6D1C0C9EAD001B0EF5 /* Build configuration list for PBXNativeTarget "LawTrackerTests" */;
+			buildPhases = (
+				C7A29E5D1C0C9EAD001B0EF5 /* Sources */,
+				C7A29E5E1C0C9EAD001B0EF5 /* Frameworks */,
+				C7A29E5F1C0C9EAD001B0EF5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C7A29E631C0C9EAD001B0EF5 /* PBXTargetDependency */,
+			);
+			name = LawTrackerTests;
+			productName = LawTrackerTests;
+			productReference = C7A29E611C0C9EAD001B0EF5 /* LawTrackerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C7A29E401C0C9EAD001B0EF5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0710;
+				LastUpgradeCheck = 0710;
+				ORGANIZATIONNAME = VarvaraMironova;
+				TargetAttributes = {
+					C7A29E471C0C9EAD001B0EF5 = {
+						CreatedOnToolsVersion = 7.1.1;
+					};
+					C7A29E601C0C9EAD001B0EF5 = {
+						CreatedOnToolsVersion = 7.1.1;
+						TestTargetID = C7A29E471C0C9EAD001B0EF5;
+					};
+				};
+			};
+			buildConfigurationList = C7A29E431C0C9EAD001B0EF5 /* Build configuration list for PBXProject "LawTracker" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C7A29E3F1C0C9EAD001B0EF5;
+			productRefGroup = C7A29E491C0C9EAD001B0EF5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C7A29E471C0C9EAD001B0EF5 /* LawTracker */,
+				C7A29E601C0C9EAD001B0EF5 /* LawTrackerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C7A29E461C0C9EAD001B0EF5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7E792B61C18672C0031C55A /* LTSearchView.xib in Resources */,
+				C7A29E5B1C0C9EAD001B0EF5 /* LaunchScreen.storyboard in Resources */,
+				C7E7928F1C159E820031C55A /* LTCellHeaderView.xib in Resources */,
+				C7A29E581C0C9EAD001B0EF5 /* Assets.xcassets in Resources */,
+				C7E792B41C18672C0031C55A /* LTSearchTableViewCell.xib in Resources */,
+				C7A29E561C0C9EAD001B0EF5 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7A29E5F1C0C9EAD001B0EF5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C7A29E441C0C9EAD001B0EF5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C72800FB1C11ABBE0090C2B8 /* LTUILabelExtensions.swift in Sources */,
+				C72800FF1C11CF280090C2B8 /* LTStringHeightExtensions.swift in Sources */,
+				C72800F11C10558F0090C2B8 /* LTMainContentTableViewCell.swift in Sources */,
+				C7E7928D1C158B220031C55A /* LTUtility.swift in Sources */,
+				C7E792B01C18672C0031C55A /* LTFilterRootView.swift in Sources */,
+				C72800ED1C1053270090C2B8 /* LTMainContentViewControllerViewController.swift in Sources */,
+				C72800F31C10ADA50090C2B8 /* LTNewsTableViewCell.swift in Sources */,
+				C72800EF1C1053410090C2B8 /* LTMainContentRootView.swift in Sources */,
+				C7E792B21C18672C0031C55A /* LTFilterViewController.swift in Sources */,
+				C7E792931C15A33B0031C55A /* LTFontSizeExtensions.swift in Sources */,
+				C72800FD1C11BBDA0090C2B8 /* LTSectionModel.swift in Sources */,
+				C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */,
+				C7E792B51C18672C0031C55A /* LTSearchView.swift in Sources */,
+				C72800F71C10FD090090C2B8 /* LTNewsTableViewDadaSource.swift in Sources */,
+				C7E792911C159EA40031C55A /* LTCellHeaderView.swift in Sources */,
+				C72800F91C1194010090C2B8 /* LTNewsModel.swift in Sources */,
+				C7A29E4F1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld in Sources */,
+				C7E792B71C18672C0031C55A /* LTSearchViewDelegate.swift in Sources */,
+				C7E792A51C18644B0031C55A /* LTChildViewControllerExtensions.swift in Sources */,
+				C7E792B11C18672C0031C55A /* LTFilterTableViewCell.swift in Sources */,
+				C72801031C11E7A80090C2B8 /* LTTableViewExtensions.swift in Sources */,
+				C72800F51C10B7EB0090C2B8 /* LTSwitchButton.swift in Sources */,
+				C7E792B31C18672C0031C55A /* LTSearchTableViewCell.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7A29E5D1C0C9EAD001B0EF5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7A29E661C0C9EAD001B0EF5 /* LawTrackerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C7A29E631C0C9EAD001B0EF5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C7A29E471C0C9EAD001B0EF5 /* LawTracker */;
+			targetProxy = C7A29E621C0C9EAD001B0EF5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		C7A29E541C0C9EAD001B0EF5 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C7A29E551C0C9EAD001B0EF5 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		C7A29E591C0C9EAD001B0EF5 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C7A29E5A1C0C9EAD001B0EF5 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C7A29E681C0C9EAD001B0EF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C7A29E691C0C9EAD001B0EF5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C7A29E6B1C0C9EAD001B0EF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = LawTracker/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.chesno.LawTracker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C7A29E6C1C0C9EAD001B0EF5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = LawTracker/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.chesno.LawTracker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		C7A29E6E1C0C9EAD001B0EF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = LawTrackerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.chesno.LawTrackerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LawTracker.app/LawTracker";
+			};
+			name = Debug;
+		};
+		C7A29E6F1C0C9EAD001B0EF5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = LawTrackerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.chesno.LawTrackerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LawTracker.app/LawTracker";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C7A29E431C0C9EAD001B0EF5 /* Build configuration list for PBXProject "LawTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7A29E681C0C9EAD001B0EF5 /* Debug */,
+				C7A29E691C0C9EAD001B0EF5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C7A29E6A1C0C9EAD001B0EF5 /* Build configuration list for PBXNativeTarget "LawTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7A29E6B1C0C9EAD001B0EF5 /* Debug */,
+				C7A29E6C1C0C9EAD001B0EF5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C7A29E6D1C0C9EAD001B0EF5 /* Build configuration list for PBXNativeTarget "LawTrackerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7A29E6E1C0C9EAD001B0EF5 /* Debug */,
+				C7A29E6F1C0C9EAD001B0EF5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		C7A29E4D1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				C7A29E4E1C0C9EAD001B0EF5 /* LawTracker.xcdatamodel */,
+			);
+			currentVersion = C7A29E4E1C0C9EAD001B0EF5 /* LawTracker.xcdatamodel */;
+			path = LawTracker.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = C7A29E401C0C9EAD001B0EF5 /* Project object */;
+}
