@@ -12,10 +12,17 @@ let titleOne = "За комітетами"
 let titleTwo = "За ініціаторами"
 let titleThree = "За законопроектами"
 
+enum LTFilterType : Int {
+    case byCommettees = 0, byInitializers = 1, byLaws = 2
+    
+    static let filterTypes = [byCommettees, byInitializers, byLaws]
+}
+
 class LTMainContentRootView: UIView {
     @IBOutlet var headerView             : UIView!
     @IBOutlet var titleLabel             : UILabel!
     @IBOutlet var filterButton           : UIButton!
+    @IBOutlet var menuButton             : UIButton!
     @IBOutlet var byCommetteesButton     : LTSwitchButton!
     @IBOutlet var byInitializersButton   : LTSwitchButton!
     @IBOutlet var byLawsButton           : LTSwitchButton!
@@ -23,10 +30,10 @@ class LTMainContentRootView: UIView {
     @IBOutlet var contentView            : UIView!
     @IBOutlet var noSubscriptionsLabel   : UILabel!
     @IBOutlet var contentTableView       : UITableView!
-    @IBOutlet var filterContainerView    : UIView!
+    @IBOutlet var menuContainerView      : UIView!
     @IBOutlet var dismissFilterViewButton: UIButton!
-    
-    var filterViewShown : Bool = false
+
+    var menuShown : Bool = false
     
     lazy var titleStrings: [String] = {
         [unowned self] in
@@ -40,38 +47,51 @@ class LTMainContentRootView: UIView {
         }
     }
     
+    var filterType: LTFilterType {
+        get {
+            switch selectedButton.tag {
+            case 1:
+                return .byInitializers
+                
+            case 2:
+                return .byLaws
+                
+            default:
+                return .byCommettees
+            }
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
         selectedButton = byCommetteesButton
     }
     
-    func showFilterView() {
+    func showMenu() {
         //horizontal
-//        let filterContainer = filterContainerView
-//        let screenWidth = CGRectGetWidth(self.frame)
-//        
-//        UIView.animateWithDuration(0.4, animations: {
-//            var center = filterContainer.center
-//            center.x = self.filterViewShown ? screenWidth + 207.0 : screenWidth - 207.0
-//            filterContainer.center = center
-//            self.dismissFilterViewButton.alpha = self.filterViewShown ? 0.0 : 0.8
-//            }, completion: {(finished: Bool) -> Void in
-//            self.filterViewShown = !self.filterViewShown
-//        })
-//        
-        //vertical
-        let filterContainer = filterContainerView
-        let headerHeight = CGRectGetHeight(headerView.frame)
+        var width = 0.0 as CGFloat!
+        if menuShown {
+            width = CGRectGetWidth(menuContainerView.frame) < 250.0 ? CGRectGetWidth(menuContainerView.frame) : 250.0;
+        } else {
+            width = CGRectGetWidth(menuContainerView.frame)
+        }
+        
+        animateMenu(width, show: menuShown)
+    }
+    
+    private func animateMenu(width: CGFloat, show: Bool) {
+        let menuContainer = menuContainerView
         
         UIView.animateWithDuration(0.4, animations: {
-            var center = filterContainer.center
-            center.y = self.filterViewShown ? headerHeight - 150.0 : headerHeight + CGRectGetHeight(self.filterContainerView.frame) / 2.0
-            filterContainer.center = center
-            self.dismissFilterViewButton.alpha = self.filterViewShown ? 0.0 : 0.8
+            var center = menuContainer.center
+            center.x = show ? -width / 2.0 : width / 2.0
+            menuContainer.center = center
+            self.dismissFilterViewButton.alpha = show ? 0.0 : 0.8
             }, completion: {(finished: Bool) -> Void in
-            self.filterViewShown = !self.filterViewShown
+                self.menuShown = !self.menuShown
         })
+
     }
     
 }

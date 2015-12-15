@@ -11,15 +11,9 @@ import UIKit
 class LTFilterTableViewCell: UITableViewCell {
     @IBOutlet var titleLabel: UILabel!
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+    func fillWithModel(model: LTSectionModel) {
+        titleLabel.text = model.title
+        
+        titleLabel.fit()
     }
-
-    override func setSelected(selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-
 }

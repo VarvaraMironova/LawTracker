@@ -11,10 +11,11 @@ import UIKit
 class LTMainContentTableViewCell: UITableViewCell {
     @IBOutlet var newsLabel: UILabel!
     @IBOutlet var dateLabel: UILabel!
+    @IBOutlet var lawNameLabel: UILabel!
     
     var separatorView: UIView?
     
-    func fillWithModel(model: LTNewsModel) {
+    func fillWithModel(model: LTChangeModel) {
         newsLabel.text = model.description
         dateLabel.text = model.date
         

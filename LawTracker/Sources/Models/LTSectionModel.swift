@@ -10,10 +10,10 @@ import Foundation
 
 struct LTSectionModel {
     var title: String!
-    var news : [LTNewsModel]!
+    var changes : [LTChangeModel]!
     
-    init(title: String!, news: [LTNewsModel]!) {
+    init(title: String!, changes: [LTChangeModel]!) {
         self.title = title
-        self.news = news
+        self.changes = changes
     }
 }

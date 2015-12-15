@@ -39,34 +39,30 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     
     lazy var commiteesArray: [LTSectionModel] = {
         [unowned self] in
-        return [LTSectionModel(title:Commitee1, news:self.arrayModel), LTSectionModel(title:Commitee2, news:self.arrayModel), LTSectionModel(title:Commitee3, news:self.arrayModel), LTSectionModel(title:Commitee4, news:self.arrayModel), LTSectionModel(title:Commitee5, news:self.arrayModel)]
+        return [LTSectionModel(title:Commitee1, changes:self.arrayModel), LTSectionModel(title:Commitee2, changes:self.arrayModel), LTSectionModel(title:Commitee3, changes:self.arrayModel), LTSectionModel(title:Commitee4, changes:self.arrayModel), LTSectionModel(title:Commitee5, changes:self.arrayModel)]
         }()
     
     lazy var initializatorsArray: [LTSectionModel] = {
         [unowned self] in
-        return [LTSectionModel(title:init1, news:self.arrayModel), LTSectionModel(title:init2, news:self.arrayModel), LTSectionModel(title:init3, news:self.arrayModel), LTSectionModel(title:init4, news:self.arrayModel)]
+        return [LTSectionModel(title:init1, changes:self.arrayModel), LTSectionModel(title:init2, changes:self.arrayModel), LTSectionModel(title:init3, changes:self.arrayModel), LTSectionModel(title:init4, changes:self.arrayModel)]
         }()
     
     lazy var lawsArray: [LTSectionModel] = {
         [unowned self] in
-        return [LTSectionModel(title:law1, news:self.arrayModel), LTSectionModel(title:law2, news:self.arrayModel), LTSectionModel(title:law3, news:self.arrayModel), LTSectionModel(title:law4, news:self.arrayModel), LTSectionModel(title:law5, news:self.arrayModel), LTSectionModel(title:law6, news:self.arrayModel)]
+        return [LTSectionModel(title:law1, changes:self.arrayModel), LTSectionModel(title:law2, changes:self.arrayModel), LTSectionModel(title:law3, changes:self.arrayModel), LTSectionModel(title:law4, changes:self.arrayModel), LTSectionModel(title:law5, changes:self.arrayModel), LTSectionModel(title:law6, changes:self.arrayModel)]
         }()
     
-    lazy var arrayModel: [LTNewsModel] = {
+    lazy var arrayModel: [LTChangeModel] = {
         [unowned self] in
-        return [LTNewsModel(date:date1, description:desc1), LTNewsModel(date:date2, description:desc2), LTNewsModel(date:date3, description:desc3)]
+        return [LTChangeModel(date:date1, description:desc1), LTChangeModel(date:date2, description:desc2), LTChangeModel(date:date3, description:desc3)]
         }()
     
-    var filterViewController: LTFilterViewController {
-        set {
-            filterViewController.view.removeFromSuperview()
-        }
-        
+    var menuViewController: LTMenuViewController {
         get {
-            let filterController = self.storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
-            filterController.delegate = self
+            let menuViewController = self.storyboard!.instantiateViewControllerWithIdentifier("LTMenuViewController") as! LTMenuViewController
+            menuViewController.delegate = self
             
-            return filterController
+            return menuViewController
         }
     }
     
@@ -74,8 +70,8 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     
     var rootView: LTMainContentRootView! {
         get {
-            if isViewLoaded() && self.view.isKindOfClass(LTMainContentRootView) {
-                return self.view as! LTMainContentRootView
+            if isViewLoaded() && view.isKindOfClass(LTMainContentRootView) {
+                return view as! LTMainContentRootView
             } else {
                 return nil
             }
@@ -87,8 +83,8 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         
         selectedArray = commiteesArray
         
-        //create filterController and add it as childVuewController
-        addChildViewController(filterViewController, view: rootView.filterContainerView)
+        //add menuViewController as a childViewController to menuContainerView
+        addChildViewController(menuViewController, view: rootView.menuContainerView)
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator)
@@ -96,29 +92,56 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         
         coordinator.animateAlongsideTransition({(UIViewControllerTransitionCoordinatorContext) -> Void in
-            if self.rootView.filterViewShown {
-                self.rootView.showFilterView()
+            if self.rootView.menuShown {
+                self.rootView.showMenu()
             }}, completion: {(UIViewControllerTransitionCoordinatorContext) -> Void in })
     }
     
-    override func prefersStatusBarHidden() -> Bool {
-        return true
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
     }
     
     @IBAction func onDismissFilterViewButton(sender: UIButton) {
         dispatch_async(dispatch_get_main_queue()) {
-            self.onFilterButton(sender)
+            dispatch_async(dispatch_get_main_queue()) {
+                self.rootView.showMenu()
+            }
+        }
+    }
+    
+    @IBAction func onMenuButton(sender: AnyObject) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.rootView.showMenu()
         }
     }
     
     @IBAction func onFilterButton(sender: UIButton) {
         dispatch_async(dispatch_get_main_queue()) {
-            self.rootView.showFilterView()
+            let filterController = self.storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
+            filterController.delegate = self
+            filterController.filteredArray = []
+            switch self.rootView.filterType {
+            case .byCommettees:
+                filterController.searchArray = self.commiteesArray
+                filterController.placeholderString = "Зазначте комітет"
+                break
+                
+            case .byInitializers:
+                filterController.searchArray = self.initializatorsArray
+                filterController.placeholderString = "Зазначте ініціатора"
+                break
+                
+            case .byLaws:
+                filterController.searchArray = self.lawsArray
+                filterController.placeholderString = "Зазначте назву закону"
+                break
+            }
+            
+            self.presentViewController(filterController, animated: true, completion: nil)
         }
     }
 
     @IBAction func onByCommetteesButton(sender: LTSwitchButton) {
-        filterViewController.type = .byCommettees
         rootView.selectedButton = sender
         selectedArray = commiteesArray
         
@@ -126,7 +149,6 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     }
     
     @IBAction func onByInitializersButton(sender: LTSwitchButton) {
-        filterViewController.type = .byInitializers
         rootView.selectedButton = sender
         selectedArray = initializatorsArray
         
@@ -134,7 +156,6 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     }
     
     @IBAction func byLawsButton(sender: LTSwitchButton) {
-        filterViewController.type = .byLaws
         rootView.selectedButton = sender
         selectedArray = lawsArray
         
@@ -142,7 +163,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return selectedArray[section].news.count
+        return selectedArray[section].changes.count
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -155,7 +176,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("LTMainContentTableViewCell", forIndexPath: indexPath) as! LTMainContentTableViewCell
         let model = selectedArray[indexPath.section]
-        cell.fillWithModel(model.news[indexPath.row])
+        cell.fillWithModel(model.changes[indexPath.row])
         
         return cell
     }
@@ -172,7 +193,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let news = selectedArray[indexPath.section].news
+        let news = selectedArray[indexPath.section].changes
         let newsModel = news[indexPath.row]
         let width = CGRectGetWidth(tableView.frame) - 20.0
         let dateFont = UIFont(name: "Arial", size: 12.0)

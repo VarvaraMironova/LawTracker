@@ -9,9 +9,9 @@
 import UIKit
 
 class LTNewsTableViewDadaSource: NSObject, UITableViewDataSource, UITableViewDelegate {
-    var arrayModel: [LTNewsModel]!
+    var arrayModel: [LTChangeModel]!
     
-    init(arrayModel: [LTNewsModel]) {
+    init(arrayModel: [LTChangeModel]) {
         super.init()
         self.arrayModel = arrayModel
     }

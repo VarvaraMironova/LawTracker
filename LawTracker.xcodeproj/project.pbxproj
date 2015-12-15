@@ -7,36 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C72800ED1C1053270090C2B8 /* LTMainContentViewControllerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800EC1C1053270090C2B8 /* LTMainContentViewControllerViewController.swift */; };
-		C72800EF1C1053410090C2B8 /* LTMainContentRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800EE1C1053410090C2B8 /* LTMainContentRootView.swift */; };
-		C72800F11C10558F0090C2B8 /* LTMainContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F01C10558F0090C2B8 /* LTMainContentTableViewCell.swift */; };
-		C72800F31C10ADA50090C2B8 /* LTNewsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F21C10ADA50090C2B8 /* LTNewsTableViewCell.swift */; };
-		C72800F51C10B7EB0090C2B8 /* LTSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F41C10B7EB0090C2B8 /* LTSwitchButton.swift */; };
-		C72800F71C10FD090090C2B8 /* LTNewsTableViewDadaSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F61C10FD090090C2B8 /* LTNewsTableViewDadaSource.swift */; };
-		C72800F91C1194010090C2B8 /* LTNewsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F81C1194010090C2B8 /* LTNewsModel.swift */; };
+		C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F81C1194010090C2B8 /* LTChangeModel.swift */; };
 		C72800FB1C11ABBE0090C2B8 /* LTUILabelExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800FA1C11ABBE0090C2B8 /* LTUILabelExtensions.swift */; };
 		C72800FD1C11BBDA0090C2B8 /* LTSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800FC1C11BBDA0090C2B8 /* LTSectionModel.swift */; };
 		C72800FF1C11CF280090C2B8 /* LTStringHeightExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800FE1C11CF280090C2B8 /* LTStringHeightExtensions.swift */; };
 		C72801031C11E7A80090C2B8 /* LTTableViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72801021C11E7A80090C2B8 /* LTTableViewExtensions.swift */; };
+		C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73520D91C1EC62500993AEB /* LTLawModel.swift */; };
+		C76CE92D1C1B744F006262E8 /* LTMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76CE92C1C1B744F006262E8 /* LTMenuViewController.swift */; };
+		C76CE92F1C1B7461006262E8 /* LTMenuRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76CE92E1C1B7461006262E8 /* LTMenuRootView.swift */; };
+		C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76CE9301C1B7477006262E8 /* LTMenuTableViewCell.swift */; };
 		C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */; };
 		C7A29E4F1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E4D1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld */; };
 		C7A29E561C0C9EAD001B0EF5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E541C0C9EAD001B0EF5 /* Main.storyboard */; };
 		C7A29E581C0C9EAD001B0EF5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E571C0C9EAD001B0EF5 /* Assets.xcassets */; };
 		C7A29E5B1C0C9EAD001B0EF5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E591C0C9EAD001B0EF5 /* LaunchScreen.storyboard */; };
 		C7A29E661C0C9EAD001B0EF5 /* LawTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E651C0C9EAD001B0EF5 /* LawTrackerTests.swift */; };
+		C7CFB5AC1C1FFFDB00211C6B /* LTCellHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A41C1FFFDB00211C6B /* LTCellHeaderView.swift */; };
+		C7CFB5AD1C1FFFDB00211C6B /* LTCellHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7CFB5A51C1FFFDB00211C6B /* LTCellHeaderView.xib */; };
+		C7CFB5AE1C1FFFDB00211C6B /* LTMainContentRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A61C1FFFDB00211C6B /* LTMainContentRootView.swift */; };
+		C7CFB5AF1C1FFFDB00211C6B /* LTMainContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A71C1FFFDB00211C6B /* LTMainContentTableViewCell.swift */; };
+		C7CFB5B01C1FFFDB00211C6B /* LTMainContentViewControllerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A81C1FFFDB00211C6B /* LTMainContentViewControllerViewController.swift */; };
+		C7CFB5B11C1FFFDB00211C6B /* LTNewsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A91C1FFFDB00211C6B /* LTNewsTableViewCell.swift */; };
+		C7CFB5B21C1FFFDB00211C6B /* LTNewsTableViewDadaSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5AA1C1FFFDB00211C6B /* LTNewsTableViewDadaSource.swift */; };
+		C7CFB5B31C1FFFDB00211C6B /* LTSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5AB1C1FFFDB00211C6B /* LTSwitchButton.swift */; };
 		C7E7928D1C158B220031C55A /* LTUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E7928C1C158B220031C55A /* LTUtility.swift */; };
-		C7E7928F1C159E820031C55A /* LTCellHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E7928E1C159E820031C55A /* LTCellHeaderView.xib */; };
-		C7E792911C159EA40031C55A /* LTCellHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792901C159EA40031C55A /* LTCellHeaderView.swift */; };
 		C7E792931C15A33B0031C55A /* LTFontSizeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792921C15A33B0031C55A /* LTFontSizeExtensions.swift */; };
 		C7E792A51C18644B0031C55A /* LTChildViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A41C18644B0031C55A /* LTChildViewControllerExtensions.swift */; };
 		C7E792B01C18672C0031C55A /* LTFilterRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A71C18672C0031C55A /* LTFilterRootView.swift */; };
 		C7E792B11C18672C0031C55A /* LTFilterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */; };
 		C7E792B21C18672C0031C55A /* LTFilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A91C18672C0031C55A /* LTFilterViewController.swift */; };
-		C7E792B31C18672C0031C55A /* LTSearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792AB1C18672C0031C55A /* LTSearchTableViewCell.swift */; };
-		C7E792B41C18672C0031C55A /* LTSearchTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E792AC1C18672C0031C55A /* LTSearchTableViewCell.xib */; };
-		C7E792B51C18672C0031C55A /* LTSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792AD1C18672C0031C55A /* LTSearchView.swift */; };
-		C7E792B61C18672C0031C55A /* LTSearchView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7E792AE1C18672C0031C55A /* LTSearchView.xib */; };
-		C7E792B71C18672C0031C55A /* LTSearchViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792AF1C18672C0031C55A /* LTSearchViewDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,17 +49,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		C72800EC1C1053270090C2B8 /* LTMainContentViewControllerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentViewControllerViewController.swift; sourceTree = "<group>"; };
-		C72800EE1C1053410090C2B8 /* LTMainContentRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentRootView.swift; sourceTree = "<group>"; };
-		C72800F01C10558F0090C2B8 /* LTMainContentTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentTableViewCell.swift; sourceTree = "<group>"; };
-		C72800F21C10ADA50090C2B8 /* LTNewsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsTableViewCell.swift; sourceTree = "<group>"; };
-		C72800F41C10B7EB0090C2B8 /* LTSwitchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButton.swift; sourceTree = "<group>"; };
-		C72800F61C10FD090090C2B8 /* LTNewsTableViewDadaSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsTableViewDadaSource.swift; sourceTree = "<group>"; };
-		C72800F81C1194010090C2B8 /* LTNewsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsModel.swift; sourceTree = "<group>"; };
+		C72800F81C1194010090C2B8 /* LTChangeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChangeModel.swift; sourceTree = "<group>"; };
 		C72800FA1C11ABBE0090C2B8 /* LTUILabelExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUILabelExtensions.swift; sourceTree = "<group>"; };
 		C72800FC1C11BBDA0090C2B8 /* LTSectionModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSectionModel.swift; sourceTree = "<group>"; };
 		C72800FE1C11CF280090C2B8 /* LTStringHeightExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTStringHeightExtensions.swift; sourceTree = "<group>"; };
 		C72801021C11E7A80090C2B8 /* LTTableViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTTableViewExtensions.swift; sourceTree = "<group>"; };
+		C73520D91C1EC62500993AEB /* LTLawModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTLawModel.swift; sourceTree = "<group>"; };
+		C76CE92C1C1B744F006262E8 /* LTMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMenuViewController.swift; sourceTree = "<group>"; };
+		C76CE92E1C1B7461006262E8 /* LTMenuRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMenuRootView.swift; sourceTree = "<group>"; };
+		C76CE9301C1B7477006262E8 /* LTMenuTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMenuTableViewCell.swift; sourceTree = "<group>"; };
 		C7A29E481C0C9EAD001B0EF5 /* LawTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LawTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C7A29E4E1C0C9EAD001B0EF5 /* LawTracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LawTracker.xcdatamodel; sourceTree = "<group>"; };
@@ -71,19 +68,20 @@
 		C7A29E611C0C9EAD001B0EF5 /* LawTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LawTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7A29E651C0C9EAD001B0EF5 /* LawTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LawTrackerTests.swift; sourceTree = "<group>"; };
 		C7A29E671C0C9EAD001B0EF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7CFB5A41C1FFFDB00211C6B /* LTCellHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTCellHeaderView.swift; sourceTree = "<group>"; };
+		C7CFB5A51C1FFFDB00211C6B /* LTCellHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTCellHeaderView.xib; sourceTree = "<group>"; };
+		C7CFB5A61C1FFFDB00211C6B /* LTMainContentRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentRootView.swift; sourceTree = "<group>"; };
+		C7CFB5A71C1FFFDB00211C6B /* LTMainContentTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentTableViewCell.swift; sourceTree = "<group>"; };
+		C7CFB5A81C1FFFDB00211C6B /* LTMainContentViewControllerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentViewControllerViewController.swift; sourceTree = "<group>"; };
+		C7CFB5A91C1FFFDB00211C6B /* LTNewsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsTableViewCell.swift; sourceTree = "<group>"; };
+		C7CFB5AA1C1FFFDB00211C6B /* LTNewsTableViewDadaSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsTableViewDadaSource.swift; sourceTree = "<group>"; };
+		C7CFB5AB1C1FFFDB00211C6B /* LTSwitchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButton.swift; sourceTree = "<group>"; };
 		C7E7928C1C158B220031C55A /* LTUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUtility.swift; sourceTree = "<group>"; };
-		C7E7928E1C159E820031C55A /* LTCellHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTCellHeaderView.xib; sourceTree = "<group>"; };
-		C7E792901C159EA40031C55A /* LTCellHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTCellHeaderView.swift; sourceTree = "<group>"; };
 		C7E792921C15A33B0031C55A /* LTFontSizeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFontSizeExtensions.swift; sourceTree = "<group>"; };
 		C7E792A41C18644B0031C55A /* LTChildViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChildViewControllerExtensions.swift; sourceTree = "<group>"; };
 		C7E792A71C18672C0031C55A /* LTFilterRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterRootView.swift; sourceTree = "<group>"; };
 		C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterTableViewCell.swift; sourceTree = "<group>"; };
 		C7E792A91C18672C0031C55A /* LTFilterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterViewController.swift; sourceTree = "<group>"; };
-		C7E792AB1C18672C0031C55A /* LTSearchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSearchTableViewCell.swift; sourceTree = "<group>"; };
-		C7E792AC1C18672C0031C55A /* LTSearchTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSearchTableViewCell.xib; sourceTree = "<group>"; };
-		C7E792AD1C18672C0031C55A /* LTSearchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSearchView.swift; sourceTree = "<group>"; };
-		C7E792AE1C18672C0031C55A /* LTSearchView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSearchView.xib; sourceTree = "<group>"; };
-		C7E792AF1C18672C0031C55A /* LTSearchViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSearchViewDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +102,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C76CE92B1C1B742F006262E8 /* MenuViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C76CE92C1C1B744F006262E8 /* LTMenuViewController.swift */,
+				C76CE92E1C1B7461006262E8 /* LTMenuRootView.swift */,
+				C76CE9301C1B7477006262E8 /* LTMenuTableViewCell.swift */,
+			);
+			path = MenuViewController;
+			sourceTree = "<group>";
+		};
 		C7A29E3F1C0C9EAD001B0EF5 = {
 			isa = PBXGroup;
 			children = (
@@ -173,8 +181,9 @@
 		C7A29E721C0C9F97001B0EF5 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				C72800F81C1194010090C2B8 /* LTNewsModel.swift */,
+				C72800F81C1194010090C2B8 /* LTChangeModel.swift */,
 				C72800FC1C11BBDA0090C2B8 /* LTSectionModel.swift */,
+				C73520D91C1EC62500993AEB /* LTLawModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -182,7 +191,9 @@
 		C7A29E731C0C9F97001B0EF5 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				C7A29E791C0CCF6A001B0EF5 /* LTMainContentViewController */,
+				C7CFB5A21C1FFFDB00211C6B /* HelpViewController */,
+				C7CFB5A31C1FFFDB00211C6B /* MainContentViewController */,
+				C76CE92B1C1B742F006262E8 /* MenuViewController */,
 				C7E792A61C18672C0031C55A /* FilterViewController */,
 			);
 			path = UI;
@@ -195,19 +206,26 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		C7A29E791C0CCF6A001B0EF5 /* LTMainContentViewController */ = {
+		C7CFB5A21C1FFFDB00211C6B /* HelpViewController */ = {
 			isa = PBXGroup;
 			children = (
-				C72800EC1C1053270090C2B8 /* LTMainContentViewControllerViewController.swift */,
-				C72800EE1C1053410090C2B8 /* LTMainContentRootView.swift */,
-				C72800F01C10558F0090C2B8 /* LTMainContentTableViewCell.swift */,
-				C72800F21C10ADA50090C2B8 /* LTNewsTableViewCell.swift */,
-				C72800F41C10B7EB0090C2B8 /* LTSwitchButton.swift */,
-				C72800F61C10FD090090C2B8 /* LTNewsTableViewDadaSource.swift */,
-				C7E792901C159EA40031C55A /* LTCellHeaderView.swift */,
-				C7E7928E1C159E820031C55A /* LTCellHeaderView.xib */,
 			);
-			path = LTMainContentViewController;
+			path = HelpViewController;
+			sourceTree = "<group>";
+		};
+		C7CFB5A31C1FFFDB00211C6B /* MainContentViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C7CFB5A41C1FFFDB00211C6B /* LTCellHeaderView.swift */,
+				C7CFB5A51C1FFFDB00211C6B /* LTCellHeaderView.xib */,
+				C7CFB5A61C1FFFDB00211C6B /* LTMainContentRootView.swift */,
+				C7CFB5A71C1FFFDB00211C6B /* LTMainContentTableViewCell.swift */,
+				C7CFB5A81C1FFFDB00211C6B /* LTMainContentViewControllerViewController.swift */,
+				C7CFB5A91C1FFFDB00211C6B /* LTNewsTableViewCell.swift */,
+				C7CFB5AA1C1FFFDB00211C6B /* LTNewsTableViewDadaSource.swift */,
+				C7CFB5AB1C1FFFDB00211C6B /* LTSwitchButton.swift */,
+			);
+			path = MainContentViewController;
 			sourceTree = "<group>";
 		};
 		C7E792A61C18672C0031C55A /* FilterViewController */ = {
@@ -216,21 +234,8 @@
 				C7E792A91C18672C0031C55A /* LTFilterViewController.swift */,
 				C7E792A71C18672C0031C55A /* LTFilterRootView.swift */,
 				C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */,
-				C7E792AA1C18672C0031C55A /* LTSearchView */,
 			);
 			path = FilterViewController;
-			sourceTree = "<group>";
-		};
-		C7E792AA1C18672C0031C55A /* LTSearchView */ = {
-			isa = PBXGroup;
-			children = (
-				C7E792AD1C18672C0031C55A /* LTSearchView.swift */,
-				C7E792AE1C18672C0031C55A /* LTSearchView.xib */,
-				C7E792AF1C18672C0031C55A /* LTSearchViewDelegate.swift */,
-				C7E792AB1C18672C0031C55A /* LTSearchTableViewCell.swift */,
-				C7E792AC1C18672C0031C55A /* LTSearchTableViewCell.xib */,
-			);
-			path = LTSearchView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -314,11 +319,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C7E792B61C18672C0031C55A /* LTSearchView.xib in Resources */,
 				C7A29E5B1C0C9EAD001B0EF5 /* LaunchScreen.storyboard in Resources */,
-				C7E7928F1C159E820031C55A /* LTCellHeaderView.xib in Resources */,
+				C7CFB5AD1C1FFFDB00211C6B /* LTCellHeaderView.xib in Resources */,
 				C7A29E581C0C9EAD001B0EF5 /* Assets.xcassets in Resources */,
-				C7E792B41C18672C0031C55A /* LTSearchTableViewCell.xib in Resources */,
 				C7A29E561C0C9EAD001B0EF5 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -337,29 +340,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7CFB5AF1C1FFFDB00211C6B /* LTMainContentTableViewCell.swift in Sources */,
 				C72800FB1C11ABBE0090C2B8 /* LTUILabelExtensions.swift in Sources */,
+				C7CFB5AC1C1FFFDB00211C6B /* LTCellHeaderView.swift in Sources */,
 				C72800FF1C11CF280090C2B8 /* LTStringHeightExtensions.swift in Sources */,
-				C72800F11C10558F0090C2B8 /* LTMainContentTableViewCell.swift in Sources */,
+				C76CE92D1C1B744F006262E8 /* LTMenuViewController.swift in Sources */,
 				C7E7928D1C158B220031C55A /* LTUtility.swift in Sources */,
 				C7E792B01C18672C0031C55A /* LTFilterRootView.swift in Sources */,
-				C72800ED1C1053270090C2B8 /* LTMainContentViewControllerViewController.swift in Sources */,
-				C72800F31C10ADA50090C2B8 /* LTNewsTableViewCell.swift in Sources */,
-				C72800EF1C1053410090C2B8 /* LTMainContentRootView.swift in Sources */,
+				C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */,
+				C76CE92F1C1B7461006262E8 /* LTMenuRootView.swift in Sources */,
 				C7E792B21C18672C0031C55A /* LTFilterViewController.swift in Sources */,
 				C7E792931C15A33B0031C55A /* LTFontSizeExtensions.swift in Sources */,
 				C72800FD1C11BBDA0090C2B8 /* LTSectionModel.swift in Sources */,
+				C7CFB5B01C1FFFDB00211C6B /* LTMainContentViewControllerViewController.swift in Sources */,
+				C7CFB5B31C1FFFDB00211C6B /* LTSwitchButton.swift in Sources */,
 				C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */,
-				C7E792B51C18672C0031C55A /* LTSearchView.swift in Sources */,
-				C72800F71C10FD090090C2B8 /* LTNewsTableViewDadaSource.swift in Sources */,
-				C7E792911C159EA40031C55A /* LTCellHeaderView.swift in Sources */,
-				C72800F91C1194010090C2B8 /* LTNewsModel.swift in Sources */,
+				C7CFB5B11C1FFFDB00211C6B /* LTNewsTableViewCell.swift in Sources */,
+				C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */,
+				C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */,
 				C7A29E4F1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld in Sources */,
-				C7E792B71C18672C0031C55A /* LTSearchViewDelegate.swift in Sources */,
 				C7E792A51C18644B0031C55A /* LTChildViewControllerExtensions.swift in Sources */,
 				C7E792B11C18672C0031C55A /* LTFilterTableViewCell.swift in Sources */,
 				C72801031C11E7A80090C2B8 /* LTTableViewExtensions.swift in Sources */,
-				C72800F51C10B7EB0090C2B8 /* LTSwitchButton.swift in Sources */,
-				C7E792B31C18672C0031C55A /* LTSearchTableViewCell.swift in Sources */,
+				C7CFB5B21C1FFFDB00211C6B /* LTNewsTableViewDadaSource.swift in Sources */,
+				C7CFB5AE1C1FFFDB00211C6B /* LTMainContentRootView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

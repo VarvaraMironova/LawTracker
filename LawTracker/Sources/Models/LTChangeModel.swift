@@ -1,5 +1,5 @@
 //
-//  LTNewsModel.swift
+//  LTChangeModel.swift
 //  LawTracker
 //
 //  Created by Varvara Mironova on 12/4/15.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct LTNewsModel {
+struct LTChangeModel {
     var date        : String
     var description : String
     
