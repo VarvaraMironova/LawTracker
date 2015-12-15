@@ -591,15 +591,15 @@
             </objects>
             <point key="canvasLocation" x="1297" y="447"/>
         </scene>
-        <!--View Controller-->
+        <!--Help View Controller-->
         <scene sceneID="JFG-29-3u7">
             <objects>
-                <viewController id="WI0-m4-OSI" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LTHelpViewController" id="WI0-m4-OSI" customClass="LTHelpViewController" customModule="LawTracker" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="8DY-5M-Cge"/>
                         <viewControllerLayoutGuide type="bottom" id="3F4-1N-bgC"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="TeR-N6-6DI">
+                    <view key="view" contentMode="scaleToFill" id="TeR-N6-6DI" customClass="LTHelpRootView" customModule="LawTracker" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -621,6 +621,9 @@
                                                     <constraint firstAttribute="width" secondItem="cZx-fg-AYe" secondAttribute="height" multiplier="1:1" id="qdT-9x-S4k"/>
                                                 </constraints>
                                                 <state key="normal" image="closeViolet"/>
+                                                <connections>
+                                                    <action selector="onCloseButton:" destination="WI0-m4-OSI" eventType="touchUpInside" id="DN2-nT-rTA"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -692,6 +695,12 @@
                             <constraint firstAttribute="trailing" secondItem="7cg-9Y-Z8w" secondAttribute="trailing" id="fis-DC-CXD"/>
                             <constraint firstItem="7cg-9Y-Z8w" firstAttribute="top" secondItem="8DY-5M-Cge" secondAttribute="bottom" id="wdv-Hb-TdK"/>
                         </constraints>
+                        <connections>
+                            <outlet property="closeButton" destination="cZx-fg-AYe" id="tYs-If-d1j"/>
+                            <outlet property="headerView" destination="23g-Ja-NmD" id="dN9-SS-nsb"/>
+                            <outlet property="logogImageView" destination="Ch9-fe-w7O" id="nAZ-Rk-FAG"/>
+                            <outlet property="scrollView" destination="x52-we-4wr" id="WaS-lD-9Vu"/>
+                        </connections>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <nil key="simulatedTopBarMetrics"/>

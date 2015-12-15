@@ -30,6 +30,8 @@
 		C7CFB5B11C1FFFDB00211C6B /* LTNewsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A91C1FFFDB00211C6B /* LTNewsTableViewCell.swift */; };
 		C7CFB5B21C1FFFDB00211C6B /* LTNewsTableViewDadaSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5AA1C1FFFDB00211C6B /* LTNewsTableViewDadaSource.swift */; };
 		C7CFB5B31C1FFFDB00211C6B /* LTSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5AB1C1FFFDB00211C6B /* LTSwitchButton.swift */; };
+		C7CFB5B51C2004D100211C6B /* LTHelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5B41C2004D100211C6B /* LTHelpViewController.swift */; };
+		C7CFB5B71C2004F700211C6B /* LTHelpRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5B61C2004F700211C6B /* LTHelpRootView.swift */; };
 		C7E7928D1C158B220031C55A /* LTUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E7928C1C158B220031C55A /* LTUtility.swift */; };
 		C7E792931C15A33B0031C55A /* LTFontSizeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792921C15A33B0031C55A /* LTFontSizeExtensions.swift */; };
 		C7E792A51C18644B0031C55A /* LTChildViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A41C18644B0031C55A /* LTChildViewControllerExtensions.swift */; };
@@ -76,6 +78,8 @@
 		C7CFB5A91C1FFFDB00211C6B /* LTNewsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsTableViewCell.swift; sourceTree = "<group>"; };
 		C7CFB5AA1C1FFFDB00211C6B /* LTNewsTableViewDadaSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsTableViewDadaSource.swift; sourceTree = "<group>"; };
 		C7CFB5AB1C1FFFDB00211C6B /* LTSwitchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButton.swift; sourceTree = "<group>"; };
+		C7CFB5B41C2004D100211C6B /* LTHelpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpViewController.swift; sourceTree = "<group>"; };
+		C7CFB5B61C2004F700211C6B /* LTHelpRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpRootView.swift; sourceTree = "<group>"; };
 		C7E7928C1C158B220031C55A /* LTUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUtility.swift; sourceTree = "<group>"; };
 		C7E792921C15A33B0031C55A /* LTFontSizeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFontSizeExtensions.swift; sourceTree = "<group>"; };
 		C7E792A41C18644B0031C55A /* LTChildViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChildViewControllerExtensions.swift; sourceTree = "<group>"; };
@@ -209,6 +213,8 @@
 		C7CFB5A21C1FFFDB00211C6B /* HelpViewController */ = {
 			isa = PBXGroup;
 			children = (
+				C7CFB5B41C2004D100211C6B /* LTHelpViewController.swift */,
+				C7CFB5B61C2004F700211C6B /* LTHelpRootView.swift */,
 			);
 			path = HelpViewController;
 			sourceTree = "<group>";
@@ -346,6 +352,7 @@
 				C72800FF1C11CF280090C2B8 /* LTStringHeightExtensions.swift in Sources */,
 				C76CE92D1C1B744F006262E8 /* LTMenuViewController.swift in Sources */,
 				C7E7928D1C158B220031C55A /* LTUtility.swift in Sources */,
+				C7CFB5B51C2004D100211C6B /* LTHelpViewController.swift in Sources */,
 				C7E792B01C18672C0031C55A /* LTFilterRootView.swift in Sources */,
 				C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */,
 				C76CE92F1C1B7461006262E8 /* LTMenuRootView.swift in Sources */,
@@ -358,6 +365,7 @@
 				C7CFB5B11C1FFFDB00211C6B /* LTNewsTableViewCell.swift in Sources */,
 				C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */,
 				C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */,
+				C7CFB5B71C2004F700211C6B /* LTHelpRootView.swift in Sources */,
 				C7A29E4F1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld in Sources */,
 				C7E792A51C18644B0031C55A /* LTChildViewControllerExtensions.swift in Sources */,
 				C7E792B11C18672C0031C55A /* LTFilterTableViewCell.swift in Sources */,
