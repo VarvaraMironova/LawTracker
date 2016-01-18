@@ -16,11 +16,13 @@ class LTMainContentTableViewCell: UITableViewCell {
     var separatorView: UIView?
     
     func fillWithModel(model: LTChangeModel) {
-        newsLabel.text = model.description
-        dateLabel.text = model.date
+        newsLabel.text = model.text
+        dateLabel.text = model.date.string()
+        lawNameLabel.text = model.law.name
         
         newsLabel.fit()
         dateLabel.fit()
+        lawNameLabel.fit()
         
         addSeparator()
     }

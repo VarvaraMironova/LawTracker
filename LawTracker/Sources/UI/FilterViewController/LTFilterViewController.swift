@@ -8,18 +8,78 @@
 
 import UIKit
 
+enum LTFilterControllerType: Int {
+    case Manual = 0,
+    WebSite     = 1,
+    About       = 2
+    
+    static let cellTypes = [Manual, WebSite, About]
+};
+
 class LTFilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+    
+    struct PlaceHolder {
+        static let Initialisers = "Зазначте ініціатора"
+        static let Committees   = "Зазначте комітет"
+        static let LawName      = "Зазначте назву законопроекта"
+        static let LawNumber    = "Зазначте номер законопроекта"
+    }
+    
     weak var delegate: LTMainContentViewControllerViewController!
     
-    var filteredArray: [LTSectionModel]!
-    var searchArray  : [LTSectionModel]!
-    var selectedModel: LTSectionModel? {
+//    var searchController = UISearchController(searchResultsController: nil)
+    var settingsModel    = VTSettingModel()
+    
+    var filteredArray   : [LTSectionModel]!
+    var filters         : [LTSectionModel]!
+    var selectedFilters : [String] {
+        get {
+            switch delegate.filterType {
+            case .byCommittees:
+                return settingsModel.committees
+                
+            case .byInitialisers:
+                return settingsModel.initialisers
+                
+            case .byLaws:
+                return settingsModel.laws
+            }
+        }
+        
+        set {
+            switch delegate.filterType {
+            case .byCommittees:
+                settingsModel.committees = newValue
+                
+            case .byInitialisers:
+                settingsModel.initialisers = newValue
+                
+            case .byLaws:
+                settingsModel.laws = newValue
+            }
+        }
+    }
+    
+    var selectedModel   : LTSectionModel? {
         didSet {
             rootView.fillSearchBar(selectedModel!)
         }
     }
     
-    var placeholderString: String!
+    var placeholderString: String {
+        get {
+            switch delegate.filterType {
+            case .byCommittees:
+                return PlaceHolder.Committees
+            
+            case .byInitialisers:
+                return PlaceHolder.Initialisers
+                
+            case .byLaws:
+                return PlaceHolder.LawName
+            }
+        }
+    }
     
     var rootView: LTFilterRootView! {
         get {
@@ -42,13 +102,14 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     //MARK: - Interface Handling
-    
     @IBAction func onOkButton(sender: AnyObject) {
         //save filteredArray
         dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func onCancelButton(sender: AnyObject) {
+        //clear filters in Settings
+        selectedFilters = []
         dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -60,10 +121,14 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch tableView.tag {
         case 1:
-            return filteredArray.count
+            return selectedFilters.count
         
         case 2:
-            return searchArray.count
+            if rootView.searchBar.text != "" {
+                return filteredArray.count
+            }
+            
+            return filters.count
             
         default:
             return 0
@@ -72,9 +137,31 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("LTFilterTableViewCell", forIndexPath: indexPath) as! LTFilterTableViewCell
-        
-        let model = tableView.tag == 1 ? filteredArray[indexPath.row] : searchArray[indexPath.row]
-        cell.fillWithModel(model)
+        switch tableView.tag {
+        case 1:
+            let id = selectedFilters[indexPath.row]
+            for model in filters {
+//                if model.id == id {
+                    cell.fillWithModel(model)
+//                }
+            }
+            
+            break
+            
+        case 2:
+            if rootView.searchBar.text != "" {
+                let model = filteredArray[indexPath.row]
+                cell.fillWithModel(model)
+            } else {
+                let model = filters[indexPath.row]
+                cell.fillWithModel(model)
+            }
+            
+            break
+            
+        default:
+            break
+        }
         
         return cell
     }
@@ -82,7 +169,16 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     //MARK: - UITableViewDelegate methods
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if tableView.tag == 2 {
-            selectedModel = searchArray[indexPath.row]
+            let selectedModel = filters[indexPath.row]
+//            selectedFilters.append(selectedModel.id)
+            let index = filters.indexOf({$0.title == selectedModel.title})
+            filters.removeAtIndex(index!)
+            
+            rootView.tableView.reloadData()
+            rootView.filteredTableView.reloadData()
+            rootView.fitTableViewHeight()
+            
+            rootView.searchBar.text = ""
         }
     }
     
@@ -90,7 +186,17 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         switch tableView.tag {
         case 1:
             if .Delete == editingStyle {
-                filteredArray.removeAtIndex(indexPath.row)
+                let id = selectedFilters[indexPath.row]
+                selectedFilters.removeAtIndex(indexPath.row)
+                rootView.filteredTableView.reloadData()
+                rootView.fitTableViewHeight()
+                
+                for model in filters {
+//                    if model.id == id {
+                        filters.append(model)
+                        rootView.tableView.reloadData()
+//                    }
+                }
             }
             
             break
@@ -100,18 +206,33 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
-    //MARK: - UISearchBarDelegate
-    func searchBarDidEndEditing(searchBar: UISearchBar) {
-        //find model with description == textField.text in searchArray and add it to filteredArray
-        //if there in no model with description == textField.text -> show alert
-        if let selectedModel = selectedModel as LTSectionModel! {
-            filteredArray.append(selectedModel)
+    func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
+        switch tableView.tag {
+        case 1:
+            return .Delete
+            
+        default:
+            return .None
         }
     }
     
+    //MARK: - UISearchBarDelegate
     func searchBarShouldReturn(searchBar: UISearchBar) -> Bool {
         searchBar.resignFirstResponder()
         
         return true
+    }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        filterContentForSearchText(searchText)
+    }
+    
+    //MARK: - Private methods
+    func filterContentForSearchText(searchText: String) {
+        filteredArray = filters.filter({( filter : LTSectionModel) -> Bool in
+            return filter.title.lowercaseString.containsString(searchText.lowercaseString)
+        })
+        
+        rootView.tableView.reloadData()
     }
 }

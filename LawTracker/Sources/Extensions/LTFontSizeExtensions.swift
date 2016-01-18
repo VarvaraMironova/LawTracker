@@ -11,7 +11,8 @@ import UIKit
 extension UIFont {
     
     func screenProportionalFont() -> UIFont {
-        let fontSize = pointSize * CGRectGetWidth(UIScreen.mainScreen().bounds) / 414.0
+        let widthProportionalSize = pointSize * CGRectGetWidth(UIScreen.mainScreen().bounds) / 414.0
+        let fontSize = widthProportionalSize < pointSize ? widthProportionalSize : pointSize
         
         return UIFont(name: fontName, size: fontSize)!
     }

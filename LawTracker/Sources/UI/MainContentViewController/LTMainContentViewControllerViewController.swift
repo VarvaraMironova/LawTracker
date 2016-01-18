@@ -8,54 +8,39 @@
 
 import UIKit
 
-let Commitee1 = "Комітет з питань аграрної політики та земельних відносин"
-let Commitee2 = "Комітет з питань будівництва, містобудування і житлово-комунального господарства"
-let Commitee3 = "Комітет з питань бюджету"
-let Commitee4 = "Комітет з питань державного будівництва, регіональної політики та місцевого самоврядування"
-let Commitee5 = "Комітет з питань екологічної політики, природокористування та ліквідації наслідків Чорнобильської катастрофи"
-
-let init1 = "Президент"
-let init2 = "Національний Банк України"
-let init3 = "Кабінет містрів України"
-let init4 = "Депутати"
-
-let law1 = "Проект Закону про внесення змін до статті 1071 Цивільного кодексу України (щодо списання коштів з рахунка померлого потерпілого від нещасного випадку на виробництві)"
-let law2 = "Проект Закону про внесення змін до деяких законів України щодо посилення гарантій безпеки дітей"
-let law3 = "Проект Закону про внесення змін до Закону України \"Про підприємництво\""
-let law4 = "Проект Закону про внесення змін до деяких законодавчих актів України щодо земельних ділянок багатоквартирних будинків"
-let law5 = "Проект Постанови про відхилення проекту Закону України про внесення змін до Закону України \"Про основні принципи та вимоги до безпечності та якості харчових продуктів\" щодо приведення норм до вимог Митного кодексу"
-let law6 = "Проект Закону про ратифікацію Угоди між Україною та Королівством Іспанія про взаємну охорону інформації з обмеженим доступом"
-
-//news
-let date1 = "03 грудня 2015, 17:09"
-let desc1 = "Направлений до комітетів та розміщений на Веб-сайті Верховної Ради України"
-let date2 = "03 грудня 2015, 17:07"
-let desc2 = "Прийнятий на поточній сесії"
-let date3 = "03 грудня 2015, 17:04"
-let desc3 = "Зареєстрований"
+enum LTFilterType : Int {
+    case byCommittees = 0, byInitialisers = 1, byLaws = 2
+    
+    static let filterTypes = [byCommittees, byInitialisers, byLaws]
+}
 
 class LTMainContentViewControllerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    var loaded : Bool = false
+    var arrayModel          : LTArrayModel!
     
-    lazy var commiteesArray: [LTSectionModel] = {
-        [unowned self] in
-        return [LTSectionModel(title:Commitee1, changes:self.arrayModel), LTSectionModel(title:Commitee2, changes:self.arrayModel), LTSectionModel(title:Commitee3, changes:self.arrayModel), LTSectionModel(title:Commitee4, changes:self.arrayModel), LTSectionModel(title:Commitee5, changes:self.arrayModel)]
-        }()
+    var byLawsArray         : [LTSectionModel] = []
+    var byCommitteesArray   : [LTSectionModel] = []
+    var byInitialisersArray : [LTSectionModel] = []
     
-    lazy var initializatorsArray: [LTSectionModel] = {
-        [unowned self] in
-        return [LTSectionModel(title:init1, changes:self.arrayModel), LTSectionModel(title:init2, changes:self.arrayModel), LTSectionModel(title:init3, changes:self.arrayModel), LTSectionModel(title:init4, changes:self.arrayModel)]
-        }()
+    var cellClass: AnyClass {
+        get {
+            return LTMainContentTableViewCell.self
+        }
+    }
     
-    lazy var lawsArray: [LTSectionModel] = {
-        [unowned self] in
-        return [LTSectionModel(title:law1, changes:self.arrayModel), LTSectionModel(title:law2, changes:self.arrayModel), LTSectionModel(title:law3, changes:self.arrayModel), LTSectionModel(title:law4, changes:self.arrayModel), LTSectionModel(title:law5, changes:self.arrayModel), LTSectionModel(title:law6, changes:self.arrayModel)]
-        }()
-    
-    lazy var arrayModel: [LTChangeModel] = {
-        [unowned self] in
-        return [LTChangeModel(date:date1, description:desc1), LTChangeModel(date:date2, description:desc2), LTChangeModel(date:date3, description:desc3)]
-        }()
+    var filterType: LTFilterType {
+        get {
+            switch rootView.selectedButton.tag {
+            case 1:
+                return .byInitialisers
+                
+            case 2:
+                return .byLaws
+                
+            default:
+                return .byCommittees
+            }
+        }
+    }
     
     var menuViewController: LTMenuViewController {
         get {
@@ -63,6 +48,15 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             menuViewController.delegate = self
             
             return menuViewController
+        }
+    }
+    
+    var helpViewController: LTHelpViewController {
+        get {
+            let helpViewController = self.storyboard!.instantiateViewControllerWithIdentifier("LTHelpViewController") as! LTHelpViewController
+            helpViewController.delegate = self
+            
+            return helpViewController
         }
     }
     
@@ -78,13 +72,60 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         }
     }
     
+    //MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        selectedArray = commiteesArray
+        selectedArray = byCommitteesArray
         
         //add menuViewController as a childViewController to menuContainerView
         addChildViewController(menuViewController, view: rootView.menuContainerView)
+        
+        //add helpViewController as a childViewController to menuContainerView
+        addChildViewController(helpViewController, view: rootView.helpViewContainer)
+        
+        //check, if it is a first launch -> show helpViewController, create dictionary filters in SettingsModel
+        let settingsModel = VTSettingModel()
+        let client = LTClient.sharedInstance()
+        let view = rootView
+        
+        if true != settingsModel.firstLaunch {
+//            rootView.showHelpView()
+            settingsModel.firstLaunch = true
+            
+            settingsModel.createFilters()
+            
+            //download full data from server
+            view.showLoadingViewWithMessage("Зачекайте, будь ласка.\nТриває перше завантаження...")
+            
+            client.downloadCommittees({ (success, error) -> Void in
+                if success {
+                    client.downloadInitialisers({ (success, error) -> Void in
+                        if success {
+                            client.downloadLaws({ (success, error) -> Void in
+                                if success {
+                                    self.downloadChanges()
+                                } else {
+                                    view.noSubscriptionsLabel.hidden = false
+                                    //show alert
+                                }
+                            })
+                        } else {
+                            view.noSubscriptionsLabel.hidden = false
+                            //show alert
+                        }
+                    })
+                } else {
+                    view.noSubscriptionsLabel.hidden = false
+                    //show alert
+                }
+            })
+        } else {
+            //check time
+            //remove previous changes
+            //download new changes
+            downloadChanges()
+        }
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator)
@@ -101,11 +142,11 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         return .LightContent
     }
     
+    //MARK: - Interface Handling
     @IBAction func onDismissFilterViewButton(sender: UIButton) {
         dispatch_async(dispatch_get_main_queue()) {
-            dispatch_async(dispatch_get_main_queue()) {
-                self.rootView.showMenu()
-            }
+            self.rootView.hideMenu() {finished in}
+            self.rootView.hideHelpView()
         }
     }
     
@@ -119,21 +160,21 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         dispatch_async(dispatch_get_main_queue()) {
             let filterController = self.storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
             filterController.delegate = self
-            filterController.filteredArray = []
-            switch self.rootView.filterType {
-            case .byCommettees:
-                filterController.searchArray = self.commiteesArray
-                filterController.placeholderString = "Зазначте комітет"
+            
+            switch self.filterType {
+            case .byCommittees:
+                filterController.filters = self.byCommitteesArray
+                
                 break
                 
-            case .byInitializers:
-                filterController.searchArray = self.initializatorsArray
-                filterController.placeholderString = "Зазначте ініціатора"
+            case .byInitialisers:
+                filterController.filters = self.byInitialisersArray
+                
                 break
                 
             case .byLaws:
-                filterController.searchArray = self.lawsArray
-                filterController.placeholderString = "Зазначте назву закону"
+                filterController.filters = self.byLawsArray
+                
                 break
             }
             
@@ -141,40 +182,48 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         }
     }
 
-    @IBAction func onByCommetteesButton(sender: LTSwitchButton) {
-        rootView.selectedButton = sender
-        selectedArray = commiteesArray
-        
-        rootView.contentTableView.reloadData()
+    @IBAction func onByCommitteesButton(sender: LTSwitchButton) {
+        if rootView.selectedButton != sender {
+            rootView.selectedButton = sender
+            selectedArray = byCommitteesArray
+            
+            rootView.contentTableView.reloadData()
+        }
     }
     
     @IBAction func onByInitializersButton(sender: LTSwitchButton) {
-        rootView.selectedButton = sender
-        selectedArray = initializatorsArray
-        
-        rootView.contentTableView.reloadData()
+        if rootView.selectedButton != sender {
+            rootView.selectedButton = sender
+            selectedArray = byInitialisersArray
+            
+            rootView.contentTableView.reloadData()
+        }
     }
     
     @IBAction func byLawsButton(sender: LTSwitchButton) {
-        rootView.selectedButton = sender
-        selectedArray = lawsArray
-        
-        rootView.contentTableView.reloadData()
+        if rootView.selectedButton != sender {
+            rootView.selectedButton = sender
+            selectedArray = byLawsArray
+            
+            rootView.contentTableView.reloadData()
+        }
     }
     
+    //MARK: - UITableViewDataSource methods
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return selectedArray[section].changes.count
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        let count = selectedArray.count
-        rootView.noSubscriptionsLabel.hidden = count > 0
+        if let model = selectedArray {
+            return model.count
+        }
         
-        return count
+        return 0
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("LTMainContentTableViewCell", forIndexPath: indexPath) as! LTMainContentTableViewCell
+        let cell = tableView.reusableCell(cellClass, indexPath: indexPath) as! LTMainContentTableViewCell
         let model = selectedArray[indexPath.section]
         cell.fillWithModel(model.changes[indexPath.row])
         
@@ -193,15 +242,39 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let news = selectedArray[indexPath.section].changes
-        let newsModel = news[indexPath.row]
+        let changes = selectedArray[indexPath.section].changes
+        let changeModel = changes[indexPath.row]
         let width = CGRectGetWidth(tableView.frame) - 20.0
         let dateFont = UIFont(name: "Arial", size: 12.0)
-        let descriptionFont = UIFont(name: "Arial", size: 14.0)
-        let dateHeight = newsModel.date.getHeight(width, font: dateFont!)
-        let descriptionHeight = newsModel.description.getHeight(width, font: descriptionFont!)
+        let descriptionFont = UIFont(name: "Arial-BoldMT", size: 14.0)
+        let lawNameHeight = changeModel.law.name.getHeight(width, font: descriptionFont!)
+        let dateHeight = changeModel.date.string().getHeight(width, font: dateFont!)
+        let descriptionHeight = changeModel.text.getHeight(width, font: descriptionFont!)
         
-        return dateHeight + descriptionHeight + 20.0
+        return lawNameHeight + dateHeight + descriptionHeight + 20.0
     }
     
+    //MARK: - Private methods
+    private func downloadChanges() {
+        let view = rootView
+        view.showLoadingViewWithMessage("Зачекайте, будь ласка.\nТриває завантаження останніх змін...")
+        LTClient.sharedInstance().downloadChanges({ (success, error) -> Void in
+            view.hideLoadingView()
+            if success {
+                view.noSubscriptionsLabel.hidden = true
+                self.arrayModel = LTArrayModel()
+                
+                self.byCommitteesArray = self.arrayModel.changesByKey(.byCommittees)
+                self.byInitialisersArray = self.arrayModel.changesByKey(.byInitialisers)
+                self.byLawsArray = self.arrayModel.changesByKey(.byLaws)
+                
+                self.selectedArray = self.byCommitteesArray
+                
+                view.contentTableView.reloadData()
+            } else {
+                view.noSubscriptionsLabel.hidden = false
+                //show alert
+            }
+        })
+    }
 }

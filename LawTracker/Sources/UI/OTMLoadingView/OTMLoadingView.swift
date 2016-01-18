@@ -1,0 +1,63 @@
+//
+//  OTMLoadingView.swift
+//  OnTheMap
+//
+//  Created by Varvara Mironova on 9/30/15.
+//  Copyright © 2015 VarvaraMironova. All rights reserved.
+//
+
+import UIKit
+
+class OTMLoadingView: UIView {
+    @IBOutlet var spinner     : UIActivityIndicatorView!
+    @IBOutlet var loadingLabel: UILabel!
+
+    weak var rootView: UIView!
+    
+    class func loadingView(rootView: UIView) -> OTMLoadingView {
+        let loadingView = NSBundle.mainBundle().loadNibNamed("OTMLoadingView", owner: self, options: nil).first as! OTMLoadingView
+
+        loadingView.show(rootView)
+        
+        return loadingView
+    }
+    
+    class func loadingView(rootView: UIView, message: String) -> OTMLoadingView {
+        let loadingView = NSBundle.mainBundle().loadNibNamed("OTMLoadingView", owner: self, options: nil).first as! OTMLoadingView
+        
+        loadingView.showWithMessage(rootView, message: message)
+        
+        return loadingView
+    }
+    
+    private func show(rootView: UIView) {
+        var frame = rootView.frame as CGRect
+        frame.origin = CGPointZero;
+        self.frame = frame;
+        
+        rootView.addSubview(self)
+        
+        self.rootView = rootView
+    
+        spinner.startAnimating();
+    }
+    
+    private func showWithMessage(rootView: UIView, message: String) {
+        show(rootView)
+        
+        loadingLabel.hidden = false
+        loadingLabel.text = message
+    }
+    
+    func changeMessage(message: String) {
+        loadingLabel.text = message
+    }
+    
+    func hide() {
+        if isDescendantOfView(rootView) {
+            loadingLabel.hidden = true
+            spinner.stopAnimating()
+            removeFromSuperview()
+        }
+    }
+}

@@ -12,19 +12,13 @@ let titleOne = "За комітетами"
 let titleTwo = "За ініціаторами"
 let titleThree = "За законопроектами"
 
-enum LTFilterType : Int {
-    case byCommettees = 0, byInitializers = 1, byLaws = 2
-    
-    static let filterTypes = [byCommettees, byInitializers, byLaws]
-}
-
-class LTMainContentRootView: UIView {
+class LTMainContentRootView: LTArrayRootView {
     @IBOutlet var headerView             : UIView!
     @IBOutlet var titleLabel             : UILabel!
     @IBOutlet var filterButton           : UIButton!
     @IBOutlet var menuButton             : UIButton!
-    @IBOutlet var byCommetteesButton     : LTSwitchButton!
-    @IBOutlet var byInitializersButton   : LTSwitchButton!
+    @IBOutlet var byCommitteesButton     : LTSwitchButton!
+    @IBOutlet var byInitialisersButton   : LTSwitchButton!
     @IBOutlet var byLawsButton           : LTSwitchButton!
     @IBOutlet var shadowImageView        : UIImageView!
     @IBOutlet var contentView            : UIView!
@@ -32,6 +26,7 @@ class LTMainContentRootView: UIView {
     @IBOutlet var contentTableView       : UITableView!
     @IBOutlet var menuContainerView      : UIView!
     @IBOutlet var dismissFilterViewButton: UIButton!
+    @IBOutlet var helpViewContainer      : UIView!
 
     var menuShown : Bool = false
     
@@ -44,20 +39,11 @@ class LTMainContentRootView: UIView {
         didSet {
             let tag = selectedButton.tag
             titleLabel.text = titleStrings[tag]
-        }
-    }
-    
-    var filterType: LTFilterType {
-        get {
-            switch selectedButton.tag {
-            case 1:
-                return .byInitializers
-                
-            case 2:
-                return .byLaws
-                
-            default:
-                return .byCommettees
+            
+            selectedButton.on = true
+            
+            if let oldValue = oldValue as LTSwitchButton! {
+                oldValue.on = false
             }
         }
     }
@@ -65,19 +51,43 @@ class LTMainContentRootView: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        selectedButton = byCommetteesButton
+        selectedButton = byCommitteesButton
+    }
+    
+    func showHelpView() {
+        UIView.animateWithDuration(0.4, animations: {
+            self.dismissFilterViewButton.alpha = 0.8
+            self.helpViewContainer.alpha = 1.0
+            }, completion: nil)
+    }
+    
+    func hideHelpView() {
+        UIView.animateWithDuration(0.4, animations: {
+            self.dismissFilterViewButton.alpha = 0.0
+            self.helpViewContainer.alpha = 0.0
+            }, completion: nil)
     }
     
     func showMenu() {
         //horizontal
-        var width = 0.0 as CGFloat!
+        let width = CGRectGetWidth(menuContainerView.frame) < 250.0 ? CGRectGetWidth(menuContainerView.frame) : 250.0;
+        animateMenu(width, show: !menuShown)
+    }
+    
+    func hideMenu(completionHandler: (finished: Bool) -> Void) {
         if menuShown {
-            width = CGRectGetWidth(menuContainerView.frame) < 250.0 ? CGRectGetWidth(menuContainerView.frame) : 250.0;
-        } else {
-            width = CGRectGetWidth(menuContainerView.frame)
+            let width = CGRectGetWidth(menuContainerView.frame) < 250.0 ? CGRectGetWidth(menuContainerView.frame) : 250.0;
+            let menuContainer = menuContainerView
+            UIView.animateWithDuration(0.4, animations: {
+                var center = menuContainer.center
+                center.x = -width / 2.0
+                menuContainer.center = center
+                self.dismissFilterViewButton.alpha = 0.0
+                }, completion: {(finished: Bool) -> Void in
+                    self.menuShown = !self.menuShown
+                    completionHandler(finished: finished)
+            })
         }
-        
-        animateMenu(width, show: menuShown)
     }
     
     private func animateMenu(width: CGFloat, show: Bool) {
@@ -85,9 +95,9 @@ class LTMainContentRootView: UIView {
         
         UIView.animateWithDuration(0.4, animations: {
             var center = menuContainer.center
-            center.x = show ? -width / 2.0 : width / 2.0
+            center.x = show ?  width / 2.0 : -width / 2.0
             menuContainer.center = center
-            self.dismissFilterViewButton.alpha = show ? 0.0 : 0.8
+            self.dismissFilterViewButton.alpha = show ? 0.8 : 0.0
             }, completion: {(finished: Bool) -> Void in
                 self.menuShown = !self.menuShown
         })

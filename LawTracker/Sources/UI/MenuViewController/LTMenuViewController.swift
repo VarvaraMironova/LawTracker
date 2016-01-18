@@ -52,27 +52,31 @@ class LTMenuViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        switch indexPath.row {
-        case 0:
-            break
-            
-        case 1:
-            let url = NSURL(string: kLTChesnoURL)
-            let app = UIApplication.sharedApplication()
-            if app.canOpenURL(url!) {
-                app.openURL(url!)
+        self.delegate.rootView.hideMenu(){finished in
+            if finished {
+                switch indexPath.row {
+                case 0:
+                    self.delegate.rootView.showHelpView()
+                    
+                    break
+                    
+                case 1:
+                    let url = NSURL(string: kLTChesnoURL)
+                    let app = UIApplication.sharedApplication()
+                    if app.canOpenURL(url!) {
+                        app.openURL(url!)
+                    }
+                    
+                    break
+                    
+                case 2:
+                    break
+                    
+                default:
+                    break
+                }
             }
-            
-            break
-            
-        case 2:
-            break
-            
-        default:
-            break
         }
-        
-        delegate.rootView.showMenu()
     }
 
 }

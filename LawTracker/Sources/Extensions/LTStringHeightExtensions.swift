@@ -17,4 +17,14 @@ extension String {
         
         return boundingBox.height
     }
+    
+    func date() -> NSDate? {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+        if let date = dateFormatter.dateFromString(self) as NSDate! {
+            return date
+        }
+        
+        return nil
+    }
 }

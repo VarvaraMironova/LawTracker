@@ -6,32 +6,61 @@
 //  Copyright © 2015 VarvaraMironova. All rights reserved.
 //
 
-import UIKit
+import CoreData
 
-struct LTLawModel {
-    var number          : String!
-    var name            : String!
-    var changes         : [LTChangeModel]!
-    var presentationDate: NSDate!
-    var initializers    : [String]!
-    var mainCommettee   : String!
-    var commettees      : [String]!
-    var url             : NSURL!
+class LTLawModel: LTEntityModel {
+    @NSManaged var presentationDate : NSDate?
+    @NSManaged var url              : String
+    @NSManaged var changes          : NSMutableSet
+    @NSManaged var initialisers     : NSMutableSet
+    @NSManaged var committee        : LTCommitteeModel
     
-    init(dictionary: [String: AnyObject]) {
-        if let number = dictionary["number"] as? String {
-            self.number = number
-        }
-        
-        if let name = dictionary["name"] as? String {
-            self.name = name
-        }
-        
-        if let changes = dictionary["changes"] as? [LTChangeModel] {
-            self.changes = changes
-        }
-        
-        
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
-
+    
+    override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
+        super.init(dictionary: dictionary, context: context, entityName: entityName)
+        
+        self.url = dictionary[Keys.url] as! String
+        
+        if let dateString = dictionary[Keys.date] as! String! {
+            self.presentationDate = dateString.date()
+        }
+        
+        if let initialisersArray = dictionary[Keys.initialisers] as! [String]! {
+            storeInitialisers(initialisersArray)
+        }
+        
+        if let committeeID = dictionary[Keys.committee] as! String! {
+            if let committeeModel = LTCommitteeModel.modelWithID(committeeID, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
+                self.committee = committeeModel
+            } else {
+                LTClient.sharedInstance().getCommitteeWithId(committeeID){committee, success, error in
+                    if success {
+                        self.committee = committee
+                    } else {
+                        //notify observers with error
+                    }
+                }
+            }
+        }
+    }
+    
+    func storeInitialisers(initialisers: [String]) {
+        for initialiserId in initialisers {
+            if let initialiserModel = LTInitialiserModel.modelWithID(initialiserId, entityName:"LTInitialiserModel") as! LTInitialiserModel! {
+                addValueForKey(initialiserModel, key: Keys.initialisers)
+            } else {
+                LTClient.sharedInstance().getInitialiserWithId(initialiserId){initialiser, success, error in
+                    if success {
+                        self.addValueForKey(initialiser, key: Keys.initialisers)
+                    } else {
+                        //notify observers with error
+                    }
+                }
+            }
+        }
+    }
+    
 }

@@ -13,8 +13,8 @@ class LTNewsTableViewCell: UITableViewCell {
     @IBOutlet var newsLabel: UILabel!
     
     func fillWithModel(model: LTChangeModel) {
-        dateLabel.text = model.date
-        newsLabel.text = model.description
+        dateLabel.text = model.date.string()
+        newsLabel.text = model.text
         newsLabel.fit()
     }
     

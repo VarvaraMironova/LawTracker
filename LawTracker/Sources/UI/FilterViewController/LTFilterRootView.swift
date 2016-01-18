@@ -19,7 +19,9 @@ class LTFilterRootView: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        filteredTableViewHeight.constant = 0
+        searchBar.returnKeyType = .Done
+        
+        self.fitTableViewHeight()
     }
     
     func fillSearchBar(model: LTSectionModel) {
@@ -27,7 +29,7 @@ class LTFilterRootView: UIView {
     }
     
     func fitTableViewHeight() {
-        let cellsCount = filteredTableView.numberOfRowsInSection(1)
+        let cellsCount = filteredTableView.numberOfRowsInSection(0)
         
         filteredTableViewHeight.constant = CGFloat(cellsCount * 30)
     }
