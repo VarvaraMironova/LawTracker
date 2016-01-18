@@ -45,8 +45,8 @@
         <element name="LTChangeModel" positionX="-144" positionY="-27" width="128" height="90"/>
         <element name="LTCommitteeModel" positionX="270" positionY="234" width="128" height="103"/>
         <element name="LTInitialiserModel" positionX="-153" positionY="171" width="128" height="105"/>
+        <element name="LTInitiatorType" positionX="54" positionY="126" width="128" height="90"/>
         <element name="LTLawModel" positionX="54" positionY="-9" width="128" height="150"/>
         <element name="LTPersonModel" positionX="45" positionY="117" width="128" height="120"/>
-        <element name="LTInitiatorType" positionX="54" positionY="126" width="128" height="90"/>
     </elements>
 </model>

@@ -123,8 +123,14 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         } else {
             //check time
             //remove previous changes
-            //download new changes
-            downloadChanges()
+            CoreDataStackManager.sharedInstance().clearEntity("LTChangeModel") {success, error in
+                if success {
+                    //download new changes
+                    self.downloadChanges()
+                } else {
+                    //show alert
+                }
+            }
         }
     }
     

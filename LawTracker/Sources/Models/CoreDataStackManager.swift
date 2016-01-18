@@ -133,4 +133,23 @@ class CoreDataStackManager {
             completionHandler(finished: true)}
         
     }
+    
+    func clearEntity(entityName: String, completionHandler:(success: Bool, error: NSError?) -> Void) {
+        let fetchRequest = NSFetchRequest(entityName: entityName)
+        fetchRequest.includesPropertyValues = false
+        
+        do {
+            if let results = try managedObjectContext.executeFetchRequest(fetchRequest) as? [NSManagedObject] {
+                for result in results {
+                    managedObjectContext.deleteObject(result)
+                }
+            }
+
+            self.saveContext()
+            
+            completionHandler(success: true, error: nil)
+        } catch let error as NSError {
+            completionHandler(success: false, error: error)
+        }
+    }
 }
