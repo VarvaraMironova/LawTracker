@@ -9,17 +9,17 @@
 import UIKit
 
 enum LTFilterType : Int {
-    case byCommittees = 0, byInitialisers = 1, byLaws = 2
+    case byCommittees = 0, byInitiators = 1, byLaws = 2
     
-    static let filterTypes = [byCommittees, byInitialisers, byLaws]
+    static let filterTypes = [byCommittees, byInitiators, byLaws]
 }
 
 class LTMainContentViewControllerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    var arrayModel          : LTArrayModel!
+    var arrayModel        : LTArrayModel!
     
-    var byLawsArray         : [LTSectionModel] = []
-    var byCommitteesArray   : [LTSectionModel] = []
-    var byInitialisersArray : [LTSectionModel] = []
+    var byLawsArray       : [LTSectionModel] = []
+    var byCommitteesArray : [LTSectionModel] = []
+    var byInitiatorsArray : [LTSectionModel] = []
     
     var cellClass: AnyClass {
         get {
@@ -31,7 +31,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         get {
             switch rootView.selectedButton.tag {
             case 1:
-                return .byInitialisers
+                return .byInitiators
                 
             case 2:
                 return .byLaws
@@ -100,11 +100,18 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             
             client.downloadCommittees({ (success, error) -> Void in
                 if success {
-                    client.downloadInitialisers({ (success, error) -> Void in
+                    client.downloadPersonTypes({ (success, error) -> Void in
                         if success {
-                            client.downloadLaws({ (success, error) -> Void in
+                            client.downloadPersons({ (success, error) -> Void in
                                 if success {
-                                    self.downloadChanges()
+                                    client.downloadLaws({ (success, error) -> Void in
+                                        if success {
+                                            self.downloadChanges()
+                                        } else {
+                                            view.noSubscriptionsLabel.hidden = false
+                                            //show alert
+                                        }
+                                    })
                                 } else {
                                     view.noSubscriptionsLabel.hidden = false
                                     //show alert
@@ -173,8 +180,8 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
                 
                 break
                 
-            case .byInitialisers:
-                filterController.filters = self.byInitialisersArray
+            case .byInitiators:
+                filterController.filters = self.byInitiatorsArray
                 
                 break
                 
@@ -200,7 +207,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     @IBAction func onByInitializersButton(sender: LTSwitchButton) {
         if rootView.selectedButton != sender {
             rootView.selectedButton = sender
-            selectedArray = byInitialisersArray
+            selectedArray = byInitiatorsArray
             
             rootView.contentTableView.reloadData()
         }
@@ -268,10 +275,10 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             view.hideLoadingView()
             if success {
                 view.noSubscriptionsLabel.hidden = true
-                self.arrayModel = LTArrayModel()
+                self.arrayModel = LTArrayModel(entityName: "LTChangeModel")
                 
                 self.byCommitteesArray = self.arrayModel.changesByKey(.byCommittees)
-                self.byInitialisersArray = self.arrayModel.changesByKey(.byInitialisers)
+                self.byInitiatorsArray = self.arrayModel.changesByKey(.byInitiators)
                 self.byLawsArray = self.arrayModel.changesByKey(.byLaws)
                 
                 self.selectedArray = self.byCommitteesArray

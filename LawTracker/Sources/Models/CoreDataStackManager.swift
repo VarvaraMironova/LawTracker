@@ -110,16 +110,58 @@ class CoreDataStackManager {
         
     }
     
-    func storeInitialisersFromArray(initialisers: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+    func storeInitiatorTypesFromArray(types: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
-            for initialiserArray in initialisers {
-            _ = LTInitialiserModel(dictionary: initialiserArray as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTInitialiserModel")
+            for type in types {
+                _ = LTInitiatorTypeModel(dictionary: type as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTInitiatorTypeModel")
+            }
+            
+            self.saveContext()
+            
+            completionHandler(finished: true)
+        }
+        
+    }
+    
+    func storePersonsFromArray(persons: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+        dispatch_async(dispatch_get_main_queue()) {
+            for person in persons {
+            _ = LTPersonModel(dictionary: person as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTPersonModel")
             }
             
             self.saveContext()
             
             completionHandler(finished: true)}
-        
+    }
+    
+    func storeInitiators(completionHandler: (success: Bool) -> Void) {
+        dispatch_async(dispatch_get_main_queue()) {
+            //fetch all initiatorTypes
+            let fetchRequest = NSFetchRequest(entityName: "LTInitiatorTypeModel")
+            fetchRequest.predicate = NSPredicate(value: true);
+            
+            if let types = (try? self.managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTInitiatorTypeModel]! {
+                for type in types {
+                    if type.name == "Депутат" {
+                        for (_, item) in type.persons.enumerate() {
+                            if let person = item as? LTPersonModel {
+                                let name = person.firstName + " " + person.secondName + " " + person.lastName
+                                _ = LTInitiatorModel(name: name, isDeputy: true, persons: ([person]), context: self.managedObjectContext, entityName: "LTInitiatorModel")
+                            }
+                        }
+                    } else {
+                        _ = LTInitiatorModel(name: type.name, isDeputy: false, persons: type.persons, context: self.managedObjectContext, entityName: "LTInitiatorModel")
+                    }
+                }
+                
+                self.saveContext()
+                
+                completionHandler(success: true)
+            } else {
+                //report of error
+                completionHandler(success: false)
+            }
+        }
     }
     
     func storeChangesFromArray(changes: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
@@ -135,21 +177,23 @@ class CoreDataStackManager {
     }
     
     func clearEntity(entityName: String, completionHandler:(success: Bool, error: NSError?) -> Void) {
-        let fetchRequest = NSFetchRequest(entityName: entityName)
-        fetchRequest.includesPropertyValues = false
-        
-        do {
-            if let results = try managedObjectContext.executeFetchRequest(fetchRequest) as? [NSManagedObject] {
-                for result in results {
-                    managedObjectContext.deleteObject(result)
-                }
-            }
-
-            self.saveContext()
+        dispatch_async(dispatch_get_main_queue()) {
+            let fetchRequest = NSFetchRequest(entityName: entityName)
+            fetchRequest.includesPropertyValues = false
             
-            completionHandler(success: true, error: nil)
-        } catch let error as NSError {
-            completionHandler(success: false, error: error)
+            do {
+                if let results = try self.managedObjectContext.executeFetchRequest(fetchRequest) as? [NSManagedObject] {
+                    for result in results {
+                        self.managedObjectContext.deleteObject(result)
+                    }
+                }
+                
+                self.saveContext()
+                
+                completionHandler(success: true, error: nil)
+            } catch let error as NSError {
+                completionHandler(success: false, error: error)
+            }
         }
     }
 }

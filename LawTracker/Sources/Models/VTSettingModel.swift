@@ -12,11 +12,11 @@ class VTSettingModel: NSObject {
     var defaults    : NSUserDefaults
     
     struct Keys {
-        static let Initialisers = "Initializers"
-        static let Committees   = "Committees"
-        static let Laws         = "Laws"
-        static let Filters      = "Filters"
-        static let FirstLaunch  = "firstLaunch"
+        static let Initiators  = "Initiators"
+        static let Committees  = "Committees"
+        static let Laws        = "Laws"
+        static let Filters     = "Filters"
+        static let FirstLaunch = "firstLaunch"
     }
     
     var firstLaunch : Bool {
@@ -29,14 +29,14 @@ class VTSettingModel: NSObject {
         }
     }
     
-    var initialisers : [String] {
+    var initiators : [String] {
         set {
-            filters[Keys.Initialisers] = newValue
+            filters[Keys.Initiators] = newValue
         }
         
         get {
-            if nil != filters[Keys.Initialisers] {
-                if let array = filters[Keys.Initialisers] as [String]! {
+            if nil != filters[Keys.Initiators] {
+                if let array = filters[Keys.Initiators] as [String]! {
                     return array
                 }
             }
@@ -118,6 +118,6 @@ class VTSettingModel: NSObject {
     }
     
     func createFilters() {
-        filters = [Keys.Initialisers:[], Keys.Committees:[], Keys.Laws:[]]
+        filters = [Keys.Initiators:[], Keys.Committees:[], Keys.Laws:[]]
     }
 }

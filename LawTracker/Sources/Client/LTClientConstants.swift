@@ -18,10 +18,10 @@ extension LTClient {
     }
     
     struct kVTKeys {
-        static let laws         = "laws"
-        static let initialisers = "initialisers"
-        static let committees   = "committees"
-        static let changes      = "changes"
+        static let laws       = "laws"
+        static let initiators = "initiators"
+        static let committees = "committees"
+        static let changes    = "changes"
     }
     
 }

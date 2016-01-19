@@ -8,26 +8,17 @@
 
 import UIKit
 
-enum LTFilterControllerType: Int {
-    case Manual = 0,
-    WebSite     = 1,
-    About       = 2
-    
-    static let cellTypes = [Manual, WebSite, About]
-};
-
 class LTFilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
     
     struct PlaceHolder {
-        static let Initialisers = "Зазначте ініціатора"
-        static let Committees   = "Зазначте комітет"
-        static let LawName      = "Зазначте назву законопроекта"
-        static let LawNumber    = "Зазначте номер законопроекта"
+        static let Initiators = "Зазначте ініціатора"
+        static let Committees = "Зазначте комітет"
+        static let LawName    = "Зазначте назву законопроекта"
+        static let LawNumber  = "Зазначте номер законопроекта"
     }
     
     weak var delegate: LTMainContentViewControllerViewController!
     
-//    var searchController = UISearchController(searchResultsController: nil)
     var settingsModel    = VTSettingModel()
     
     var filteredArray   : [LTSectionModel]!
@@ -38,8 +29,8 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
             case .byCommittees:
                 return settingsModel.committees
                 
-            case .byInitialisers:
-                return settingsModel.initialisers
+            case .byInitiators:
+                return settingsModel.initiators
                 
             case .byLaws:
                 return settingsModel.laws
@@ -51,8 +42,8 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
             case .byCommittees:
                 settingsModel.committees = newValue
                 
-            case .byInitialisers:
-                settingsModel.initialisers = newValue
+            case .byInitiators:
+                settingsModel.initiators = newValue
                 
             case .byLaws:
                 settingsModel.laws = newValue
@@ -72,8 +63,8 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
             case .byCommittees:
                 return PlaceHolder.Committees
             
-            case .byInitialisers:
-                return PlaceHolder.Initialisers
+            case .byInitiators:
+                return PlaceHolder.Initiators
                 
             case .byLaws:
                 return PlaceHolder.LawName

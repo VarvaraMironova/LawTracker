@@ -12,7 +12,7 @@ class LTLawModel: LTEntityModel {
     @NSManaged var presentationDate : NSDate?
     @NSManaged var url              : String
     @NSManaged var changes          : NSMutableSet
-    @NSManaged var initialisers     : NSMutableSet
+    @NSManaged var initiators       : NSMutableSet
     @NSManaged var committee        : LTCommitteeModel
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -28,8 +28,8 @@ class LTLawModel: LTEntityModel {
             self.presentationDate = dateString.date()
         }
         
-        if let initialisersArray = dictionary[Keys.initialisers] as! [String]! {
-            storeInitialisers(initialisersArray)
+        if let initiatorsArray = dictionary[Keys.initiators] as! [String]! {
+            storeInitiators(initiatorsArray)
         }
         
         if let committeeID = dictionary[Keys.committee] as! String! {
@@ -47,14 +47,14 @@ class LTLawModel: LTEntityModel {
         }
     }
     
-    func storeInitialisers(initialisers: [String]) {
-        for initialiserId in initialisers {
-            if let initialiserModel = LTInitialiserModel.modelWithID(initialiserId, entityName:"LTInitialiserModel") as! LTInitialiserModel! {
-                addValueForKey(initialiserModel, key: Keys.initialisers)
+    func storeInitiators(persons: [String]) {
+        for personId in persons {
+            if let personModel = LTPersonModel.modelWithID(personId) as LTPersonModel! {
+                self.addValueForKey(personModel.initiator, key: Keys.initiators)
             } else {
-                LTClient.sharedInstance().getInitialiserWithId(initialiserId){initialiser, success, error in
+                LTClient.sharedInstance().getPersonWithId(personId){person, success, error in
                     if success {
-                        self.addValueForKey(initialiser, key: Keys.initialisers)
+                        self.addValueForKey(person.initiator, key: Keys.initiators)
                     } else {
                         //notify observers with error
                     }

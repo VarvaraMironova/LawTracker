@@ -16,8 +16,8 @@ let Commitee5 = "Комітет з питань екологічної полі�
 
 let init1 = "Президент"
 let init2 = "Кабінет містрів України"
-let init3 = "Абдуллін Олександр Рафкатович"
-let init4 = "Аваков Арсен Борисович"
+let init3 = "Національний банк України"
+let init4 = "Депутат"
 
 let law1 = "Проект Закону про внесення змін до статті 1071 Цивільного кодексу України (щодо списання коштів з рахунка померлого потерпілого від нещасного випадку на виробництві)"
 let law2 = "Проект Закону про внесення змін до деяких законів України щодо посилення гарантій безпеки дітей"
@@ -68,8 +68,7 @@ extension LTClient {
 //        }
         
         //MOCK!
-        sleep(2)
-        let laws = [["id":"3100-12", "name":law1, "date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee1ID", "initialisers":["initialiser1ID"]], ["id":"3100-15", "name":law2, "date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57640", "committee":"commettee2ID", "initialisers":["initialiser3ID", "initialiser4ID"]], ["id":"3185", "name":law3, "date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee2ID", "initialisers":["initialiser2ID"]]]
+        let laws = [["id":"3100-12", "name":law1, "date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee1ID", "initiators":["person1"]], ["id":"3100-15", "name":law2, "date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57640", "committee":"commettee2ID", "initiators":["person5", "person6"]], ["id":"3185", "name":law3, "date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee2ID", "initiators":["person3"]]]
         CoreDataStackManager.sharedInstance().storeLawsFromArray(laws){finished in
             if finished {
                 completionHandler(success: true, error: nil)
@@ -78,7 +77,6 @@ extension LTClient {
     }
     
     func downloadCommittees(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        sleep(2)
         //MOCK!
         let committees = [["id":"commettee1ID", "name":Commitee1, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642"], ["id":"commettee2ID", "name":Commitee2, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642"], ["id":"commettee3ID", "name":Commitee3, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642"], ["id":"commettee4ID", "name":Commitee4, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642"], ["id":"commettee5ID", "name":Commitee5, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642"]]
         CoreDataStackManager.sharedInstance().storeCommitteesFromArray(committees){finished in
@@ -88,11 +86,20 @@ extension LTClient {
         }
     }
     
-    func downloadInitialisers(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        sleep(2)
+    func downloadPersons(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //MOCK!
-        let initialisers = [["id":"initialiser1ID", "name":init1, "deputy":0], ["id":"initialiser2ID", "name":init2, "deputy":0], ["id":"initialiser3ID", "name":init3, "deputy":1], ["id":"initialiser4ID", "name":init4, "deputy":1]]
-        CoreDataStackManager.sharedInstance().storeInitialisersFromArray(initialisers){finished in
+        let persons = [["id":"person1", "first_name":"Петро", "second_name":"Олексійович", "last_name":"Порошенко", "type":"initiatorType1"], ["id":"person2", "first_name":"Віктор", "second_name":"Федорович", "last_name":"Янукович", "type":"initiatorType1"], ["id":"person3", "first_name":"Арсеній", "second_name":"Петрович", "last_name":"Яценюк", "type":"initiatorType2"], ["id":"person4", "first_name":"Валерія", "second_name":"Олексіївна", "last_name":"Гонтарьова", "type":"initiatorType3"], ["id":"person5", "first_name":"Олександр", "second_name":"Рафкатович", "last_name":"Абдуллін", "type":"initiatorType4"], ["id":"person6", "first_name":"Арсен", "second_name":"Борисович", "last_name":"Аваков", "type":"initiatorType4"]]
+        CoreDataStackManager.sharedInstance().storePersonsFromArray(persons){finished in
+            if finished {
+                completionHandler(success: true, error: nil)
+            }
+        }
+    }
+    
+    func downloadPersonTypes(completionHandler:(success: Bool, error: NSError?) -> Void) {
+        //MOCK!
+        let types = [["id":"initiatorType1", "name":init1], ["id":"initiatorType2", "name":init2], ["id":"initiatorType3", "name":init3], ["id":"initiatorType4", "name":init4]]
+        CoreDataStackManager.sharedInstance().storeInitiatorTypesFromArray(types){finished in
             if finished {
                 completionHandler(success: true, error: nil)
             }
@@ -100,7 +107,6 @@ extension LTClient {
     }
     
     func downloadChanges(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        sleep(2)
         //MOCK!
         let changes = [["date":date1, "text":desc1, "law":"3100-12"], ["date":date2, "text":desc2, "law":"3100-15"], ["date":date3, "text":desc3, "law":"3185"]]
         CoreDataStackManager.sharedInstance().storeChangesFromArray(changes){finished in
@@ -114,7 +120,11 @@ extension LTClient {
         
     }
     
-    func getInitialiserWithId(id: String, completionHandler:(initialiser: LTInitialiserModel, success: Bool, error: NSError?) -> Void) {
+    func getPersonWithId(id: String, completionHandler:(person: LTPersonModel, success: Bool, error: NSError?) -> Void) {
+        
+    }
+    
+    func getInitiatorTypeWithId(id: String, completionHandler:(type:LTInitiatorTypeModel, success: Bool, error: NSError?) -> Void) {
         
     }
     

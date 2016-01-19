@@ -10,19 +10,21 @@ import CoreData
 import Foundation
 
 enum LTChangeType : Int {
-    case byCommittees = 0, byInitialisers = 1, byLaws = 2
+    case byCommittees = 0, byInitiators = 1, byLaws = 2
     
-    static let changesTypes = [byCommittees, byInitialisers, byLaws]
+    static let changesTypes = [byCommittees, byInitiators, byLaws]
 }
 
 class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
-    var settings                = VTSettingModel()
+    var settings = VTSettingModel()
+    
+    var entityName : String!
     
     // MARK: - NSFetchedResultsController
     lazy var fetchedResultsController: NSFetchedResultsController = {
-        let fetchRequest = NSFetchRequest(entityName: "LTChangeModel")
+        let fetchRequest = NSFetchRequest(entityName: self.entityName)
         
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         fetchRequest.predicate = NSPredicate(value: true);
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
@@ -37,8 +39,10 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         return self.fetchedResultsController.fetchedObjects as! [LTChangeModel]
     }()
     
-    override init() {
+    init(entityName: String) {
         super.init()
+        
+        self.entityName = entityName
         
         do {
             try fetchedResultsController.performFetch()
@@ -57,8 +61,8 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         case .byLaws:
             filteredIds = settings.laws
             
-        case .byInitialisers:
-            filteredIds = settings.initialisers.sort() { $0 > $1 }
+        case .byInitiators:
+            filteredIds = settings.initiators.sort() { $0 > $1 }
             
         case .byCommittees:
             filteredIds = settings.committees
@@ -73,10 +77,10 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
                 ids = [changeModel.law.id]
                 title = changeModel.law.name
                 
-            case .byInitialisers:
-                for initialiser in changeModel.law.initialisers.allObjects {
-                    ids.append(initialiser.id)
-                    title.appendContentsOf(initialiser.name + "\n")
+            case .byInitiators:
+                for initiator in changeModel.law.initiators.allObjects {
+                    ids.append(initiator.id)
+                    title.appendContentsOf(initiator.name + "\n")
                 }
                 
             case .byCommittees:

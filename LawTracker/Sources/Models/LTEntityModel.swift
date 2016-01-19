@@ -10,15 +10,15 @@ import CoreData
 
 class LTEntityModel: NSManagedObject {
     struct Keys {
-        static let id           = "id"
-        static let name         = "name"
-        static let url          = "url"
-        static let date         = "presentationDate"
-        static let changes      = "changes"
-        static let initialisers = "initialisers"
-        static let laws         = "laws"
-        static let deputy       = "isDeputy"
-        static let committee    = "committee"
+        static let id         = "id"
+        static let name       = "name"
+        static let url        = "url"
+        static let date       = "presentationDate"
+        static let changes    = "changes"
+        static let initiators = "initiators"
+        static let laws       = "laws"
+        static let deputy     = "isDeputy"
+        static let committee  = "committee"
     }
     
     @NSManaged var id   : String

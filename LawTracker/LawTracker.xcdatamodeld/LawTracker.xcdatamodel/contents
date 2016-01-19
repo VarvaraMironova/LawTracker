@@ -14,13 +14,14 @@
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="laws" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTLawModel" inverseName="committee" inverseEntity="LTLawModel" syncable="YES"/>
     </entity>
-    <entity name="LTInitialiserModel" representedClassName=".LTInitialiserModel" syncable="YES">
+    <entity name="LTInitiatorModel" representedClassName=".LTInitiatorModel" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isDeputy" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="laws" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTLawModel" inverseName="initialisers" inverseEntity="LTLawModel" syncable="YES"/>
+        <relationship name="laws" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTLawModel" inverseName="initiators" inverseEntity="LTLawModel" syncable="YES"/>
+        <relationship name="persons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTPersonModel" inverseName="initiator" inverseEntity="LTPersonModel" syncable="YES"/>
     </entity>
-    <entity name="LTInitiatorType" syncable="YES">
+    <entity name="LTInitiatorTypeModel" representedClassName=".LTInitiatorTypeModel" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="persons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTPersonModel" inverseName="type" inverseEntity="LTPersonModel" syncable="YES"/>
@@ -32,21 +33,22 @@
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="change" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LTChangeModel" inverseName="law" inverseEntity="LTChangeModel" syncable="YES"/>
         <relationship name="committee" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LTCommitteeModel" inverseName="laws" inverseEntity="LTCommitteeModel" syncable="YES"/>
-        <relationship name="initialisers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTInitialiserModel" inverseName="laws" inverseEntity="LTInitialiserModel" syncable="YES"/>
+        <relationship name="initiators" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTInitiatorModel" inverseName="laws" inverseEntity="LTInitiatorModel" syncable="YES"/>
     </entity>
-    <entity name="LTPersonModel" syncable="YES">
+    <entity name="LTPersonModel" representedClassName=".LTPersonModel" syncable="YES">
         <attribute name="firstName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lastName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="secondName" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="type" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LTInitiatorType" inverseName="persons" inverseEntity="LTInitiatorType" syncable="YES"/>
+        <relationship name="initiator" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LTInitiatorModel" inverseName="persons" inverseEntity="LTInitiatorModel" syncable="YES"/>
+        <relationship name="type" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LTInitiatorTypeModel" inverseName="persons" inverseEntity="LTInitiatorTypeModel" syncable="YES"/>
     </entity>
     <elements>
         <element name="LTChangeModel" positionX="-144" positionY="-27" width="128" height="90"/>
         <element name="LTCommitteeModel" positionX="270" positionY="234" width="128" height="103"/>
-        <element name="LTInitialiserModel" positionX="-153" positionY="171" width="128" height="105"/>
-        <element name="LTInitiatorType" positionX="54" positionY="126" width="128" height="90"/>
+        <element name="LTInitiatorTypeModel" positionX="54" positionY="126" width="128" height="90"/>
         <element name="LTLawModel" positionX="54" positionY="-9" width="128" height="150"/>
-        <element name="LTPersonModel" positionX="45" positionY="117" width="128" height="120"/>
+        <element name="LTPersonModel" positionX="45" positionY="117" width="128" height="135"/>
+        <element name="LTInitiatorModel" positionX="63" positionY="126" width="128" height="120"/>
     </elements>
 </model>
