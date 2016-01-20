@@ -25,7 +25,9 @@ class LTLawModel: LTEntityModel {
         self.url = dictionary[Keys.url] as! String
         
         if let dateString = dictionary[Keys.date] as! String! {
-            self.presentationDate = dateString.date()
+            if let date = dateString.date() as NSDate! {
+                self.presentationDate = date
+            }
         }
         
         if let initiatorsArray = dictionary[Keys.initiators] as! [String]! {

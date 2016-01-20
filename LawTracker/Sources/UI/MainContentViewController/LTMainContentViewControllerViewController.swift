@@ -100,7 +100,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             
             client.downloadCommittees({ (success, error) -> Void in
                 if success {
-                    client.downloadPersonTypes({ (success, error) -> Void in
+                    client.downloadInitiatorTypes({ (success, error) -> Void in
                         if success {
                             client.downloadPersons({ (success, error) -> Void in
                                 if success {
@@ -260,7 +260,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         let width = CGRectGetWidth(tableView.frame) - 20.0
         let dateFont = UIFont(name: "Arial", size: 12.0)
         let descriptionFont = UIFont(name: "Arial-BoldMT", size: 14.0)
-        let lawNameHeight = changeModel.law.name.getHeight(width, font: descriptionFont!)
+        let lawNameHeight = changeModel.law.title.getHeight(width, font: descriptionFont!)
         let dateHeight = changeModel.date.string().getHeight(width, font: dateFont!)
         let descriptionHeight = changeModel.text.getHeight(width, font: descriptionFont!)
         

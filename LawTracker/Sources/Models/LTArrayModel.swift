@@ -75,17 +75,17 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             switch key {
             case .byLaws:
                 ids = [changeModel.law.id]
-                title = changeModel.law.name
+                title = changeModel.law.title
                 
             case .byInitiators:
                 for initiator in changeModel.law.initiators.allObjects {
                     ids.append(initiator.id)
-                    title.appendContentsOf(initiator.name + "\n")
+                    title.appendContentsOf(initiator.title + "\n")
                 }
                 
             case .byCommittees:
                 ids = [changeModel.law.committee.id]
-                title = changeModel.law.committee.name
+                title = changeModel.law.committee.title
             }
             
             //check if changesByKey array contains sectionModel with title==title. If true -> add changeModel to sectionModel.changes, else -> append sectionModel to changesByKey

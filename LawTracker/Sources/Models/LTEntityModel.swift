@@ -11,18 +11,20 @@ import CoreData
 class LTEntityModel: NSManagedObject {
     struct Keys {
         static let id         = "id"
-        static let name       = "name"
+        static let title      = "title"
         static let url        = "url"
-        static let date       = "presentationDate"
+        static let date       = "filing_date"
         static let changes    = "changes"
         static let initiators = "initiators"
         static let laws       = "laws"
         static let deputy     = "isDeputy"
         static let committee  = "committee"
+        static let starts     = "starts"
+        static let ends       = "ends"
     }
     
-    @NSManaged var id   : String
-    @NSManaged var name : String
+    @NSManaged var id    : String
+    @NSManaged var title : String
     
     var entityName: String!
     
@@ -48,7 +50,7 @@ class LTEntityModel: NSManagedObject {
         
         self.entityName = entityName
         id = dictionary[Keys.id] as! String
-        name = dictionary[Keys.name] as! String
+        title = dictionary[Keys.title] as! String
     }
     
     func addValueForKey(value: LTEntityModel, key: String) {

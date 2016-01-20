@@ -18,7 +18,7 @@ class LTMainContentTableViewCell: UITableViewCell {
     func fillWithModel(model: LTChangeModel) {
         newsLabel.text = model.text
         dateLabel.text = model.date.string()
-        lawNameLabel.text = model.law.name
+        lawNameLabel.text = model.law.title
         
         newsLabel.fit()
         dateLabel.fit()

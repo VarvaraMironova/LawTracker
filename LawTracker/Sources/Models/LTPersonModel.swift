@@ -11,11 +11,11 @@ import CoreData
 class LTPersonModel: NSManagedObject {
     struct Keys {
         static let id         = "id"
-        static let name       = "name"
+        static let title      = "title"
         static let firstName  = "first_name"
         static let secondName = "second_name"
         static let lastName   = "last_name"
-        static let type       = "type"
+        static let type       = "initiator_type"
     }
     
     @NSManaged var id         : String
@@ -56,21 +56,21 @@ class LTPersonModel: NSManagedObject {
         }
         
         //create initiatorModel
-        if type.name == "Депутат" {
+        if type.title == "Депутат" {
             let name = firstName + " " + secondName + " " + lastName
-            initiator = LTInitiatorModel(name: name, isDeputy: true, persons: ([self]), context:context, entityName: "LTInitiatorModel")
+            initiator = LTInitiatorModel(title: name, isDeputy: true, persons: ([self]), context:context, entityName: "LTInitiatorModel")
         } else {
-            let predicate = NSPredicate(format:"name == %@", type.name)
+            let predicate = NSPredicate(format:"title == %@", type.title)
             let fetchRequest = NSFetchRequest(entityName: "LTInitiatorModel")
             fetchRequest.predicate = predicate
             if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTInitiatorModel]! {
                 if models.count > 0 {
                     initiator = models.first!
                 } else {
-                    initiator = LTInitiatorModel(name: type.name, isDeputy: false, persons: type.persons, context: context, entityName: "LTInitiatorModel")
+                    initiator = LTInitiatorModel(title: type.title, isDeputy: false, persons: type.persons, context: context, entityName: "LTInitiatorModel")
                 }
             } else {
-                initiator = LTInitiatorModel(name: type.name, isDeputy: false, persons: type.persons, context: context, entityName: "LTInitiatorModel")
+                initiator = LTInitiatorModel(title: type.title, isDeputy: false, persons: type.persons, context: context, entityName: "LTInitiatorModel")
             }
         }
     }

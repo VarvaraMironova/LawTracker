@@ -110,10 +110,11 @@ class CoreDataStackManager {
         
     }
     
-    func storeInitiatorTypesFromArray(types: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+    func storeInitiatorTypesFromArray(types: [String : AnyObject], completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
-            for type in types {
-                _ = LTInitiatorTypeModel(dictionary: type as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTInitiatorTypeModel")
+            for (key, value) in types {
+                let type = ["id": key, "title": value]
+                _ = LTInitiatorTypeModel(dictionary: type, context: self.managedObjectContext, entityName:"LTInitiatorTypeModel")
             }
             
             self.saveContext()
@@ -142,15 +143,15 @@ class CoreDataStackManager {
             
             if let types = (try? self.managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTInitiatorTypeModel]! {
                 for type in types {
-                    if type.name == "Депутат" {
+                    if type.title == "Депутат" {
                         for (_, item) in type.persons.enumerate() {
                             if let person = item as? LTPersonModel {
-                                let name = person.firstName + " " + person.secondName + " " + person.lastName
-                                _ = LTInitiatorModel(name: name, isDeputy: true, persons: ([person]), context: self.managedObjectContext, entityName: "LTInitiatorModel")
+                                let title = person.firstName + " " + person.secondName + " " + person.lastName
+                                _ = LTInitiatorModel(title: title, isDeputy: true, persons: ([person]), context: self.managedObjectContext, entityName: "LTInitiatorModel")
                             }
                         }
                     } else {
-                        _ = LTInitiatorModel(name: type.name, isDeputy: false, persons: type.persons, context: self.managedObjectContext, entityName: "LTInitiatorModel")
+                        _ = LTInitiatorModel(title: type.title, isDeputy: false, persons: type.persons, context: self.managedObjectContext, entityName: "LTInitiatorModel")
                     }
                 }
                 

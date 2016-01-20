@@ -68,7 +68,7 @@ extension LTClient {
 //        }
         
         //MOCK!
-        let laws = [["id":"3100-12", "name":law1, "date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee1ID", "initiators":["person1"]], ["id":"3100-15", "name":law2, "date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57640", "committee":"commettee2ID", "initiators":["person5", "person6"]], ["id":"3185", "name":law3, "date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee2ID", "initiators":["person3"]]]
+        let laws = [["id":"3100-12", "title":law1, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee1ID", "initiators":["person1"]], ["id":"3100-15", "title":law2, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57640", "committee":"commettee2ID", "initiators":["person5", "person6"]], ["id":"3185", "title":law3, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee3ID", "initiators":["person3"]]]
         CoreDataStackManager.sharedInstance().storeLawsFromArray(laws){finished in
             if finished {
                 completionHandler(success: true, error: nil)
@@ -78,7 +78,7 @@ extension LTClient {
     
     func downloadCommittees(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //MOCK!
-        let committees = [["id":"commettee1ID", "name":Commitee1, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642"], ["id":"commettee2ID", "name":Commitee2, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642"], ["id":"commettee3ID", "name":Commitee3, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642"], ["id":"commettee4ID", "name":Commitee4, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642"], ["id":"commettee5ID", "name":Commitee5, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642"]]
+        let committees = [["id":"commettee1ID", "title":Commitee1, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "starts":"null", "ends":"null"], ["id":"commettee2ID", "title":Commitee2, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "starts":"null", "ends":"null"], ["id":"commettee3ID", "title":Commitee3, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "starts":"null", "ends":"null"], ["id":"commettee4ID", "title":Commitee4, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "starts":"null", "ends":"null"], ["id":"commettee5ID", "title":Commitee5, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "starts":"null", "ends":"null"]]
         CoreDataStackManager.sharedInstance().storeCommitteesFromArray(committees){finished in
             if finished {
                 completionHandler(success: true, error: nil)
@@ -88,7 +88,7 @@ extension LTClient {
     
     func downloadPersons(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //MOCK!
-        let persons = [["id":"person1", "first_name":"Петро", "second_name":"Олексійович", "last_name":"Порошенко", "type":"initiatorType1"], ["id":"person2", "first_name":"Віктор", "second_name":"Федорович", "last_name":"Янукович", "type":"initiatorType1"], ["id":"person3", "first_name":"Арсеній", "second_name":"Петрович", "last_name":"Яценюк", "type":"initiatorType2"], ["id":"person4", "first_name":"Валерія", "second_name":"Олексіївна", "last_name":"Гонтарьова", "type":"initiatorType3"], ["id":"person5", "first_name":"Олександр", "second_name":"Рафкатович", "last_name":"Абдуллін", "type":"initiatorType4"], ["id":"person6", "first_name":"Арсен", "second_name":"Борисович", "last_name":"Аваков", "type":"initiatorType4"]]
+        let persons = [["id":"person1", "first_name":"Петро", "second_name":"Олексійович", "last_name":"Порошенко", "initiator_type":"president"], ["id":"person2", "first_name":"Віктор", "second_name":"Федорович", "last_name":"Янукович", "initiator_type":"president"], ["id":"person3", "first_name":"Арсеній", "second_name":"Петрович", "last_name":"Яценюк", "initiator_type":"cabmin"], ["id":"person4", "first_name":"Валерія", "second_name":"Олексіївна", "last_name":"Гонтарьова", "initiator_type":"bank"], ["id":"person5", "first_name":"Олександр", "second_name":"Рафкатович", "last_name":"Абдуллін", "initiator_type":"deputy"], ["id":"person6", "first_name":"Арсен", "second_name":"Борисович", "last_name":"Аваков", "initiator_type":"deputy"]]
         CoreDataStackManager.sharedInstance().storePersonsFromArray(persons){finished in
             if finished {
                 completionHandler(success: true, error: nil)
@@ -96,9 +96,9 @@ extension LTClient {
         }
     }
     
-    func downloadPersonTypes(completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func downloadInitiatorTypes(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //MOCK!
-        let types = [["id":"initiatorType1", "name":init1], ["id":"initiatorType2", "name":init2], ["id":"initiatorType3", "name":init3], ["id":"initiatorType4", "name":init4]]
+        let types = ["president":init1, "cabmin":init2, "bank":init3, "deputy":init4]
         CoreDataStackManager.sharedInstance().storeInitiatorTypesFromArray(types){finished in
             if finished {
                 completionHandler(success: true, error: nil)
