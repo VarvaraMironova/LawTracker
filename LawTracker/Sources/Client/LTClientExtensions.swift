@@ -68,7 +68,7 @@ extension LTClient {
 //        }
         
         //MOCK!
-        let laws = [["id":"3100-12", "title":law1, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee1ID", "initiators":["person1"]], ["id":"3100-15", "title":law2, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57640", "committee":"commettee2ID", "initiators":["person5", "person6"]], ["id":"3185", "title":law3, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee3ID", "initiators":["person3"]]]
+        let laws = [["id":"3100-12", "title":law1, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee1ID", "initiator_type":"president", "initiators":["person1"]], ["id":"3100-15", "title":law2, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57640", "committee":"commettee2ID", "initiator_type":"deputy", "initiators":["person5", "person6"]], ["id":"3185", "title":law3, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee3ID", "initiator_type":"cabmin", "initiators":["person3"]]]
         CoreDataStackManager.sharedInstance().storeLawsFromArray(laws){finished in
             if finished {
                 completionHandler(success: true, error: nil)
@@ -88,7 +88,7 @@ extension LTClient {
     
     func downloadPersons(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //MOCK!
-        let persons = [["id":"person1", "first_name":"Петро", "second_name":"Олексійович", "last_name":"Порошенко", "initiator_type":"president"], ["id":"person2", "first_name":"Віктор", "second_name":"Федорович", "last_name":"Янукович", "initiator_type":"president"], ["id":"person3", "first_name":"Арсеній", "second_name":"Петрович", "last_name":"Яценюк", "initiator_type":"cabmin"], ["id":"person4", "first_name":"Валерія", "second_name":"Олексіївна", "last_name":"Гонтарьова", "initiator_type":"bank"], ["id":"person5", "first_name":"Олександр", "second_name":"Рафкатович", "last_name":"Абдуллін", "initiator_type":"deputy"], ["id":"person6", "first_name":"Арсен", "second_name":"Борисович", "last_name":"Аваков", "initiator_type":"deputy"]]
+        let persons = [["id":"person5", "full_name":"Олександр Рафкатович Абдуллін", "first_name":"Олександр", "second_name":"Рафкатович", "last_name":"Абдуллін", "convocations":["8"]], ["id":"person6", "full_name":"Арсен Борисович Аваков", "first_name":"Арсен", "second_name":"Борисович", "last_name":"Аваков", "convocations":["7", "8"]]]
         CoreDataStackManager.sharedInstance().storePersonsFromArray(persons){finished in
             if finished {
                 completionHandler(success: true, error: nil)

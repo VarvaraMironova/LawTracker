@@ -88,7 +88,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
                 title = changeModel.law.committee.title
             }
             
-            //check if changesByKey array contains sectionModel with title==title. If true -> add changeModel to sectionModel.changes, else -> append sectionModel to changesByKey
+            //check if changesByKey array contains sectionModel with title. If true -> add changeModel to sectionModel.changes, else -> append sectionModel to changesByKey
             var sectionModel = changesByKey.filter(){ $0.title == title }.first
             
             if nil == sectionModel {

@@ -8,82 +8,72 @@
 
 import CoreData
 
-class LTPersonModel: NSManagedObject {
+class LTPersonModel: LTEntityModel {
     struct Keys {
-        static let id         = "id"
-        static let title      = "title"
-        static let firstName  = "first_name"
-        static let secondName = "second_name"
-        static let lastName   = "last_name"
-        static let type       = "initiator_type"
+        static let firstName    = "first_name"
+        static let secondName   = "second_name"
+        static let lastName     = "last_name"
+        static let title        = "full_name"
+        static let convocations = "convocations"
     }
     
-    @NSManaged var id         : String
     @NSManaged var firstName  : String
     @NSManaged var secondName : String
     @NSManaged var lastName   : String
     
-    @NSManaged var type       : LTInitiatorTypeModel
     @NSManaged var initiator  : LTInitiatorModel
+    
+    @NSManaged var convocations  : NSMutableSet
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
+    override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
         // Core Data
-        let entity =  NSEntityDescription.entityForName(entityName, inManagedObjectContext: context)!
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        super.init(dictionary: dictionary, context: context, entityName: entityName)
         
-        id = dictionary[Keys.id] as! String
-        firstName = dictionary[Keys.firstName] as! String
-        secondName = dictionary[Keys.secondName] as! String
-        lastName = dictionary[Keys.lastName] as! String
-        
-        //get typeModel from typeID
-        if let typeID = dictionary[Keys.type] as! String! {
-            if let typeModel = LTInitiatorTypeModel.modelWithID(typeID, entityName:"LTInitiatorTypeModel") as! LTInitiatorTypeModel! {
-                self.type = typeModel
-            } else {
-                LTClient.sharedInstance().getInitiatorTypeWithId(typeID){type, success, error in
-                    if success {
-                        self.type = type
-                    } else {
-                        //notify observers with error
-                    }
-                }
-            }
+        if let firstName = dictionary[Keys.firstName] as? String {
+            self.firstName = firstName
         }
+        
+        if let secondName = dictionary[Keys.secondName] as? String {
+            self.secondName = secondName
+        }
+        
+        if let lastName = dictionary[Keys.lastName] as? String {
+            self.lastName = lastName
+        }
+        
+//        if let fullName = dictionary[Keys.title] as? String {
+//            self.title = fullName
+//        }
         
         //create initiatorModel
-        if type.title == "Депутат" {
-            let name = firstName + " " + secondName + " " + lastName
-            initiator = LTInitiatorModel(title: name, isDeputy: true, persons: ([self]), context:context, entityName: "LTInitiatorModel")
+        if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
+            initiator = initiatorModel
         } else {
-            let predicate = NSPredicate(format:"title == %@", type.title)
-            let fetchRequest = NSFetchRequest(entityName: "LTInitiatorModel")
-            fetchRequest.predicate = predicate
-            if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTInitiatorModel]! {
-                if models.count > 0 {
-                    initiator = models.first!
-                } else {
-                    initiator = LTInitiatorModel(title: type.title, isDeputy: false, persons: type.persons, context: context, entityName: "LTInitiatorModel")
-                }
-            } else {
-                initiator = LTInitiatorModel(title: type.title, isDeputy: false, persons: type.persons, context: context, entityName: "LTInitiatorModel")
-            }
+            let name = firstName + " " + secondName + " " + lastName
+            initiator = LTInitiatorModel(id:id, title: name, isDeputy: true, persons: ([self]), context:context, entityName: "LTInitiatorModel")
         }
+        
+        //save convocations
+//        if let convocationsArray = dictionary[Keys.convocations] as! [String]! {
+//            for convocation in convocationsArray {
+//                self.addValueForKey(convocation, key:Keys.convocations)
+//            }
+//        }
     }
     
-    class func modelWithID(id: String) -> LTPersonModel? {
-        let predicate = NSPredicate(format:"id == %@", id)
-        let fetchRequest = NSFetchRequest(entityName: "LTPersonModel")
-        fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTPersonModel]! {
-            return models.first!
-        } else {
-            return nil
-        }
-    }
+//    class func modelWithID(id: String) -> LTPersonModel? {
+//        let predicate = NSPredicate(format:"id == %@", id)
+//        let fetchRequest = NSFetchRequest(entityName: "LTPersonModel")
+//        fetchRequest.predicate = predicate
+//        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTPersonModel]! {
+//            return models.first!
+//        } else {
+//            return nil
+//        }
+//    }
 
 }

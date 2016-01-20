@@ -30,8 +30,23 @@ class LTLawModel: LTEntityModel {
             }
         }
         
-        if let initiatorsArray = dictionary[Keys.initiators] as! [String]! {
-            storeInitiators(initiatorsArray)
+        if let typeID = dictionary[Keys.type] as! String! {
+            if typeID == "deputy" {
+                if let initiatorsArray = dictionary[Keys.initiators] as! [String]! {
+                    storeInitiators(initiatorsArray)
+                }
+            } else {
+                if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
+                    self.addValueForKey(initiatorModel, key: Keys.initiators)
+                } else {
+                    if let typeModel = LTInitiatorTypeModel.modelWithID(typeID, entityName:"LTInitiatorTypeModel") as! LTInitiatorTypeModel! {
+                        let initiatorModel = LTInitiatorModel(id:typeModel.id, title: typeModel.title, isDeputy: false, persons: NSMutableSet(), context: context, entityName: "LTInitiatorModel")
+                        self.addValueForKey(initiatorModel, key: Keys.initiators)
+                    } else {
+                        //get type with typeID from server!
+                    }
+                }
+            }
         }
         
         if let committeeID = dictionary[Keys.committee] as! String! {
@@ -51,7 +66,7 @@ class LTLawModel: LTEntityModel {
     
     func storeInitiators(persons: [String]) {
         for personId in persons {
-            if let personModel = LTPersonModel.modelWithID(personId) as LTPersonModel! {
+            if let personModel = LTPersonModel.modelWithID(personId, entityName:"LTPersonModel") as! LTPersonModel! {
                 self.addValueForKey(personModel.initiator, key: Keys.initiators)
             } else {
                 LTClient.sharedInstance().getPersonWithId(personId){person, success, error in

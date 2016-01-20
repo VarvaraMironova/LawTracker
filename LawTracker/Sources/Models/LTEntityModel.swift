@@ -21,6 +21,7 @@ class LTEntityModel: NSManagedObject {
         static let committee  = "committee"
         static let starts     = "starts"
         static let ends       = "ends"
+        static let type       = "initiator_type"
     }
     
     @NSManaged var id    : String
@@ -33,7 +34,11 @@ class LTEntityModel: NSManagedObject {
         let fetchRequest = NSFetchRequest(entityName: entityName)
         fetchRequest.predicate = predicate
         if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTEntityModel]! {
-            return models.first!
+            if models.count > 0 {
+                return models.first!
+            } else {
+                return nil
+            }
         } else {
             return nil
         }
@@ -49,11 +54,16 @@ class LTEntityModel: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
         self.entityName = entityName
-        id = dictionary[Keys.id] as! String
-        title = dictionary[Keys.title] as! String
+        if let id = dictionary[Keys.id] as? String {
+            self.id = id
+        }
+        
+        if let title = dictionary[Keys.title] as? String {
+            self.title = title
+        }
     }
     
-    func addValueForKey(value: LTEntityModel, key: String) {
+    func addValueForKey(value: AnyObject, key: String) {
         if deleted {
             return
         }

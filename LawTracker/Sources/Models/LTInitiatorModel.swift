@@ -16,11 +16,12 @@ class LTInitiatorModel: LTEntityModel {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(title: String, isDeputy: Bool, persons: NSMutableSet, context: NSManagedObjectContext, entityName: String) {
+    init(id:String, title: String, isDeputy: Bool, persons: NSMutableSet, context: NSManagedObjectContext, entityName: String) {
         // Core Data
         let entity =  NSEntityDescription.entityForName(entityName, inManagedObjectContext: context)!
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
+        self.id = id
         self.title = title
         self.isDeputy = isDeputy
         self.persons = persons

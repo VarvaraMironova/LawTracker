@@ -135,35 +135,35 @@ class CoreDataStackManager {
             completionHandler(finished: true)}
     }
     
-    func storeInitiators(completionHandler: (success: Bool) -> Void) {
-        dispatch_async(dispatch_get_main_queue()) {
-            //fetch all initiatorTypes
-            let fetchRequest = NSFetchRequest(entityName: "LTInitiatorTypeModel")
-            fetchRequest.predicate = NSPredicate(value: true);
-            
-            if let types = (try? self.managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTInitiatorTypeModel]! {
-                for type in types {
-                    if type.title == "Депутат" {
-                        for (_, item) in type.persons.enumerate() {
-                            if let person = item as? LTPersonModel {
-                                let title = person.firstName + " " + person.secondName + " " + person.lastName
-                                _ = LTInitiatorModel(title: title, isDeputy: true, persons: ([person]), context: self.managedObjectContext, entityName: "LTInitiatorModel")
-                            }
-                        }
-                    } else {
-                        _ = LTInitiatorModel(title: type.title, isDeputy: false, persons: type.persons, context: self.managedObjectContext, entityName: "LTInitiatorModel")
-                    }
-                }
-                
-                self.saveContext()
-                
-                completionHandler(success: true)
-            } else {
-                //report of error
-                completionHandler(success: false)
-            }
-        }
-    }
+//    func storeInitiators(completionHandler: (success: Bool) -> Void) {
+//        dispatch_async(dispatch_get_main_queue()) {
+//            //fetch all initiatorTypes
+//            let fetchRequest = NSFetchRequest(entityName: "LTInitiatorTypeModel")
+//            fetchRequest.predicate = NSPredicate(value: true);
+//            
+//            if let types = (try? self.managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTInitiatorTypeModel]! {
+//                for type in types {
+//                    if type.title == "Депутат" {
+//                        for (_, item) in type.persons.enumerate() {
+//                            if let person = item as? LTPersonModel {
+//                                let title = person.firstName + " " + person.secondName + " " + person.lastName
+//                                _ = LTInitiatorModel(id:person.id, title: title, isDeputy: true, persons: ([person]), context: self.managedObjectContext, entityName: "LTInitiatorModel")
+//                            }
+//                        }
+//                    } else {
+//                        _ = LTInitiatorModel(id:type.id, title: type.title, isDeputy: false, persons: type.persons, context: self.managedObjectContext, entityName: "LTInitiatorModel")
+//                    }
+//                }
+//                
+//                self.saveContext()
+//                
+//                completionHandler(success: true)
+//            } else {
+//                //report of error
+//                completionHandler(success: false)
+//            }
+//        }
+//    }
     
     func storeChangesFromArray(changes: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
