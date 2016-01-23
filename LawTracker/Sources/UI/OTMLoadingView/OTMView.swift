@@ -19,32 +19,36 @@ class OTMView: UIView {
     }
     
     func showLoadingViewWithMessage(message: String) {
-//        dispatch_async(dispatch_get_main_queue()) {
-            self.showLoadingViewInViewWithMessage(self, message: message)
-//        }
+        self.showLoadingViewInViewWithMessage(self, message: message)
     }
     
     func showLoadingViewInView(view: UIView) {
-        if !loadingViewShown {
-            loadingView = OTMLoadingView.loadingView(view)
-            loadingViewShown = true
+        dispatch_async(dispatch_get_main_queue()) {
+            if !self.loadingViewShown {
+                self.loadingView = OTMLoadingView.loadingView(view)
+                self.loadingViewShown = true
+            }
         }
     }
     
     func showLoadingViewInViewWithMessage(view: UIView, message: String) {
-        if !loadingViewShown {
-            loadingView = OTMLoadingView.loadingView(view, message: message)
-            loadingViewShown = true
-        } else {
-            loadingView.changeMessage(message)
+        dispatch_async(dispatch_get_main_queue()) {
+            if !self.loadingViewShown {
+                self.loadingView = OTMLoadingView.loadingView(view, message: message)
+                self.loadingViewShown = true
+            } else {
+                self.loadingView.changeMessage(message)
+            }
         }
     }
     
     func hideLoadingView() {
-        if loadingViewShown {
-            loadingView.hide()
-            loadingView = nil
-            loadingViewShown = false
+        dispatch_async(dispatch_get_main_queue()) {
+            if self.loadingViewShown {
+                self.loadingView.hide()
+                self.loadingView = nil
+                self.loadingViewShown = false
+            }
         }
     }
 

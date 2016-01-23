@@ -18,6 +18,11 @@ class LTInitiatorTypeModel: LTEntityModel {
     override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
         super.init(dictionary: dictionary, context: context, entityName: entityName)
         
+        if id != "deputy" {
+            let dictionary = ["id":id, "title":title, "isDeputy":"false", "convocations":NSMutableSet()]
+            
+            _ = LTInitiatorModel(dictionary: dictionary, context: context, entityName: "LTInitiatorModel")
+        }
     }
 
 }

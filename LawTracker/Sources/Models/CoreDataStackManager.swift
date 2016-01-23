@@ -85,10 +85,25 @@ class CoreDataStackManager {
         managedObjectContext.deleteObject(object)
     }
     
-    func storeLawsFromArray(laws: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+    func storeConvocations(convocations: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+        dispatch_async(dispatch_get_main_queue()) {
+            for convocationArray in convocations {
+                _ = LTConvocationModel(dictionary: convocationArray as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTConvocationModel")
+            }
+            
+            self.saveContext()
+            
+            completionHandler(finished: true)
+        }
+    }
+    
+    func storeLaws(laws: [NSDictionary], convocation: String, completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
             for lawArray in laws {
-                _ = LTLawModel(dictionary: lawArray as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTLawModel")
+                if var mutableLawArray = lawArray as? [String : AnyObject] {
+                    mutableLawArray["convocation"] = convocation
+                    _ = LTLawModel(dictionary: mutableLawArray, context: self.managedObjectContext, entityName:"LTLawModel")
+                }
             }
             
             self.saveContext()
@@ -97,20 +112,22 @@ class CoreDataStackManager {
         }
     }
     
-    func storeCommitteesFromArray(committees: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+    func storeCommittees(committees: [NSDictionary], convocation: String, completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
             for committeeArray in committees {
-                _ = LTCommitteeModel(dictionary: committeeArray as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTCommitteeModel")
+                if var mutableCommitteeArray = committeeArray as? [String : AnyObject] {
+                    mutableCommitteeArray["convocation"] = convocation
+                    _ = LTCommitteeModel(dictionary: mutableCommitteeArray, context: self.managedObjectContext, entityName:"LTCommitteeModel")
+                }
             }
             
             self.saveContext()
             
             completionHandler(finished: true)
         }
-        
     }
     
-    func storeInitiatorTypesFromArray(types: [String : AnyObject], completionHandler: (finished: Bool) -> Void) {
+    func storeInitiatorTypes(types: [String : AnyObject], completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
             for (key, value) in types {
                 let type = ["id": key, "title": value]
@@ -121,10 +138,9 @@ class CoreDataStackManager {
             
             completionHandler(finished: true)
         }
-        
     }
     
-    func storePersonsFromArray(persons: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+    func storePersons(persons: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
             for person in persons {
             _ = LTPersonModel(dictionary: person as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTPersonModel")
@@ -132,49 +148,20 @@ class CoreDataStackManager {
             
             self.saveContext()
             
-            completionHandler(finished: true)}
+            completionHandler(finished: true)
+        }
     }
     
-//    func storeInitiators(completionHandler: (success: Bool) -> Void) {
-//        dispatch_async(dispatch_get_main_queue()) {
-//            //fetch all initiatorTypes
-//            let fetchRequest = NSFetchRequest(entityName: "LTInitiatorTypeModel")
-//            fetchRequest.predicate = NSPredicate(value: true);
-//            
-//            if let types = (try? self.managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTInitiatorTypeModel]! {
-//                for type in types {
-//                    if type.title == "Депутат" {
-//                        for (_, item) in type.persons.enumerate() {
-//                            if let person = item as? LTPersonModel {
-//                                let title = person.firstName + " " + person.secondName + " " + person.lastName
-//                                _ = LTInitiatorModel(id:person.id, title: title, isDeputy: true, persons: ([person]), context: self.managedObjectContext, entityName: "LTInitiatorModel")
-//                            }
-//                        }
-//                    } else {
-//                        _ = LTInitiatorModel(id:type.id, title: type.title, isDeputy: false, persons: type.persons, context: self.managedObjectContext, entityName: "LTInitiatorModel")
-//                    }
-//                }
-//                
-//                self.saveContext()
-//                
-//                completionHandler(success: true)
-//            } else {
-//                //report of error
-//                completionHandler(success: false)
-//            }
-//        }
-//    }
-    
-    func storeChangesFromArray(changes: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+    func storeChanges(changes: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
             for changeArray in changes {
-            _ = LTChangeModel(dictionary: changeArray as! [String : AnyObject], context: self.managedObjectContext)
+                _ = LTChangeModel(dictionary: changeArray as! [String : AnyObject], context: self.managedObjectContext)
             }
             
             self.saveContext()
             
-            completionHandler(finished: true)}
-        
+            completionHandler(finished: true)
+        }
     }
     
     func clearEntity(entityName: String, completionHandler:(success: Bool, error: NSError?) -> Void) {

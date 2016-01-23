@@ -9,22 +9,23 @@
 import CoreData
 
 class LTInitiatorModel: LTEntityModel {
-    @NSManaged var isDeputy : Bool
-    @NSManaged var persons  : NSMutableSet
+    @NSManaged var isDeputy     : Bool
+    @NSManaged var convocations : NSMutableSet
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(id:String, title: String, isDeputy: Bool, persons: NSMutableSet, context: NSManagedObjectContext, entityName: String) {
-        // Core Data
-        let entity =  NSEntityDescription.entityForName(entityName, inManagedObjectContext: context)!
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
+        super.init(dictionary: dictionary, context: context, entityName: entityName)
         
-        self.id = id
-        self.title = title
-        self.isDeputy = isDeputy
-        self.persons = persons
+        if let isDeputy = dictionary[Keys.deputy] as? String {
+            self.isDeputy = isDeputy == "true"
+        }
+        
+        if let convocations = dictionary[Keys.convocations] as? NSMutableSet {
+            self.convocations = convocations
+        }
     }
     
 }

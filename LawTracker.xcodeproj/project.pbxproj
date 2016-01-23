@@ -20,10 +20,11 @@
 		C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73520D91C1EC62500993AEB /* LTLawModel.swift */; };
 		C76174AE1C4D431900C344FA /* LTInitiatorTypeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76174AD1C4D431900C344FA /* LTInitiatorTypeModel.swift */; };
 		C76174B01C4D445700C344FA /* LTPersonModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76174AF1C4D445700C344FA /* LTPersonModel.swift */; };
+		C76174B21C5394B400C344FA /* LTConvocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76174B11C5394B400C344FA /* LTConvocationModel.swift */; };
 		C76CE92D1C1B744F006262E8 /* LTMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76CE92C1C1B744F006262E8 /* LTMenuViewController.swift */; };
 		C76CE92F1C1B7461006262E8 /* LTMenuRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76CE92E1C1B7461006262E8 /* LTMenuRootView.swift */; };
 		C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76CE9301C1B7477006262E8 /* LTMenuTableViewCell.swift */; };
-		C77397321C3A7AE60093CBCC /* LTChildViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972C1C3A7AE60093CBCC /* LTChildViewControllerExtensions.swift */; };
+		C77397321C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972C1C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift */; };
 		C77397331C3A7AE70093CBCC /* LTFontSizeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972D1C3A7AE60093CBCC /* LTFontSizeExtensions.swift */; };
 		C77397341C3A7AE70093CBCC /* LTStringHeightExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972E1C3A7AE60093CBCC /* LTStringHeightExtensions.swift */; };
 		C77397351C3A7AE70093CBCC /* LTTableViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972F1C3A7AE60093CBCC /* LTTableViewExtensions.swift */; };
@@ -84,10 +85,11 @@
 		C73520D91C1EC62500993AEB /* LTLawModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTLawModel.swift; sourceTree = "<group>"; };
 		C76174AD1C4D431900C344FA /* LTInitiatorTypeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTInitiatorTypeModel.swift; sourceTree = "<group>"; };
 		C76174AF1C4D445700C344FA /* LTPersonModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTPersonModel.swift; sourceTree = "<group>"; };
+		C76174B11C5394B400C344FA /* LTConvocationModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTConvocationModel.swift; sourceTree = "<group>"; };
 		C76CE92C1C1B744F006262E8 /* LTMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMenuViewController.swift; sourceTree = "<group>"; };
 		C76CE92E1C1B7461006262E8 /* LTMenuRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMenuRootView.swift; sourceTree = "<group>"; };
 		C76CE9301C1B7477006262E8 /* LTMenuTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMenuTableViewCell.swift; sourceTree = "<group>"; };
-		C773972C1C3A7AE60093CBCC /* LTChildViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChildViewControllerExtensions.swift; sourceTree = "<group>"; };
+		C773972C1C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		C773972D1C3A7AE60093CBCC /* LTFontSizeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFontSizeExtensions.swift; sourceTree = "<group>"; };
 		C773972E1C3A7AE60093CBCC /* LTStringHeightExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTStringHeightExtensions.swift; sourceTree = "<group>"; };
 		C773972F1C3A7AE60093CBCC /* LTTableViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTTableViewExtensions.swift; sourceTree = "<group>"; };
@@ -207,7 +209,7 @@
 		C773972B1C3A7AE60093CBCC /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				C773972C1C3A7AE60093CBCC /* LTChildViewControllerExtensions.swift */,
+				C773972C1C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift */,
 				C773972D1C3A7AE60093CBCC /* LTFontSizeExtensions.swift */,
 				C773972E1C3A7AE60093CBCC /* LTStringHeightExtensions.swift */,
 				C773972F1C3A7AE60093CBCC /* LTTableViewExtensions.swift */,
@@ -285,6 +287,7 @@
 				C773973A1C3AA74C0093CBCC /* LTCommitteeModel.swift */,
 				C77397461C3AFE140093CBCC /* LTEntityModel.swift */,
 				C77397481C3D7DFA0093CBCC /* LTArrayModel.swift */,
+				C76174B11C5394B400C344FA /* LTConvocationModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -471,6 +474,7 @@
 				C773973B1C3AA74C0093CBCC /* LTCommitteeModel.swift in Sources */,
 				C71A079B1C23068C00235D78 /* LTTableViewCell.swift in Sources */,
 				C71A07991C23067400235D78 /* LTArrayRootView.swift in Sources */,
+				C76174B21C5394B400C344FA /* LTConvocationModel.swift in Sources */,
 				C7CFB5BC1C2008D500211C6B /* LTCellHeaderView.swift in Sources */,
 				C773974B1C40095C0093CBCC /* LTSectionModel.swift in Sources */,
 				C7E792B21C18672C0031C55A /* LTFilterViewController.swift in Sources */,
@@ -479,7 +483,7 @@
 				C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */,
 				C71A07AC1C2403DF00235D78 /* LTSwitchButtonView.swift in Sources */,
 				C7CFB5B11C1FFFDB00211C6B /* LTNewsTableViewCell.swift in Sources */,
-				C77397321C3A7AE60093CBCC /* LTChildViewControllerExtensions.swift in Sources */,
+				C77397321C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift in Sources */,
 				C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */,
 				C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */,
 				C7CFB5B71C2004F700211C6B /* LTHelpRootView.swift in Sources */,

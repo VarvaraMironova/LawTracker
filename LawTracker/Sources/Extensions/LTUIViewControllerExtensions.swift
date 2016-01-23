@@ -17,4 +17,12 @@ extension UIViewController {
         self.addChildViewController(childController)
         childController.didMoveToParentViewController(self)
     }
+    
+    func displayError(error: NSError) {
+        dispatch_async(dispatch_get_main_queue()) {
+            let alertViewController: UIAlertController = UIAlertController(title: "Oops!", message: error.localizedDescription, preferredStyle: .Alert)
+            alertViewController.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            self.presentViewController(alertViewController, animated: true, completion: nil)
+        }
+    }
 }

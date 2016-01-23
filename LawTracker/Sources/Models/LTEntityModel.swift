@@ -10,18 +10,23 @@ import CoreData
 
 class LTEntityModel: NSManagedObject {
     struct Keys {
-        static let id         = "id"
-        static let title      = "title"
-        static let url        = "url"
-        static let date       = "filing_date"
-        static let changes    = "changes"
-        static let initiators = "initiators"
-        static let laws       = "laws"
-        static let deputy     = "isDeputy"
-        static let committee  = "committee"
-        static let starts     = "starts"
-        static let ends       = "ends"
-        static let type       = "initiator_type"
+        static let id           = "id"
+        static let number       = "number"
+        static let title        = "title"
+        static let url          = "url"
+        static let date         = "filing_date"
+        static let changes      = "changes"
+        static let initiators   = "initiators"
+        static let laws         = "laws"
+        static let deputy       = "isDeputy"
+        static let committee    = "committee"
+        static let starts       = "starts"
+        static let ends         = "ends"
+        static let type         = "initiator_type"
+        static let convocations = "convocations"
+        static let convocation  = "convocation"
+        static let current      = "current"
+        static let persons      = "persons"
     }
     
     @NSManaged var id    : String
@@ -33,7 +38,7 @@ class LTEntityModel: NSManagedObject {
         let predicate = NSPredicate(format:"id == %@", id)
         let fetchRequest = NSFetchRequest(entityName: entityName)
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTEntityModel]! {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTEntityModel] {
             if models.count > 0 {
                 return models.first!
             } else {
@@ -54,8 +59,11 @@ class LTEntityModel: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
         self.entityName = entityName
+        
         if let id = dictionary[Keys.id] as? String {
             self.id = id
+        } else if let id = dictionary[Keys.id] as? Int {
+            self.id = "\(id)"
         }
         
         if let title = dictionary[Keys.title] as? String {

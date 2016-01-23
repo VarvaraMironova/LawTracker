@@ -8,30 +8,32 @@
 
 import CoreData
 
-class LTPersonModel: LTEntityModel {
+struct LTPersonModel {
     struct Keys {
+        static let id           = "id"
         static let firstName    = "first_name"
         static let secondName   = "second_name"
         static let lastName     = "last_name"
-        static let title        = "full_name"
+        static let fullName     = "full_name"
         static let convocations = "convocations"
     }
     
-    @NSManaged var firstName  : String
-    @NSManaged var secondName : String
-    @NSManaged var lastName   : String
+    var id         : String!
+    var firstName  : String!
+    var secondName : String!
+    var lastName   : String!
+    var fullName   : String!
     
-    @NSManaged var initiator  : LTInitiatorModel
+    var initiator  : LTInitiatorModel!
     
-    @NSManaged var convocations  : NSMutableSet
+    var convocations  = NSMutableSet()
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
-    }
-    
-    override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
-        // Core Data
-        super.init(dictionary: dictionary, context: context, entityName: entityName)
+    init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
+        if let id = dictionary[Keys.id] as? String {
+            self.id = id
+        } else if let id = dictionary[Keys.id] as? Int {
+            self.id = "\(id)"
+        }
         
         if let firstName = dictionary[Keys.firstName] as? String {
             self.firstName = firstName
@@ -45,35 +47,27 @@ class LTPersonModel: LTEntityModel {
             self.lastName = lastName
         }
         
-//        if let fullName = dictionary[Keys.title] as? String {
-//            self.title = fullName
-//        }
-        
-        //create initiatorModel
-        if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
-            initiator = initiatorModel
-        } else {
-            let name = firstName + " " + secondName + " " + lastName
-            initiator = LTInitiatorModel(id:id, title: name, isDeputy: true, persons: ([self]), context:context, entityName: "LTInitiatorModel")
+        if let fullName = dictionary[Keys.fullName] as? String {
+            self.fullName = fullName
         }
         
         //save convocations
-//        if let convocationsArray = dictionary[Keys.convocations] as! [String]! {
-//            for convocation in convocationsArray {
-//                self.addValueForKey(convocation, key:Keys.convocations)
-//            }
-//        }
+        if let convocationsArray = dictionary[Keys.convocations] as? [String] {
+            for convocation in convocationsArray {
+                if let convocationModel = LTConvocationModel.convocationWithNumber(convocation) {
+                    convocations.addObject(convocationModel)
+                } else {
+                    //download convocation with number = convocation
+                }
+            }
+        }
+        
+        //create initiatorModel
+        if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName:"LTInitiatorModel") as? LTInitiatorModel {
+            initiator = initiatorModel
+        } else {
+            let dictionary = ["id":id, "title":fullName, "isDeputy":"true", "convocations":convocations]
+            initiator = LTInitiatorModel(dictionary: dictionary, context: context, entityName: "LTInitiatorModel")
+        }
     }
-    
-//    class func modelWithID(id: String) -> LTPersonModel? {
-//        let predicate = NSPredicate(format:"id == %@", id)
-//        let fetchRequest = NSFetchRequest(entityName: "LTPersonModel")
-//        fetchRequest.predicate = predicate
-//        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTPersonModel]! {
-//            return models.first!
-//        } else {
-//            return nil
-//        }
-//    }
-
 }

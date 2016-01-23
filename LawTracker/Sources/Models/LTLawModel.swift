@@ -9,10 +9,14 @@
 import CoreData
 
 class LTLawModel: LTEntityModel {
+    @NSManaged var number           : String
     @NSManaged var presentationDate : NSDate?
     @NSManaged var url              : String
+    
     @NSManaged var changes          : NSMutableSet
     @NSManaged var initiators       : NSMutableSet
+    
+    @NSManaged var convocation      : LTConvocationModel
     @NSManaged var committee        : LTCommitteeModel
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -22,34 +26,41 @@ class LTLawModel: LTEntityModel {
     override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
         super.init(dictionary: dictionary, context: context, entityName: entityName)
         
-        self.url = dictionary[Keys.url] as! String
+        if let url = dictionary[Keys.url] as? String {
+            self.url = url
+        }
         
-        if let dateString = dictionary[Keys.date] as! String! {
+        if let convocationModel = dictionary[Keys.convocation] as? LTConvocationModel {
+            self.convocation = convocationModel
+        }
+        
+        if let dateString = dictionary[Keys.date] as? String {
             if let date = dateString.date() as NSDate! {
                 self.presentationDate = date
             }
         }
         
-        if let typeID = dictionary[Keys.type] as! String! {
+        if let number = dictionary[Keys.number] as? String {
+            self.number = number
+        }
+        
+        if let typeID = dictionary[Keys.type] as? String {
             if typeID == "deputy" {
-                if let initiatorsArray = dictionary[Keys.initiators] as! [String]! {
-                    storeInitiators(initiatorsArray)
+                if let deputiesArray = dictionary[Keys.initiators] as? [String] {
+                    storeDeputies(deputiesArray)
                 }
             } else {
                 if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
                     self.addValueForKey(initiatorModel, key: Keys.initiators)
                 } else {
-                    if let typeModel = LTInitiatorTypeModel.modelWithID(typeID, entityName:"LTInitiatorTypeModel") as! LTInitiatorTypeModel! {
-                        let initiatorModel = LTInitiatorModel(id:typeModel.id, title: typeModel.title, isDeputy: false, persons: NSMutableSet(), context: context, entityName: "LTInitiatorModel")
-                        self.addValueForKey(initiatorModel, key: Keys.initiators)
-                    } else {
-                        //get type with typeID from server!
+                    LTClient.sharedInstance().getInitiatorTypeWithId(typeID) {type, success, error in
+                        
                     }
                 }
             }
         }
         
-        if let committeeID = dictionary[Keys.committee] as! String! {
+        if let committeeID = dictionary[Keys.committee] as? String {
             if let committeeModel = LTCommitteeModel.modelWithID(committeeID, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
                 self.committee = committeeModel
             } else {
@@ -64,19 +75,34 @@ class LTLawModel: LTEntityModel {
         }
     }
     
-    func storeInitiators(persons: [String]) {
-        for personId in persons {
-            if let personModel = LTPersonModel.modelWithID(personId, entityName:"LTPersonModel") as! LTPersonModel! {
-                self.addValueForKey(personModel.initiator, key: Keys.initiators)
+    func storeDeputies(deputies: [String]) {
+        for deputyId in deputies {
+            if let initiatorModel = LTInitiatorModel.modelWithID(deputyId, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
+                self.addValueForKey(initiatorModel, key: Keys.initiators)
             } else {
-                LTClient.sharedInstance().getPersonWithId(personId){person, success, error in
+                LTClient.sharedInstance().getInitiatorWithId(deputyId){initiator, success, error in
                     if success {
-                        self.addValueForKey(person.initiator, key: Keys.initiators)
+                        self.addValueForKey(initiator, key: Keys.initiators)
                     } else {
                         //notify observers with error
                     }
                 }
             }
+        }
+    }
+    
+    class func lawWithNumber(number: String) -> LTEntityModel? {
+        let predicate = NSPredicate(format:"number == %@", number)
+        let fetchRequest = NSFetchRequest(entityName: "LTLawModel")
+        fetchRequest.predicate = predicate
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTLawModel] {
+            if models.count > 0 {
+                return models.first!
+            } else {
+                return nil
+            }
+        } else {
+            return nil
         }
     }
     

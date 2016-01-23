@@ -8,110 +8,194 @@
 
 import Foundation
 
-let Commitee1 = "Комітет з питань аграрної політики та земельних відносин"
-let Commitee2 = "Комітет з питань будівництва, містобудування і житлово-комунального господарства"
-let Commitee3 = "Комітет з питань бюджету"
-let Commitee4 = "Комітет з питань державного будівництва, регіональної політики та місцевого самоврядування"
-let Commitee5 = "Комітет з питань екологічної політики, природокористування та ліквідації наслідків Чорнобильської катастрофи"
-
-let init1 = "Президент"
-let init2 = "Кабінет містрів України"
-let init3 = "Національний банк України"
-let init4 = "Депутат"
-
-let law1 = "Проект Закону про внесення змін до статті 1071 Цивільного кодексу України (щодо списання коштів з рахунка померлого потерпілого від нещасного випадку на виробництві)"
-let law2 = "Проект Закону про внесення змін до деяких законів України щодо посилення гарантій безпеки дітей"
-let law3 = "Проект Закону про внесення змін до Закону України \"Про підприємництво\""
-let law4 = "Проект Закону про внесення змін до деяких законодавчих актів України щодо земельних ділянок багатоквартирних будинків"
-let law5 = "Проект Постанови про відхилення проекту Закону України про внесення змін до Закону України \"Про основні принципи та вимоги до безпечності та якості харчових продуктів\" щодо приведення норм до вимог Митного кодексу"
-let law6 = "Проект Закону про ратифікацію Угоди між Україною та Королівством Іспанія про взаємну охорону інформації з обмеженим доступом"
-
-//news
-let date1 = "2015-12-03 17:09"
-let desc1 = "Направлений до комітетів та розміщений на Веб-сайті Верховної Ради України"
-let date2 = "2015-12-03 17:07"
-let desc2 = "Прийнятий на поточній сесії"
-let date3 = "2015-12-03 17:04"
-let desc3 = "Зареєстрований"
-let date4 = "2015-12-03 17:04"
-let date5 = "2015-12-03 17:04"
-let date6 = "2015-12-03 17:04"
-
 extension LTClient {
     
-    func downloadLaws(completionHandler:(success: Bool, error: NSError?) -> Void) {
-//        let urlString = kVTParameters.baseURL
-//        let url = NSURL(string: urlString)!
-//        let request = NSURLRequest(URL: url)
-//        
-//        downloadTask = self.task(request){data, error in
-//            if nil != error {
-//                completionHandler(success: false, error: error)
-//            } else {
-//                LTClient.parseJSONWithCompletionHandler(data) {result, error in
-//                    if nil != error {
-//                        completionHandler(success: false, error: error)
-//                    } else {
-//                        if let lawsDictionary = result.valueForKey(kVTKeys.laws) as! [[String: AnyObject]]! {
-//                            CoreDataStackManager.sharedInstance().storeLawsFromArray(lawsDictionary){finished in
-//                                if finished {
-//                                    completionHandler(success: true, error: nil)
-//                                }
-//                            }
-//                        } else {
-//                            let contentError = LTClient.errorForMessage("Can't find key 'laws' in \(result)")
-//                            completionHandler(success: false, error: contentError)
-//                        }
-//                    }
-//                }
-//            }
-//        }
+    func downloadConvocations(completionHandler:(success: Bool, error: NSError?) -> Void) {
+        //http://www.chesno.org/council/1/convocation/api/
+        let urlVars = [kVTParameters.baseURL, kLTAPINames.council, kVTParameters.radaID, kLTMethodNames.convocation, kVTParameters.extras]
+        let urlString = urlVars.joinWithSeparator("/")
+        let url = NSURL(string: urlString)!
+        let request = NSURLRequest(URL: url)
         
-        //MOCK!
-        let laws = [["id":"3100-12", "title":law1, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee1ID", "initiator_type":"president", "initiators":["person1"]], ["id":"3100-15", "title":law2, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57640", "committee":"commettee2ID", "initiator_type":"deputy", "initiators":["person5", "person6"]], ["id":"3185", "title":law3, "filing_date":"2015-12-03", "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "committee":"commettee3ID", "initiator_type":"cabmin", "initiators":["person3"]]]
-        CoreDataStackManager.sharedInstance().storeLawsFromArray(laws){finished in
-            if finished {
-                completionHandler(success: true, error: nil)
+        downloadTask = task(request){data, error in
+            if nil != error {
+                completionHandler(success: false, error: error)
+            } else {
+                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                    if nil != error {
+                        completionHandler(success: false, error: error)
+                    } else {
+                        if let convocationsDictionary = result as? [[String: AnyObject]] {
+                            CoreDataStackManager.sharedInstance().storeConvocations(convocationsDictionary){finished in
+                                if finished {
+                                    completionHandler(success: true, error: nil)
+                                }
+                            }
+                        } else {
+                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                            completionHandler(success: false, error: contentError)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func downloadLaws(completionHandler:(success: Bool, error: NSError?) -> Void) {
+        //http://www.chesno.org/legislation/2/bill/api/
+        
+        let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, kVTParameters.extras]
+        let urlString = urlVars.joinWithSeparator("/")
+        let url = NSURL(string: urlString)!
+        let request = NSURLRequest(URL: url)
+        
+        downloadTask = task(request){data, error in
+            if nil != error {
+                completionHandler(success: false, error: error)
+            } else {
+                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                    if nil != error {
+                        completionHandler(success: false, error: error)
+                    } else {
+                        if let lawsDictionary = result as? [[String: AnyObject]] {
+                            CoreDataStackManager.sharedInstance().storeLaws(lawsDictionary, convocation: self.currentConvocation!.id){finished in
+                                if finished {
+                                    completionHandler(success: true, error: nil)
+                                }
+                            }
+                        } else {
+                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                            completionHandler(success: false, error: contentError)
+                        }
+                    }
+                }
             }
         }
     }
     
     func downloadCommittees(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        //MOCK!
-        let committees = [["id":"commettee1ID", "title":Commitee1, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "starts":"null", "ends":"null"], ["id":"commettee2ID", "title":Commitee2, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "starts":"null", "ends":"null"], ["id":"commettee3ID", "title":Commitee3, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "starts":"null", "ends":"null"], ["id":"commettee4ID", "title":Commitee4, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "starts":"null", "ends":"null"], ["id":"commettee5ID", "title":Commitee5, "url":"http://w1.c1.rada.gov.ua/pls/zweb2/webproc4_1?pf3511=57642", "starts":"null", "ends":"null"]]
-        CoreDataStackManager.sharedInstance().storeCommitteesFromArray(committees){finished in
-            if finished {
-                completionHandler(success: true, error: nil)
+        //http://www.chesno.org/legislation/2/committees/api/
+        
+        let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.committees, kVTParameters.extras]
+        let urlString = urlVars.joinWithSeparator("/")
+        let url = NSURL(string: urlString)!
+        let request = NSURLRequest(URL: url)
+        
+        downloadTask = task(request){data, error in
+            if nil != error {
+                completionHandler(success: false, error: error)
+            } else {
+                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                    if nil != error {
+                        completionHandler(success: false, error: error)
+                    } else {
+                        if let committees = result as? [[String: AnyObject]] {
+                            CoreDataStackManager.sharedInstance().storeCommittees(committees, convocation: self.currentConvocation!.id){finished in
+                                if finished {
+                                    completionHandler(success: true, error: nil)
+                                }
+                            }
+                        } else {
+                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                            completionHandler(success: false, error: contentError)
+                        }
+                    }
+                }
             }
         }
     }
     
     func downloadPersons(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        //MOCK!
-        let persons = [["id":"person5", "full_name":"Олександр Рафкатович Абдуллін", "first_name":"Олександр", "second_name":"Рафкатович", "last_name":"Абдуллін", "convocations":["8"]], ["id":"person6", "full_name":"Арсен Борисович Аваков", "first_name":"Арсен", "second_name":"Борисович", "last_name":"Аваков", "convocations":["7", "8"]]]
-        CoreDataStackManager.sharedInstance().storePersonsFromArray(persons){finished in
-            if finished {
-                completionHandler(success: true, error: nil)
+        //http://www.chesno.org/persons/json/deputies/<номер скликання>
+        
+        let urlVars = [kVTParameters.baseURL, kLTAPINames.persons, kVTParameters.format, kLTMethodNames.deputies, currentConvocation!.number]
+        let urlString = urlVars.joinWithSeparator("/")
+        let url = NSURL(string: urlString)!
+        let request = NSURLRequest(URL: url)
+        
+        downloadTask = task(request){data, error in
+            if nil != error {
+                completionHandler(success: false, error: error)
+            } else {
+                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                    if nil != error {
+                        completionHandler(success: false, error: error)
+                    } else {
+                        if let persons = result as? [[String: AnyObject]] {
+                            CoreDataStackManager.sharedInstance().storePersons(persons){finished in
+                                if finished {
+                                    completionHandler(success: true, error: nil)
+                                }
+                            }
+                        } else {
+                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                            completionHandler(success: false, error: contentError)
+                        }
+                    }
+                }
             }
         }
     }
     
     func downloadInitiatorTypes(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        //MOCK!
-        let types = ["president":init1, "cabmin":init2, "bank":init3, "deputy":init4]
-        CoreDataStackManager.sharedInstance().storeInitiatorTypesFromArray(types){finished in
-            if finished {
-                completionHandler(success: true, error: nil)
+        //http://www.chesno.org/legislation/initiator-types/api/
+        let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, kLTMethodNames.initiatorTypes, kVTParameters.extras]
+        let urlString = urlVars.joinWithSeparator("/")
+        let url = NSURL(string: urlString)!
+        let request = NSURLRequest(URL: url)
+        
+        downloadTask = task(request){data, error in
+            if nil != error {
+                completionHandler(success: false, error: error)
+            } else {
+                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                    if nil != error {
+                        completionHandler(success: false, error: error)
+                    } else {
+                        if let types = result as? [String: AnyObject] {
+                            CoreDataStackManager.sharedInstance().storeInitiatorTypes(types){finished in
+                                if finished {
+                                    completionHandler(success: true, error: nil)
+                                }
+                            }
+                        } else {
+                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                            completionHandler(success: false, error: contentError)
+                        }
+                    }
+                }
             }
         }
     }
     
-    func downloadChanges(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        //MOCK!
-        let changes = [["date":date1, "text":desc1, "law":"3100-12"], ["date":date2, "text":desc2, "law":"3100-15"], ["date":date3, "text":desc3, "law":"3185"]]
-        CoreDataStackManager.sharedInstance().storeChangesFromArray(changes){finished in
-            if finished {
-                completionHandler(success: true, error: nil)
+    func downloadChanges(date:NSDate, completionHandler:(success: Bool, error: NSError?) -> Void) {
+        //http://www.chesno.org/legislation/2/bill-statuses/2015-12-25/api/
+        
+        let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.billStatuses, date.shirtString(), kVTParameters.extras]
+        let urlString = urlVars.joinWithSeparator("/")
+        let url = NSURL(string: urlString)!
+        let request = NSURLRequest(URL: url)
+        
+        downloadTask = task(request){data, error in
+            if nil != error {
+                completionHandler(success: false, error: error)
+            } else {
+                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                    if nil != error {
+                        completionHandler(success: false, error: error)
+                    } else {
+                        if let changes = result as? [[String: AnyObject]] {
+                            CoreDataStackManager.sharedInstance().storeChanges(changes){finished in
+                                if finished {
+                                    completionHandler(success: true, error: nil)
+                                }
+                            }
+                        } else {
+                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                            completionHandler(success: false, error: contentError)
+                        }
+                    }
+                }
             }
         }
     }
@@ -120,7 +204,7 @@ extension LTClient {
         
     }
     
-    func getPersonWithId(id: String, completionHandler:(person: LTPersonModel, success: Bool, error: NSError?) -> Void) {
+    func getInitiatorWithId(id: String, completionHandler:(initiator: LTInitiatorModel, success: Bool, error: NSError?) -> Void) {
         
     }
     

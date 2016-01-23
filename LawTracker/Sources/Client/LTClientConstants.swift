@@ -8,13 +8,25 @@
 
 extension LTClient {
     struct kVTParameters {
-        static let baseURL        = "https://api.flickr.com/services/rest/"
-        static let methodName     = "flickr.photos.search"
-        static let APIKey         = "997631065d8b180112f22052ec0003be"
-        static let extras         = "url_m"
-        static let dataFormat     = "json"
-        static let safeSearch     = "1"
-        static let noJSONCallback = "1"
+        static let baseURL = "http://www.chesno.org"
+        static let extras  = "api/"
+        static let radaID  = "1"
+        static let format  = "json"
+    }
+    
+    struct kLTAPINames {
+        static let persons     = "persons"
+        static let council     = "council"
+        static let legislation = "legislation"
+    }
+    
+    struct kLTMethodNames {
+        static let convocation      = "convocation"
+        static let bill             = "bill"
+        static let committees       = "committees"
+        static let deputies         = "deputies"
+        static let initiatorTypes   = "initiator-types"
+        static let billStatuses     = "bill-statuses"
     }
     
     struct kVTKeys {
@@ -22,6 +34,10 @@ extension LTClient {
         static let initiators = "initiators"
         static let committees = "committees"
         static let changes    = "changes"
+    }
+    
+    struct KLTMessages {
+        static let parseJSONError = "Cannot parse JSON"
     }
     
 }

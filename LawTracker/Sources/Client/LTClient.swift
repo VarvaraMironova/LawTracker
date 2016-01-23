@@ -14,14 +14,21 @@ class LTClient: NSObject {
     var getImageDataTask: NSURLSessionTask?
     
     var methodArguments = [
-        "method"        : kVTParameters.methodName,
-        "api_key"       : kVTParameters.APIKey,
-        "safe_search"   : kVTParameters.safeSearch,
-        "extras"        : kVTParameters.extras,
-        "format"        : kVTParameters.dataFormat,
-        "nojsoncallback": kVTParameters.noJSONCallback,
-        "per_page"      : "40"
+        "api"           : String(),
+        "format"        : String(),
+        "rada"          : String(),
+        "convocation"   : String(),
+        "method"        : String(),
+        "extras"        : String()
     ]
+    
+    lazy var currentConvocation: LTConvocationModel? = {
+        if let convocationModel = LTConvocationModel.currentConvocation() as LTConvocationModel! {
+            return convocationModel
+        }
+        
+        return nil
+    }()
     
     typealias CompletionHander = (result: AnyObject!, error: NSError?) -> Void
     
@@ -67,20 +74,7 @@ class LTClient: NSObject {
         }
     }
     
-    func escapedParameters(parameters: [String:AnyObject]) -> String {
-        var urlVars = [String]()
-        
-        for (key, value) in parameters {
-            let stringValue = "\(value)"
-            let escapedValue = stringValue.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
-            urlVars += [key + "=" + "\(escapedValue!)"]
-        }
-        
-        return (!urlVars.isEmpty ? "?" : "") + urlVars.joinWithSeparator("&")
-    }
-    
     // MARK: - All purpose tasks
-    
     func task(request: NSURLRequest, completionHandler: (result: NSData!, error: NSError?) -> Void) -> NSURLSessionDataTask
     {
         let task = session.dataTaskWithRequest(request) {data, response, downloadError in
@@ -88,21 +82,6 @@ class LTClient: NSObject {
                 completionHandler(result: nil, error: error)
             } else {
                 completionHandler(result: data, error: nil)
-            }
-        }
-        
-        task.resume()
-        
-        return task
-    }
-    
-    func taskForImage(request: NSURLRequest, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionTask
-    {
-        let task = session.dataTaskWithRequest(request) {data, response, downloadError in
-            if let error = downloadError {
-                completionHandler(imageData: nil, error: error)
-            } else {
-                completionHandler(imageData: data, error: nil)
             }
         }
         

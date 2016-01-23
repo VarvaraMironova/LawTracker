@@ -96,35 +96,49 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             settingsModel.createFilters()
             
             //download full data from server
-            view.showLoadingViewWithMessage("Зачекайте, будь ласка.\nТриває перше завантаження...")
+            view.showLoadingViewWithMessage("Зачекайте, будь ласка.\nПерше завантаження може зайняти кілька хвилин...")
             
-            client.downloadCommittees({ (success, error) -> Void in
+            client.downloadConvocations({ (success, error) -> Void in
                 if success {
-                    client.downloadInitiatorTypes({ (success, error) -> Void in
+                    client.downloadCommittees({ (success, error) -> Void in
                         if success {
-                            client.downloadPersons({ (success, error) -> Void in
+                            client.downloadInitiatorTypes({ (success, error) -> Void in
                                 if success {
-                                    client.downloadLaws({ (success, error) -> Void in
+                                    client.downloadPersons({ (success, error) -> Void in
                                         if success {
-                                            self.downloadChanges()
+                                            client.downloadLaws({ (success, error) -> Void in
+                                                if success {
+                                                    view.hideLoadingView()
+                                                    
+                                                    self.downloadChanges()
+                                                } else {
+                                                    view.hideLoadingView()
+                                                    view.noSubscriptionsLabel.hidden = false
+                                                    self.displayError(error!)
+                                                }
+                                            })
                                         } else {
+                                            view.hideLoadingView()
                                             view.noSubscriptionsLabel.hidden = false
-                                            //show alert
+                                            self.displayError(error!)
                                         }
                                     })
                                 } else {
+                                    view.hideLoadingView()
                                     view.noSubscriptionsLabel.hidden = false
-                                    //show alert
+                                    self.displayError(error!)
                                 }
                             })
                         } else {
+                            view.hideLoadingView()
                             view.noSubscriptionsLabel.hidden = false
-                            //show alert
+                            self.displayError(error!)
                         }
                     })
                 } else {
+                    view.hideLoadingView()
                     view.noSubscriptionsLabel.hidden = false
-                    //show alert
+                    self.displayError(error!)
                 }
             })
         } else {
@@ -135,7 +149,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
                     //download new changes
                     self.downloadChanges()
                 } else {
-                    //show alert
+                    self.displayError(error!)
                 }
             }
         }
@@ -271,7 +285,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     private func downloadChanges() {
         let view = rootView
         view.showLoadingViewWithMessage("Зачекайте, будь ласка.\nТриває завантаження останніх змін...")
-        LTClient.sharedInstance().downloadChanges({ (success, error) -> Void in
+        LTClient.sharedInstance().downloadChanges(NSDate()) { (success, error) -> Void in
             view.hideLoadingView()
             if success {
                 view.noSubscriptionsLabel.hidden = true
@@ -286,8 +300,8 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
                 view.contentTableView.reloadData()
             } else {
                 view.noSubscriptionsLabel.hidden = false
-                //show alert
+                self.displayError(error!)
             }
-        })
+        }
     }
 }

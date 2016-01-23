@@ -9,10 +9,11 @@
 import CoreData
 
 class LTCommitteeModel: LTEntityModel {
-    @NSManaged var url    : String
-    @NSManaged var starts : NSDate
-    @NSManaged var ends   : NSDate
-    @NSManaged var laws   : NSMutableSet
+    @NSManaged var url         : String
+    @NSManaged var starts      : NSDate
+    @NSManaged var ends        : NSDate
+    @NSManaged var laws        : NSMutableSet
+    @NSManaged var convocation : LTConvocationModel
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -33,6 +34,10 @@ class LTCommitteeModel: LTEntityModel {
             if let endsDate = endsString.date() as NSDate! {
                 ends = endsDate
             }
+        }
+        
+        if let convocationModel = dictionary[Keys.convocation] as? LTConvocationModel {
+            self.convocation = convocationModel
         }
     }
 }
