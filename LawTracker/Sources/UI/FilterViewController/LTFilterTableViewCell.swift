@@ -9,10 +9,18 @@
 import UIKit
 
 class LTFilterTableViewCell: UITableViewCell {
-    @IBOutlet var titleLabel: UILabel!
+    @IBOutlet var titleLabel     : UILabel!
+    @IBOutlet var filterImageView: UIImageView!
     
-    func fillWithModel(model: LTSectionModel) {
-        titleLabel.text = model.title
+    var filtered : Bool! {
+        didSet {
+            filterImageView.image = filtered == true ? UIImage(named: "checkboxOn") : UIImage(named: "checkboxOff")
+        }
+    }
+    
+    func fillWithModel(model: LTFilterModel) {
+        filtered = model.selected
+        titleLabel.text = model.entity.title
         
         titleLabel.fit()
     }

@@ -35,39 +35,41 @@ struct LTPersonModel {
             self.id = "\(id)"
         }
         
-        if let firstName = dictionary[Keys.firstName] as? String {
-            self.firstName = firstName
-        }
-        
-        if let secondName = dictionary[Keys.secondName] as? String {
-            self.secondName = secondName
-        }
-        
-        if let lastName = dictionary[Keys.lastName] as? String {
-            self.lastName = lastName
-        }
-        
-        if let fullName = dictionary[Keys.fullName] as? String {
-            self.fullName = fullName
-        }
-        
-        //save convocations
-        if let convocationsArray = dictionary[Keys.convocations] as? [String] {
-            for convocation in convocationsArray {
-                if let convocationModel = LTConvocationModel.convocationWithNumber(convocation) {
-                    convocations.addObject(convocationModel)
-                } else {
-                    //download convocation with number = convocation
+        if nil == LTInitiatorModel.modelWithID(id, entityName: "LTInitiatorModel") {
+            if let firstName = dictionary[Keys.firstName] as? String {
+                self.firstName = firstName
+            }
+            
+            if let secondName = dictionary[Keys.secondName] as? String {
+                self.secondName = secondName
+            }
+            
+            if let lastName = dictionary[Keys.lastName] as? String {
+                self.lastName = lastName
+            }
+            
+            if let fullName = dictionary[Keys.fullName] as? String {
+                self.fullName = fullName
+            }
+            
+            //save convocations
+            if let convocationsArray = dictionary[Keys.convocations] as? [String] {
+                for convocation in convocationsArray {
+                    if let convocationModel = LTConvocationModel.convocationWithNumber(convocation) {
+                        convocations.addObject(convocationModel)
+                    } else {
+                        //download convocation with number = convocation
+                    }
                 }
             }
-        }
-        
-        //create initiatorModel
-        if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName:"LTInitiatorModel") as? LTInitiatorModel {
-            initiator = initiatorModel
-        } else {
-            let dictionary = ["id":id, "title":fullName, "isDeputy":"true", "convocations":convocations]
-            initiator = LTInitiatorModel(dictionary: dictionary, context: context, entityName: "LTInitiatorModel")
+            
+            //create initiatorModel
+            if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName:"LTInitiatorModel") as? LTInitiatorModel {
+                initiator = initiatorModel
+            } else {
+                let dictionary = ["id":id, "title":fullName, "isDeputy":"true", "convocations":convocations]
+                initiator = LTInitiatorModel(dictionary: dictionary, context: context, entityName: "LTInitiatorModel")
+            }
         }
     }
 }

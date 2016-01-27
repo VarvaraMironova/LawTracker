@@ -9,51 +9,32 @@
 import UIKit
 
 class LTFilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
-    
     struct PlaceHolder {
-        static let Initiators = "Зазначте ініціатора"
-        static let Committees = "Зазначте комітет"
-        static let LawName    = "Зазначте назву законопроекта"
-        static let LawNumber  = "Зазначте номер законопроекта"
+        static let Initiators = "ПІБ депутата або назва ініціатора"
+        static let Committees = "Назва комітету"
+        static let Laws       = "Номер або назва законопроекту"
     }
     
     weak var delegate: LTMainContentViewControllerViewController!
     
-    var settingsModel    = VTSettingModel()
+    var settingsModel = VTSettingModel()
+    var filteredArray = [LTFilterModel]()
     
-    var filteredArray   : [LTSectionModel]!
-    var filters         : [LTSectionModel]!
-    var selectedFilters : [String] {
-        get {
-            switch delegate.filterType {
-            case .byCommittees:
-                return settingsModel.committees
-                
-            case .byInitiators:
-                return settingsModel.initiators
-                
-            case .byLaws:
-                return settingsModel.laws
-            }
-        }
-        
-        set {
-            switch delegate.filterType {
-            case .byCommittees:
-                settingsModel.committees = newValue
-                
-            case .byInitiators:
-                settingsModel.initiators = newValue
-                
-            case .byLaws:
-                settingsModel.laws = newValue
-            }
-        }
-    }
+    var filters           : [LTFilterModel]!
     
-    var selectedModel   : LTSectionModel? {
+    
+    var selectedFilters : [String]! {
         didSet {
-            rootView.fillSearchBar(selectedModel!)
+            switch delegate.filterType {
+            case .byCommittees:
+                settingsModel.committees = selectedFilters
+                
+            case .byInitiators:
+                settingsModel.initiators = selectedFilters
+                
+            case .byLaws:
+                settingsModel.laws = selectedFilters
+            }
         }
     }
     
@@ -67,7 +48,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                 return PlaceHolder.Initiators
                 
             case .byLaws:
-                return PlaceHolder.LawName
+                return PlaceHolder.Laws
             }
         }
     }
@@ -88,70 +69,51 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         rootView.fillSearchBarPlaceholder(placeholderString)
     }
     
-    override func prefersStatusBarHidden() -> Bool {
-        return true
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
     }
-    
+        
     //MARK: - Interface Handling
     @IBAction func onOkButton(sender: AnyObject) {
         //save filteredArray
+        var filteredIds = [String]()
+        let selectedArray = filteredArray.filter() { $0.selected == true }
+        if selectedArray.count > 0 {
+            delegate.filtersDidSet()
+        }
+        for filterModel in selectedArray {
+            filteredIds.append(filterModel.entity.id)
+        }
+        
+        selectedFilters = filteredIds
+        
         dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func onCancelButton(sender: AnyObject) {
         //clear filters in Settings
         selectedFilters = []
+        delegate.filtersDidCancelled()
         dismissViewControllerAnimated(true, completion: nil)
     }
     
     //MARK: - UITableViewDataSource methods
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
-    }
-    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch tableView.tag {
-        case 1:
-            return selectedFilters.count
-        
-        case 2:
-            if rootView.searchBar.text != "" {
-                return filteredArray.count
-            }
-            
-            return filters.count
-            
-        default:
-            return 0
+        if rootView.searchBar.text != "" || rootView.searchBar.selectedScopeButtonIndex > 0 {
+            return filteredArray.count
         }
+        
+        return filters.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("LTFilterTableViewCell", forIndexPath: indexPath) as! LTFilterTableViewCell
-        switch tableView.tag {
-        case 1:
-            let id = selectedFilters[indexPath.row]
-            for model in filters {
-//                if model.id == id {
-                    cell.fillWithModel(model)
-//                }
-            }
-            
-            break
-            
-        case 2:
-            if rootView.searchBar.text != "" {
-                let model = filteredArray[indexPath.row]
-                cell.fillWithModel(model)
-            } else {
-                let model = filters[indexPath.row]
-                cell.fillWithModel(model)
-            }
-            
-            break
-            
-        default:
-            break
+        if rootView.searchBar.text != "" || rootView.searchBar.selectedScopeButtonIndex > 0 {
+            let model = filteredArray[indexPath.row]
+            cell.fillWithModel(model)
+        } else {
+            let model = filters[indexPath.row]
+            cell.fillWithModel(model)
         }
         
         return cell
@@ -159,52 +121,11 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     
     //MARK: - UITableViewDelegate methods
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if tableView.tag == 2 {
-            let selectedModel = filters[indexPath.row]
-//            selectedFilters.append(selectedModel.id)
-            let index = filters.indexOf({$0.title == selectedModel.title})
-            filters.removeAtIndex(index!)
-            
-            rootView.tableView.reloadData()
-            rootView.filteredTableView.reloadData()
-            rootView.fitTableViewHeight()
-            
-            rootView.searchBar.text = ""
-        }
-    }
-    
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        switch tableView.tag {
-        case 1:
-            if .Delete == editingStyle {
-                let id = selectedFilters[indexPath.row]
-                selectedFilters.removeAtIndex(indexPath.row)
-                rootView.filteredTableView.reloadData()
-                rootView.fitTableViewHeight()
-                
-                for model in filters {
-//                    if model.id == id {
-                        filters.append(model)
-                        rootView.tableView.reloadData()
-//                    }
-                }
-            }
-            
-            break
-            
-        default:
-            break
-        }
-    }
-    
-    func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
-        switch tableView.tag {
-        case 1:
-            return .Delete
-            
-        default:
-            return .None
-        }
+        let cell = tableView.cellForRowAtIndexPath(indexPath) as! LTFilterTableViewCell
+        let selectedModel = filters[indexPath.row]
+        selectedModel.selected = !cell.filtered
+        
+        filterContentForSearchText(rootView.searchBar.text!, scope: rootView.searchBar.selectedScopeButtonIndex)
     }
     
     //MARK: - UISearchBarDelegate
@@ -218,12 +139,31 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         filterContentForSearchText(searchText)
     }
     
+    func searchBar(searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        filterContentForSearchText(searchBar.text!, scope: selectedScope)
+    }
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        rootView.searchBar.resignFirstResponder()
+    }
+    
     //MARK: - Private methods
-    func filterContentForSearchText(searchText: String) {
-        filteredArray = filters.filter({( filter : LTSectionModel) -> Bool in
-            return filter.title.lowercaseString.containsString(searchText.lowercaseString)
+    func filterContentForSearchText(searchText: String, scope: Int = 0) {
+        filteredArray = filters.filter({( filter : LTFilterModel) -> Bool in
+            let category = filter.selected == true ? 1 : 2
+            let categoryMatch = (scope == 0) || (category == scope)
+            
+            if let entity = filter.entity as? LTLawModel {
+                let containsInTitle = entity.title.lowercaseString.containsString(searchText.lowercaseString)
+                let containsInNumber = entity.number.lowercaseString.containsString(searchText.lowercaseString)
+                
+                return categoryMatch || (containsInTitle || containsInNumber)
+            }
+            
+            return categoryMatch || filter.entity.title.lowercaseString.containsString(searchText.lowercaseString)
         })
         
         rootView.tableView.reloadData()
     }
+    
 }

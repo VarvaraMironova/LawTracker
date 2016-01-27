@@ -46,7 +46,7 @@ class LTLawModel: LTEntityModel {
         
         if let typeID = dictionary[Keys.type] as? String {
             if typeID == "deputy" {
-                if let deputiesArray = dictionary[Keys.initiators] as? [String] {
+                if let deputiesArray = dictionary[Keys.initiators] as? [Int] {
                     storeDeputies(deputiesArray)
                 }
             } else {
@@ -60,11 +60,11 @@ class LTLawModel: LTEntityModel {
             }
         }
         
-        if let committeeID = dictionary[Keys.committee] as? String {
-            if let committeeModel = LTCommitteeModel.modelWithID(committeeID, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
+        if let committeeID = dictionary[Keys.committee] as? Int {
+            if let committeeModel = LTCommitteeModel.modelWithID("\(committeeID)", entityName:"LTCommitteeModel") as! LTCommitteeModel! {
                 self.committee = committeeModel
             } else {
-                LTClient.sharedInstance().getCommitteeWithId(committeeID){committee, success, error in
+                LTClient.sharedInstance().getCommitteeWithId("\(committeeID)"){committee, success, error in
                     if success {
                         self.committee = committee
                     } else {
@@ -75,12 +75,12 @@ class LTLawModel: LTEntityModel {
         }
     }
     
-    func storeDeputies(deputies: [String]) {
+    func storeDeputies(deputies: [Int]) {
         for deputyId in deputies {
-            if let initiatorModel = LTInitiatorModel.modelWithID(deputyId, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
+            if let initiatorModel = LTInitiatorModel.modelWithID("\(deputyId)", entityName:"LTInitiatorModel") as! LTInitiatorModel! {
                 self.addValueForKey(initiatorModel, key: Keys.initiators)
             } else {
-                LTClient.sharedInstance().getInitiatorWithId(deputyId){initiator, success, error in
+                LTClient.sharedInstance().getInitiatorWithId("\(deputyId)"){initiator, success, error in
                     if success {
                         self.addValueForKey(initiator, key: Keys.initiators)
                     } else {

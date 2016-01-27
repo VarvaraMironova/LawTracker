@@ -8,14 +8,9 @@
 
 import UIKit
 
-enum LTFilterType : Int {
-    case byCommittees = 0, byInitiators = 1, byLaws = 2
-    
-    static let filterTypes = [byCommittees, byInitiators, byLaws]
-}
-
 class LTMainContentViewControllerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    var arrayModel        : LTArrayModel!
+    var refreshControl    : UIRefreshControl!
+    var changesModel      : LTChangesModel!
     
     var byLawsArray       : [LTSectionModel] = []
     var byCommitteesArray : [LTSectionModel] = []
@@ -86,73 +81,32 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         
         //check, if it is a first launch -> show helpViewController, create dictionary filters in SettingsModel
         let settingsModel = VTSettingModel()
-        let client = LTClient.sharedInstance()
-        let view = rootView
+        let downloadDate = NSDate().previousDay()
         
         if true != settingsModel.firstLaunch {
-//            rootView.showHelpView()
-            settingsModel.firstLaunch = true
-            
-            settingsModel.createFilters()
-            
-            //download full data from server
-            view.showLoadingViewWithMessage("Зачекайте, будь ласка.\nПерше завантаження може зайняти кілька хвилин...")
-            
-            client.downloadConvocations({ (success, error) -> Void in
-                if success {
-                    client.downloadCommittees({ (success, error) -> Void in
-                        if success {
-                            client.downloadInitiatorTypes({ (success, error) -> Void in
-                                if success {
-                                    client.downloadPersons({ (success, error) -> Void in
-                                        if success {
-                                            client.downloadLaws({ (success, error) -> Void in
-                                                if success {
-                                                    view.hideLoadingView()
-                                                    
-                                                    self.downloadChanges()
-                                                } else {
-                                                    view.hideLoadingView()
-                                                    view.noSubscriptionsLabel.hidden = false
-                                                    self.displayError(error!)
-                                                }
-                                            })
-                                        } else {
-                                            view.hideLoadingView()
-                                            view.noSubscriptionsLabel.hidden = false
-                                            self.displayError(error!)
-                                        }
-                                    })
-                                } else {
-                                    view.hideLoadingView()
-                                    view.noSubscriptionsLabel.hidden = false
-                                    self.displayError(error!)
-                                }
-                            })
-                        } else {
-                            view.hideLoadingView()
-                            view.noSubscriptionsLabel.hidden = false
-                            self.displayError(error!)
-                        }
-                    })
-                } else {
-                    view.hideLoadingView()
-                    view.noSubscriptionsLabel.hidden = false
-                    self.displayError(error!)
-                }
-            })
+            //download data from server
+            loadData()
         } else {
-            //check time
-            //remove previous changes
-            CoreDataStackManager.sharedInstance().clearEntity("LTChangeModel") {success, error in
-                if success {
-                    //download new changes
-                    self.downloadChanges()
-                } else {
-                    self.displayError(error!)
-                }
+            //check date
+            if downloadDate == settingsModel.lastDownloadDate {
+                setChangesModel()
+            } else {
+                downloadChanges(downloadDate)
             }
         }
+        
+        rootView.fillSearchButton(downloadDate.longString())
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        //add refresh control
+        let refreshControl = UIRefreshControl()
+        rootView.contentTableView.addSubview(refreshControl)
+        refreshControl.addTarget(self, action: "reloadTableView", forControlEvents: .ValueChanged)
+        
+        self.refreshControl = refreshControl
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator)
@@ -163,6 +117,12 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             if self.rootView.menuShown {
                 self.rootView.showMenu()
             }}, completion: {(UIViewControllerTransitionCoordinatorContext) -> Void in })
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        print(VTSettingModel().committees.count)
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -187,23 +147,9 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         dispatch_async(dispatch_get_main_queue()) {
             let filterController = self.storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
             filterController.delegate = self
-            
-            switch self.filterType {
-            case .byCommittees:
-                filterController.filters = self.byCommitteesArray
-                
-                break
-                
-            case .byInitiators:
-                filterController.filters = self.byInitiatorsArray
-                
-                break
-                
-            case .byLaws:
-                filterController.filters = self.byLawsArray
-                
-                break
-            }
+            let filtersModel = LTFiltersModel()
+            filtersModel.fetchEntities(self.filterType)
+            filterController.filters = filtersModel.filters(self.filterType)
             
             self.presentViewController(filterController, animated: true, completion: nil)
         }
@@ -236,6 +182,36 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         }
     }
     
+    @IBAction func onSearchButton(sender: AnyObject) {
+        rootView.showDatePicker()
+    }
+    
+    @IBAction func onHidePickerButton(sender: AnyObject) {
+        rootView.hideDatePicker()
+    }
+    
+    @IBAction func onDonePickerButton(sender: AnyObject) {
+        rootView.hideDatePicker()
+        let date = rootView.datePicker.date
+        
+        rootView.fillSearchButton(date.longString())
+        downloadChanges(date)
+    }
+    
+    func reloadTableView() {
+        refreshControl.beginRefreshing()
+        
+        let alertViewController: UIAlertController = UIAlertController(title: "Оновити базу законопроектів, ініціаторів та комітетів?", message:"Це може зайняти кілька хвилин", preferredStyle: .Alert)
+        alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: {void in
+            self.loadData()
+        }))
+        alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
+        
+        presentViewController(alertViewController, animated: true, completion: nil)
+        
+        refreshControl.endRefreshing()
+    }
+    
     //MARK: - UITableViewDataSource methods
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return selectedArray[section].changes.count
@@ -243,7 +219,9 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         if let model = selectedArray {
-            return model.count
+            let count = model.count
+            
+            return count
         }
         
         return 0
@@ -272,36 +250,106 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         let changes = selectedArray[indexPath.section].changes
         let changeModel = changes[indexPath.row]
         let width = CGRectGetWidth(tableView.frame) - 20.0
-        let dateFont = UIFont(name: "Arial", size: 12.0)
         let descriptionFont = UIFont(name: "Arial-BoldMT", size: 14.0)
         let lawNameHeight = changeModel.law.title.getHeight(width, font: descriptionFont!)
-        let dateHeight = changeModel.date.string().getHeight(width, font: dateFont!)
         let descriptionHeight = changeModel.text.getHeight(width, font: descriptionFont!)
         
-        return lawNameHeight + dateHeight + descriptionHeight + 20.0
+        return lawNameHeight + descriptionHeight + 20.0
     }
     
     //MARK: - Private methods
-    private func downloadChanges() {
-        let view = rootView
-        view.showLoadingViewWithMessage("Зачекайте, будь ласка.\nТриває завантаження останніх змін...")
-        LTClient.sharedInstance().downloadChanges(NSDate()) { (success, error) -> Void in
-            view.hideLoadingView()
+    private func downloadChanges(date: NSDate) {
+        rootView.noSubscriptionsLabel.hidden = true
+        CoreDataStackManager.sharedInstance().clearEntity("LTChangeModel") {success, error in
             if success {
-                view.noSubscriptionsLabel.hidden = true
-                self.arrayModel = LTArrayModel(entityName: "LTChangeModel")
-                
-                self.byCommitteesArray = self.arrayModel.changesByKey(.byCommittees)
-                self.byInitiatorsArray = self.arrayModel.changesByKey(.byInitiators)
-                self.byLawsArray = self.arrayModel.changesByKey(.byLaws)
-                
-                self.selectedArray = self.byCommitteesArray
-                
-                view.contentTableView.reloadData()
+                let view = self.rootView
+                view.showLoadingViewWithMessage("Завантаження останніх змін. \nЗалишилося кілька секунд...")
+                LTClient.sharedInstance().downloadChanges(date) { (success, error) -> Void in
+                    view.hideLoadingView()
+                    if success {
+                        self.setChangesModel()
+                        let settingsModel = VTSettingModel()
+                        settingsModel.lastDownloadDate = date
+                    } else {
+                        self.processError(error!)
+                    }
+                }
             } else {
-                view.noSubscriptionsLabel.hidden = false
                 self.displayError(error!)
             }
         }
+    }
+    
+    private func setChangesModel() {
+        let view = rootView
+        changesModel = LTChangesModel()
+        
+        byCommitteesArray = changesModel.changesByKey(.byCommittees)
+        byInitiatorsArray = changesModel.changesByKey(.byInitiators)
+        byLawsArray = changesModel.changesByKey(.byLaws)
+        
+        selectedArray = self.byCommitteesArray
+        
+        view.contentTableView.reloadData()
+        
+        view.noSubscriptionsLabel.hidden = changesModel.models.count != 0
+    }
+    
+    private func loadData() {
+        rootView.showLoadingViewWithMessage("Зачекайте, будь ласка. Триває завантаження законопроектів, комітетів та ініціаторів...")
+        
+        let client = LTClient.sharedInstance()
+        
+        client.downloadConvocations({ (success, error) -> Void in
+            if success {
+                client.downloadCommittees({ (success, error) -> Void in
+                    if success {
+                        client.downloadInitiatorTypes({ (success, error) -> Void in
+                            if success {
+                                client.downloadPersons({ (success, error) -> Void in
+                                    if success {
+                                        client.downloadLaws({ (success, error) -> Void in
+                                            if success {
+                                                let settings = VTSettingModel()
+                                                if settings.firstLaunch != true {
+                                                    settings.setup()
+                                                }
+                                                self.rootView.hideLoadingView()
+                                                self.downloadChanges(NSDate().previousDay())
+                                            } else {
+                                                self.processError(error!)
+                                            }
+                                        })
+                                    } else {
+                                        self.processError(error!)
+                                    }
+                                })
+                            } else {
+                                self.processError(error!)
+                            }
+                        })
+                    } else {
+                        self.processError(error!)
+                    }
+                })
+            } else {
+                self.processError(error!)
+            }
+        })
+    }
+    
+    private func processError(error:NSError) {
+        rootView.hideLoadingView()
+        rootView.noSubscriptionsLabel.hidden = false
+        
+        self.displayError(error)
+    }
+    
+    func filtersDidSet() {
+        rootView.selectedButton.filtersSet = true
+    }
+    
+    func filtersDidCancelled() {
+        rootView.selectedButton.filtersSet = false
     }
 }

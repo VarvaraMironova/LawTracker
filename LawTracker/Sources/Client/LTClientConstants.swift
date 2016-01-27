@@ -9,7 +9,7 @@
 extension LTClient {
     struct kVTParameters {
         static let baseURL = "http://www.chesno.org"
-        static let extras  = "api/"
+        static let extras  = "api"
         static let radaID  = "1"
         static let format  = "json"
     }

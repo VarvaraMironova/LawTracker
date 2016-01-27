@@ -22,7 +22,9 @@ class LTCommitteeModel: LTEntityModel {
     override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
         super.init(dictionary: dictionary, context: context, entityName: entityName)
         
-        url = dictionary[Keys.url] as! String
+        if let url = dictionary[Keys.url] as? String {
+            self.url = url
+        }
         
         if let startsString = dictionary[Keys.starts] as? String {
             if let startsDate = startsString.date() as NSDate! {

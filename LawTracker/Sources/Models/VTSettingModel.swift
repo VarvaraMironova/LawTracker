@@ -17,6 +17,7 @@ class VTSettingModel: NSObject {
         static let Laws        = "Laws"
         static let Filters     = "Filters"
         static let FirstLaunch = "firstLaunch"
+        static let Date        = "lastDownloadDate"
     }
     
     var firstLaunch : Bool {
@@ -31,11 +32,13 @@ class VTSettingModel: NSObject {
     
     var initiators : [String] {
         set {
-            filters[Keys.Initiators] = newValue
+            if var filters = filters as [String:[String]]! {
+                filters[Keys.Initiators] = newValue
+            }
         }
         
         get {
-            if nil != filters[Keys.Initiators] {
+            if var filters = filters as [String:[String]]! {
                 if let array = filters[Keys.Initiators] as [String]! {
                     return array
                 }
@@ -47,11 +50,13 @@ class VTSettingModel: NSObject {
     
     var laws : [String] {
         set {
-            filters[Keys.Laws] = newValue
+            if var filters = filters as [String:[String]]! {
+                filters[Keys.Laws] = newValue
+            }
         }
         
         get {
-            if nil != filters[Keys.Laws] {
+            if var filters = filters as [String:[String]]! {
                 if let array = filters[Keys.Laws] as [String]! {
                     return array
                 }
@@ -63,11 +68,13 @@ class VTSettingModel: NSObject {
     
     var committees : [String] {
         set {
-            filters[Keys.Committees] = newValue
+            if var filters = filters as [String:[String]]! {
+                filters[Keys.Committees] = newValue
+            }
         }
         
         get {
-            if nil != filters[Keys.Committees] {
+            if var filters = filters as [String:[String]]! {
                 if let array = filters[Keys.Committees] as [String]! {
                     return array
                 }
@@ -77,13 +84,27 @@ class VTSettingModel: NSObject {
         }
     }
     
-    var filters : [String:[String]] {
+    var filters : [String:[String]]? {
         set {
             defaults.setObject(newValue, forKey: Keys.Filters)
         }
         
         get {
-            return defaults.objectForKey(Keys.Filters) as! [String:[String]]
+            return defaults.objectForKey(Keys.Filters) as? [String:[String]]
+        }
+    }
+    
+    var lastDownloadDate : NSDate? {
+        set {
+            defaults.setObject(newValue!.dateWithoutTime(), forKey: Keys.Date)
+        }
+        
+        get {
+            if let date = defaults.objectForKey(Keys.Date) as? NSDate {
+                return date.dateWithoutTime()
+            } else {
+                return nil
+            }
         }
     }
     
@@ -117,7 +138,8 @@ class VTSettingModel: NSObject {
         objc_sync_exit(lock)
     }
     
-    func createFilters() {
-        filters = [Keys.Initiators:[], Keys.Committees:[], Keys.Laws:[]]
+    func setup() {
+        firstLaunch = true
+//        filters = [Keys.Initiators:[], Keys.Committees:[], Keys.Laws:[]]
     }
 }

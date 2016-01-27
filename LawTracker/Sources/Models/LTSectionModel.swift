@@ -8,11 +8,13 @@
 
 import Foundation
 
-struct LTSectionModel {
+class LTSectionModel: NSObject {
     var title   : String!
     var changes = [LTChangeModel]()
     
     init(title: String!) {
+        super.init()
+        
         self.title = title
     }
 }

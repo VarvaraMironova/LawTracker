@@ -9,29 +9,30 @@
 import UIKit
 
 class LTFilterRootView: UIView {
-    @IBOutlet var filteredTableView      : UITableView!
     @IBOutlet var okButton               : UIButton!
     @IBOutlet var cancelButton           : UIButton!
     @IBOutlet var searchBar              : UISearchBar!
     @IBOutlet var tableView              : UITableView!
-    @IBOutlet var filteredTableViewHeight: NSLayoutConstraint!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         
         searchBar.returnKeyType = .Done
-        
-        self.fitTableViewHeight()
+        searchBar.scopeButtonTitles = ["Всі", "Обрані", "Необрані"]
     }
     
-    func fillSearchBar(model: LTSectionModel) {
-        searchBar.text = model.title
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        var okButtonFont = okButton.titleLabel!.font
+        okButtonFont = okButtonFont.screenProportionalFont()
+        
+        var cancelButtonFont = cancelButton.titleLabel!.font
+        cancelButtonFont = cancelButtonFont.screenProportionalFont()
     }
     
-    func fitTableViewHeight() {
-        let cellsCount = filteredTableView.numberOfRowsInSection(0)
-        
-        filteredTableViewHeight.constant = CGFloat(cellsCount * 30)
+    func fillSearchBar(text: String?) {
+        searchBar.text = text
     }
     
     func fillSearchBarPlaceholder(string: String) {

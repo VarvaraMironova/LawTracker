@@ -11,7 +11,7 @@ import Foundation
 extension LTClient {
     
     func downloadConvocations(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        //http://www.chesno.org/council/1/convocation/api/
+        //http://www.chesno.org/council/<Verkhovna Rada's id>/convocation/api/
         let urlVars = [kVTParameters.baseURL, kLTAPINames.council, kVTParameters.radaID, kLTMethodNames.convocation, kVTParameters.extras]
         let urlString = urlVars.joinWithSeparator("/")
         let url = NSURL(string: urlString)!
@@ -42,7 +42,7 @@ extension LTClient {
     }
     
     func downloadLaws(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        //http://www.chesno.org/legislation/2/bill/api/
+        //http://www.chesno.org/legislation/<convocation's id>/bill/api/
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, kVTParameters.extras]
         let urlString = urlVars.joinWithSeparator("/")
@@ -74,7 +74,7 @@ extension LTClient {
     }
     
     func downloadCommittees(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        //http://www.chesno.org/legislation/2/committees/api/
+        //http://www.chesno.org/legislation/<convocation's id>/committees/api/
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.committees, kVTParameters.extras]
         let urlString = urlVars.joinWithSeparator("/")
@@ -106,7 +106,7 @@ extension LTClient {
     }
     
     func downloadPersons(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        //http://www.chesno.org/persons/json/deputies/<номер скликання>
+        //http://www.chesno.org/persons/json/deputies/<convocation's number>
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.persons, kVTParameters.format, kLTMethodNames.deputies, currentConvocation!.number]
         let urlString = urlVars.joinWithSeparator("/")
@@ -169,9 +169,16 @@ extension LTClient {
     }
     
     func downloadChanges(date:NSDate, completionHandler:(success: Bool, error: NSError?) -> Void) {
-        //http://www.chesno.org/legislation/2/bill-statuses/2015-12-25/api/
+        //http://www.chesno.org/legislation/<convocation's id>/bill-statuses/<yyyy-MM-dd>/api/
         
-        let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.billStatuses, date.shirtString(), kVTParameters.extras]
+        if nil == currentConvocation {
+            let contentError = LTClient.errorForMessage("Не вдалося завантажити зміни. Спробуйте оновити дані")
+            completionHandler(success: false, error: contentError)
+            
+            return
+        }
+        
+        let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.billStatuses, date.string("yyyy-MM-dd"), kVTParameters.extras]
         let urlString = urlVars.joinWithSeparator("/")
         let url = NSURL(string: urlString)!
         let request = NSURLRequest(URL: url)

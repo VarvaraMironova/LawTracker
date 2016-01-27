@@ -1,5 +1,5 @@
 //
-//  LTArrayModel.swift
+//  LTChangesModel.swift
 //  LawTracker
 //
 //  Created by Varvara Mironova on 1/6/16.
@@ -9,20 +9,12 @@
 import CoreData
 import Foundation
 
-enum LTChangeType : Int {
-    case byCommittees = 0, byInitiators = 1, byLaws = 2
-    
-    static let changesTypes = [byCommittees, byInitiators, byLaws]
-}
-
-class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
+class LTChangesModel: NSObject, NSFetchedResultsControllerDelegate {
     var settings = VTSettingModel()
-    
-    var entityName : String!
     
     // MARK: - NSFetchedResultsController
     lazy var fetchedResultsController: NSFetchedResultsController = {
-        let fetchRequest = NSFetchRequest(entityName: self.entityName)
+        let fetchRequest = NSFetchRequest(entityName: "LTChangeModel")
         
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         fetchRequest.predicate = NSPredicate(value: true);
@@ -39,10 +31,8 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         return self.fetchedResultsController.fetchedObjects as! [LTChangeModel]
     }()
     
-    init(entityName: String) {
+    override init() {
         super.init()
-        
-        self.entityName = entityName
         
         do {
             try fetchedResultsController.performFetch()
@@ -52,8 +42,8 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     }
     
     //MARK: - Public
-    func changesByKey(key: LTChangeType) ->[LTSectionModel] {
-        //check are there saved filters. If false -> return models, else -> apply filters
+    func changesByKey(key: LTFilterType) ->[LTSectionModel] {
+        //check are there saved filters. If true -> apply filters
         var changesByKey = [LTSectionModel]()
         var filteredIds = [String]()
         
@@ -75,12 +65,24 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             switch key {
             case .byLaws:
                 ids = [changeModel.law.id]
-                title = changeModel.law.title
+                title = changeModel.law.number
                 
             case .byInitiators:
-                for initiator in changeModel.law.initiators.allObjects {
-                    ids.append(initiator.id)
-                    title.appendContentsOf(initiator.title + "\n")
+                let initiators = changeModel.law.initiators.allObjects as! [LTInitiatorModel]
+                //changeModel has more than 2 initiators
+                if initiators.count > 2 {
+                    var titles = [String]()
+                    for initiator in initiators {
+                        ids.append(initiator.id)
+                        titles.append(initiator.title)
+                    }
+                    
+                    title = titles.joinWithSeparator("\n")
+                } else {
+                    if let initiator = initiators.first {
+                        ids = [initiator.id]
+                        title = initiator.title
+                    }
                 }
                 
             case .byCommittees:
@@ -93,9 +95,11 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             
             if nil == sectionModel {
                 sectionModel = LTSectionModel(title: title)
+                sectionModel!.changes.append(changeModel)
+                changesByKey.append(sectionModel!)
+            } else {
+                sectionModel!.changes.append(changeModel)
             }
-            
-            sectionModel!.changes.append(changeModel)
             
             if filteredIds.count > 0 {
                 //filters applied -> for every id from ids check, if filteredIds contains it. If true -> create LTSectionModel
@@ -109,9 +113,6 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
                 if contains {
                     changesByKey.append(sectionModel!)
                 }
-            } else {
-                //filters not applied ->
-                changesByKey.append(sectionModel!)
             }
             
         }
@@ -174,15 +175,4 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         print("controllerDidChangeContent")
     }
     
-    func sectionsCount() ->Int {
-        return fetchedResultsController.sections!.count
-    }
-    
-    func rowsInSection() ->Int {
-        if let objects = fetchedResultsController.fetchedObjects {
-            return objects.count
-        }
-        
-        return 0
-    }
 }

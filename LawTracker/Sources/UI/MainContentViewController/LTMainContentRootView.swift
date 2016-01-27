@@ -14,7 +14,6 @@ let titleThree = "За законопроектами"
 
 class LTMainContentRootView: LTArrayRootView {
     @IBOutlet var headerView             : UIView!
-    @IBOutlet var titleLabel             : UILabel!
     @IBOutlet var filterButton           : UIButton!
     @IBOutlet var menuButton             : UIButton!
     @IBOutlet var byCommitteesButton     : LTSwitchButton!
@@ -27,19 +26,18 @@ class LTMainContentRootView: LTArrayRootView {
     @IBOutlet var menuContainerView      : UIView!
     @IBOutlet var dismissFilterViewButton: UIButton!
     @IBOutlet var helpViewContainer      : UIView!
-
-    var menuShown : Bool = false
+    @IBOutlet var searchButton           : UIButton!
+    @IBOutlet var datePicker             : UIDatePicker!
+    @IBOutlet var pickerBackgroundView   : UIView!
+    @IBOutlet var hidePickerButton       : UIButton!
+    @IBOutlet var donePickerButton       : UIButton!
     
-    lazy var titleStrings: [String] = {
-        [unowned self] in
-        return [titleOne, titleTwo, titleThree]
-        }()
+    var menuShown       : Bool = false
+    
+    var datePickerShown : Bool = false
     
     var selectedButton: LTSwitchButton! {
         didSet {
-            let tag = selectedButton.tag
-            titleLabel.text = titleStrings[tag]
-            
             selectedButton.on = true
             
             if let oldValue = oldValue as LTSwitchButton! {
@@ -51,6 +49,7 @@ class LTMainContentRootView: LTArrayRootView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        searchButton.titleLabel!.frame = searchButton.frame
         selectedButton = byCommitteesButton
     }
     
@@ -90,8 +89,26 @@ class LTMainContentRootView: LTArrayRootView {
         }
     }
     
+    func showDatePicker() {
+        pickerBackgroundView.hidden = false
+        datePickerShown = true
+    }
+    
+    func hideDatePicker() {
+        pickerBackgroundView.hidden = true
+        datePickerShown = false
+    }
+    
+    func fillSearchButton(date:String) {
+        searchButton.setTitle(date, forState: .Normal)
+    }
+    
     private func animateMenu(width: CGFloat, show: Bool) {
         let menuContainer = menuContainerView
+        
+        if show {
+            hideDatePicker()
+        }
         
         UIView.animateWithDuration(0.4, animations: {
             var center = menuContainer.center
@@ -101,7 +118,6 @@ class LTMainContentRootView: LTArrayRootView {
             }, completion: {(finished: Bool) -> Void in
                 self.menuShown = !self.menuShown
         })
-
     }
     
 }

@@ -100,9 +100,18 @@ class CoreDataStackManager {
     func storeLaws(laws: [NSDictionary], convocation: String, completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
             for lawArray in laws {
-                if var mutableLawArray = lawArray as? [String : AnyObject] {
-                    mutableLawArray["convocation"] = convocation
-                    _ = LTLawModel(dictionary: mutableLawArray, context: self.managedObjectContext, entityName:"LTLawModel")
+                var lawId = String()
+                if let id = lawArray["id"] as? String {
+                    lawId = id
+                } else if let id = lawArray["id"] as? Int {
+                    lawId = "\(id)"
+                }
+                
+                if nil == LTLawModel.modelWithID(lawId, entityName: "LTLawModel") {
+                    if var mutableLawArray = lawArray as? [String : AnyObject] {
+                        mutableLawArray["convocation"] = convocation
+                        _ = LTLawModel(dictionary: mutableLawArray, context: self.managedObjectContext, entityName:"LTLawModel")
+                    }
                 }
             }
             
@@ -115,9 +124,18 @@ class CoreDataStackManager {
     func storeCommittees(committees: [NSDictionary], convocation: String, completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
             for committeeArray in committees {
-                if var mutableCommitteeArray = committeeArray as? [String : AnyObject] {
-                    mutableCommitteeArray["convocation"] = convocation
-                    _ = LTCommitteeModel(dictionary: mutableCommitteeArray, context: self.managedObjectContext, entityName:"LTCommitteeModel")
+                var committeeId = String()
+                if let id = committeeArray["id"] as? String {
+                    committeeId = id
+                } else if let id = committeeArray["id"] as? Int {
+                    committeeId = "\(id)"
+                }
+                
+                if nil == LTCommitteeModel.modelWithID(committeeId, entityName: "LTCommitteeModel") {
+                    if var mutableCommitteeArray = committeeArray as? [String : AnyObject] {
+                        mutableCommitteeArray["convocation"] = convocation
+                        _ = LTCommitteeModel(dictionary: mutableCommitteeArray, context: self.managedObjectContext, entityName:"LTCommitteeModel")
+                    }
                 }
             }
             
@@ -130,8 +148,10 @@ class CoreDataStackManager {
     func storeInitiatorTypes(types: [String : AnyObject], completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
             for (key, value) in types {
-                let type = ["id": key, "title": value]
-                _ = LTInitiatorTypeModel(dictionary: type, context: self.managedObjectContext, entityName:"LTInitiatorTypeModel")
+                if nil == LTInitiatorTypeModel.modelWithID(key, entityName: "LTInitiatorTypeModel") {
+                    let type = ["id": key, "title": value]
+                    _ = LTInitiatorTypeModel(dictionary: type, context: self.managedObjectContext, entityName:"LTInitiatorTypeModel")
+                }
             }
             
             self.saveContext()

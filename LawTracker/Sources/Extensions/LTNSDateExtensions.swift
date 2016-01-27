@@ -10,10 +10,10 @@ import Foundation
 
 extension NSDate {
     
-    func string() -> String {
+    func string(format: String) -> String {
         let dateFormatter = NSDateFormatter()
         dateFormatter.calendar = NSCalendar.currentCalendar()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+        dateFormatter.dateFormat = format
         
         if let result = dateFormatter.stringFromDate(self) as String! {
             return result
@@ -22,10 +22,11 @@ extension NSDate {
         return ""
     }
     
-    func shirtString() -> String {
+    func longString() -> String {
         let dateFormatter = NSDateFormatter()
         dateFormatter.calendar = NSCalendar.currentCalendar()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.dateStyle = .LongStyle
+        dateFormatter.locale = NSLocale(localeIdentifier: "uk-Cyrl")
         
         if let result = dateFormatter.stringFromDate(self) as String! {
             return result
@@ -33,4 +34,20 @@ extension NSDate {
         
         return ""
     }
+    
+    func previousDay() -> NSDate {
+        let calendar = NSCalendar.currentCalendar()
+        let components = calendar.components([.Year, .Month, .Day], fromDate: self)
+        components.day -= 1
+        
+        return calendar.dateFromComponents(components)!
+    }
+    
+    func dateWithoutTime() -> NSDate {
+        let calendar = NSCalendar.currentCalendar()
+        let components = calendar.components([.Year, .Month, .Day], fromDate: self)
+        
+        return calendar.dateFromComponents(components)!
+    }
+    
 }
