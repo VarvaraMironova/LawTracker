@@ -10,9 +10,9 @@
 		C707CF481C5818ED004A8640 /* LTFilterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF471C5818ED004A8640 /* LTFilterModel.swift */; };
 		C707CF4A1C581D58004A8640 /* LTNSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF491C581D58004A8640 /* LTNSObject.swift */; };
 		C707CF4C1C581EB3004A8640 /* LTFiltersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF4B1C581EB3004A8640 /* LTFiltersModel.swift */; };
-		C71A07971C23064F00235D78 /* LTArrayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07961C23064F00235D78 /* LTArrayViewController.swift */; };
-		C71A07991C23067400235D78 /* LTArrayRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07981C23067400235D78 /* LTArrayRootView.swift */; };
-		C71A079B1C23068C00235D78 /* LTTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A079A1C23068C00235D78 /* LTTableViewCell.swift */; };
+		C707CF511C5A5538004A8640 /* LTArrayRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF4E1C5A5538004A8640 /* LTArrayRootView.swift */; };
+		C707CF521C5A5538004A8640 /* LTArrayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF4F1C5A5538004A8640 /* LTArrayViewController.swift */; };
+		C707CF531C5A5538004A8640 /* LTTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF501C5A5538004A8640 /* LTTableViewCell.swift */; };
 		C71A07A11C23382700235D78 /* LTSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A01C23382700235D78 /* LTSwitchButton.swift */; };
 		C71A07A31C23383B00235D78 /* LTSwitchButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C71A07A21C23383B00235D78 /* LTSwitchButtonView.xib */; };
 		C71A07A81C23F9F600235D78 /* OTMLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */; };
@@ -76,9 +76,9 @@
 		C707CF471C5818ED004A8640 /* LTFilterModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterModel.swift; sourceTree = "<group>"; };
 		C707CF491C581D58004A8640 /* LTNSObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNSObject.swift; sourceTree = "<group>"; };
 		C707CF4B1C581EB3004A8640 /* LTFiltersModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFiltersModel.swift; sourceTree = "<group>"; };
-		C71A07961C23064F00235D78 /* LTArrayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTArrayViewController.swift; sourceTree = "<group>"; };
-		C71A07981C23067400235D78 /* LTArrayRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTArrayRootView.swift; sourceTree = "<group>"; };
-		C71A079A1C23068C00235D78 /* LTTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTTableViewCell.swift; sourceTree = "<group>"; };
+		C707CF4E1C5A5538004A8640 /* LTArrayRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTArrayRootView.swift; sourceTree = "<group>"; };
+		C707CF4F1C5A5538004A8640 /* LTArrayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTArrayViewController.swift; sourceTree = "<group>"; };
+		C707CF501C5A5538004A8640 /* LTTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTTableViewCell.swift; sourceTree = "<group>"; };
 		C71A07A01C23382700235D78 /* LTSwitchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButton.swift; sourceTree = "<group>"; };
 		C71A07A21C23383B00235D78 /* LTSwitchButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSwitchButtonView.xib; sourceTree = "<group>"; };
 		C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMLoadingView.swift; sourceTree = "<group>"; };
@@ -150,12 +150,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C71A07951C23063A00235D78 /* BaseClasses */ = {
+		C707CF4D1C5A5538004A8640 /* BaseClasses */ = {
 			isa = PBXGroup;
 			children = (
-				C71A07961C23064F00235D78 /* LTArrayViewController.swift */,
-				C71A07981C23067400235D78 /* LTArrayRootView.swift */,
-				C71A079A1C23068C00235D78 /* LTTableViewCell.swift */,
+				C707CF4E1C5A5538004A8640 /* LTArrayRootView.swift */,
+				C707CF4F1C5A5538004A8640 /* LTArrayViewController.swift */,
+				C707CF501C5A5538004A8640 /* LTTableViewCell.swift */,
 			);
 			path = BaseClasses;
 			sourceTree = "<group>";
@@ -300,9 +300,9 @@
 		C7A29E731C0C9F97001B0EF5 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				C707CF4D1C5A5538004A8640 /* BaseClasses */,
 				C71A07A41C23F9F600235D78 /* OTMLoadingView */,
 				C71A079E1C23380000235D78 /* Buttons */,
-				C71A07951C23063A00235D78 /* BaseClasses */,
 				C7CFB5A21C1FFFDB00211C6B /* HelpViewController */,
 				C7CFB5A31C1FFFDB00211C6B /* MainContentViewController */,
 				C76CE92B1C1B742F006262E8 /* MenuViewController */,
@@ -399,6 +399,7 @@
 				TargetAttributes = {
 					C7A29E471C0C9EAD001B0EF5 = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = Z4W46D7MK3;
 					};
 					C7A29E601C0C9EAD001B0EF5 = {
 						CreatedOnToolsVersion = 7.1.1;
@@ -453,7 +454,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C71A07971C23064F00235D78 /* LTArrayViewController.swift in Sources */,
 				C77397341C3A7AE70093CBCC /* LTStringHeightExtensions.swift in Sources */,
 				C76174B01C4D445700C344FA /* LTPersonModel.swift in Sources */,
 				C77397451C3AB9450093CBCC /* LTClientExtensions.swift in Sources */,
@@ -463,6 +463,7 @@
 				C7CFB5AF1C1FFFDB00211C6B /* LTMainContentTableViewCell.swift in Sources */,
 				C77397441C3AB9450093CBCC /* LTClientConstants.swift in Sources */,
 				C77397371C3A7AE70093CBCC /* LTUtility.swift in Sources */,
+				C707CF521C5A5538004A8640 /* LTArrayViewController.swift in Sources */,
 				C77397351C3A7AE70093CBCC /* LTTableViewExtensions.swift in Sources */,
 				C77397391C3A9C2C0093CBCC /* LTInitiatorModel.swift in Sources */,
 				C7CFB5B91C2006F200211C6B /* VTSettingModel.swift in Sources */,
@@ -472,12 +473,11 @@
 				C773973F1C3AB1180093CBCC /* LTNSDateExtensions.swift in Sources */,
 				C7CFB5B51C2004D100211C6B /* LTHelpViewController.swift in Sources */,
 				C707CF4A1C581D58004A8640 /* LTNSObject.swift in Sources */,
+				C707CF511C5A5538004A8640 /* LTArrayRootView.swift in Sources */,
 				C7E792B01C18672C0031C55A /* LTFilterRootView.swift in Sources */,
 				C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */,
 				C76CE92F1C1B7461006262E8 /* LTMenuRootView.swift in Sources */,
 				C773973B1C3AA74C0093CBCC /* LTCommitteeModel.swift in Sources */,
-				C71A079B1C23068C00235D78 /* LTTableViewCell.swift in Sources */,
-				C71A07991C23067400235D78 /* LTArrayRootView.swift in Sources */,
 				C76174B21C5394B400C344FA /* LTConvocationModel.swift in Sources */,
 				C7CFB5BC1C2008D500211C6B /* LTCellHeaderView.swift in Sources */,
 				C773974B1C40095C0093CBCC /* LTSectionModel.swift in Sources */,
@@ -489,6 +489,7 @@
 				C77397321C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift in Sources */,
 				C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */,
 				C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */,
+				C707CF531C5A5538004A8640 /* LTTableViewCell.swift in Sources */,
 				C7CFB5B71C2004F700211C6B /* LTHelpRootView.swift in Sources */,
 				C707CF4C1C581EB3004A8640 /* LTFiltersModel.swift in Sources */,
 				C77397431C3AB9450093CBCC /* LTClient.swift in Sources */,
@@ -625,10 +626,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = LawTracker/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.chesno.LawTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = vmironova.ZakonoproektIOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -637,10 +641,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = LawTracker/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.chesno.LawTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = vmironova.ZakonoproektIOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

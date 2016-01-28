@@ -3,6 +3,8 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -14,14 +16,31 @@
                         <viewControllerLayoutGuide type="bottom" id="xb3-aO-Qok"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchLogo" translatesAutoresizingMaskIntoConstraints="NO" id="jFS-VO-dLd">
+                                <rect key="frame" x="69" y="342" width="276" height="51"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="jFS-VO-dLd" secondAttribute="height" multiplier="16:3" id="FZO-ic-Ld4"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="jFS-VO-dLd" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="Pa4-Rh-dHT"/>
+                            <constraint firstItem="jFS-VO-dLd" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="gJ5-SV-f4U"/>
+                            <constraint firstItem="jFS-VO-dLd" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="400:600" id="kuK-pP-KOE"/>
+                        </constraints>
                     </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="launchLogo" width="1336" height="250"/>
+    </resources>
 </document>

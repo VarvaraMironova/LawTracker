@@ -44,6 +44,13 @@ extension LTClient {
     func downloadLaws(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/<convocation's id>/bill/api/
         
+        if nil == currentConvocation {
+            let contentError = LTClient.errorForMessage("Cannot download bills. " + LTClient.KLTMessages.noCurrentConvocation)
+            completionHandler(success: false, error: contentError)
+            
+            return
+        }
+        
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, kVTParameters.extras]
         let urlString = urlVars.joinWithSeparator("/")
         let url = NSURL(string: urlString)!
@@ -75,6 +82,13 @@ extension LTClient {
     
     func downloadCommittees(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/<convocation's id>/committees/api/
+        
+        if nil == currentConvocation {
+            let contentError = LTClient.errorForMessage("Cannot download committees. " + LTClient.KLTMessages.noCurrentConvocation)
+            completionHandler(success: false, error: contentError)
+            
+            return
+        }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.committees, kVTParameters.extras]
         let urlString = urlVars.joinWithSeparator("/")
@@ -108,6 +122,13 @@ extension LTClient {
     func downloadPersons(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/persons/json/deputies/<convocation's number>
         
+        if nil == currentConvocation {
+            let contentError = LTClient.errorForMessage("Cannot download initiators. " + LTClient.KLTMessages.noCurrentConvocation)
+            completionHandler(success: false, error: contentError)
+            
+            return
+        }
+        
         let urlVars = [kVTParameters.baseURL, kLTAPINames.persons, kVTParameters.format, kLTMethodNames.deputies, currentConvocation!.number]
         let urlString = urlVars.joinWithSeparator("/")
         let url = NSURL(string: urlString)!
@@ -139,6 +160,14 @@ extension LTClient {
     
     func downloadInitiatorTypes(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/initiator-types/api/
+        
+        if nil == currentConvocation {
+            let contentError = LTClient.errorForMessage("Cannot download initiators. " + LTClient.KLTMessages.noCurrentConvocation)
+            completionHandler(success: false, error: contentError)
+            
+            return
+        }
+        
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, kLTMethodNames.initiatorTypes, kVTParameters.extras]
         let urlString = urlVars.joinWithSeparator("/")
         let url = NSURL(string: urlString)!
@@ -172,7 +201,7 @@ extension LTClient {
         //http://www.chesno.org/legislation/<convocation's id>/bill-statuses/<yyyy-MM-dd>/api/
         
         if nil == currentConvocation {
-            let contentError = LTClient.errorForMessage("Не вдалося завантажити зміни. Спробуйте оновити дані")
+            let contentError = LTClient.errorForMessage("Cannot download status changes. " + LTClient.KLTMessages.noCurrentConvocation)
             completionHandler(success: false, error: contentError)
             
             return

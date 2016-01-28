@@ -37,7 +37,8 @@ extension LTClient {
     }
     
     struct KLTMessages {
-        static let parseJSONError = "Cannot parse JSON"
+        static let parseJSONError       = "Cannot parse JSON"
+        static let noCurrentConvocation = "Try reload data"
     }
     
 }

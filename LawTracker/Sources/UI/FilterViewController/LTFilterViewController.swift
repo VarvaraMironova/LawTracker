@@ -78,9 +78,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         //save filteredArray
         var filteredIds = [String]()
         let selectedArray = filteredArray.filter() { $0.selected == true }
-        if selectedArray.count > 0 {
-            delegate.filtersDidSet()
-        }
+        delegate.filtersDidSet()
         for filterModel in selectedArray {
             filteredIds.append(filterModel.entity.id)
         }
@@ -129,14 +127,8 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     //MARK: - UISearchBarDelegate
-    func searchBarShouldReturn(searchBar: UISearchBar) -> Bool {
-        searchBar.resignFirstResponder()
-        
-        return true
-    }
-    
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        filterContentForSearchText(searchText)
+        filterContentForSearchText(searchText, scope: rootView.searchBar.selectedScopeButtonIndex)
     }
     
     func searchBar(searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
@@ -144,23 +136,30 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        rootView.searchBar.resignFirstResponder()
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
     
     //MARK: - Private methods
-    func filterContentForSearchText(searchText: String, scope: Int = 0) {
+    private func filterContentForSearchText(searchText: String, scope: Int = 0) {
         filteredArray = filters.filter({( filter : LTFilterModel) -> Bool in
             let category = filter.selected == true ? 1 : 2
             let categoryMatch = (scope == 0) || (category == scope)
-            
-            if let entity = filter.entity as? LTLawModel {
-                let containsInTitle = entity.title.lowercaseString.containsString(searchText.lowercaseString)
-                let containsInNumber = entity.number.lowercaseString.containsString(searchText.lowercaseString)
-                
-                return categoryMatch || (containsInTitle || containsInNumber)
+            if searchText != "" {
+                let containsInTitle = filter.entity.title.lowercaseString.containsString(searchText.lowercaseString)
+                if let entity = filter.entity as? LTLawModel {
+                    let containsInNumber = entity.number.lowercaseString.containsString(searchText.lowercaseString)
+                    
+                    return categoryMatch && (containsInTitle || containsInNumber)
+                } else {
+                    return categoryMatch && containsInTitle
+                }
+            } else {
+                return categoryMatch
             }
-            
-            return categoryMatch || filter.entity.title.lowercaseString.containsString(searchText.lowercaseString)
         })
         
         rootView.tableView.reloadData()
