@@ -20,20 +20,34 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     var settingsModel = VTSettingModel()
     var filteredArray = [LTFilterModel]()
     
-    var filters : [LTFilterModel]!
+    var filters          : [LTFilterModel]!
     
-    
-    var selectedFilters : [String]! {
-        didSet {
+    var selectedFilters  : [String]? {
+        set {
             switch delegate.filterType {
             case .byCommittees:
-                settingsModel.committees = selectedFilters
+                settingsModel.filters![VTSettingModel.Keys.Committees] = newValue
                 
             case .byInitiators:
-                settingsModel.initiators = selectedFilters
+                settingsModel.filters![VTSettingModel.Keys.Initiators] = newValue
                 
             case .byLaws:
-                settingsModel.laws = selectedFilters
+                settingsModel.filters![VTSettingModel.Keys.Laws] = newValue
+            }
+            
+            delegate.filtersDidApplied()
+        }
+        
+        get {
+            switch delegate.filterType {
+            case .byCommittees:
+                return settingsModel.filters![VTSettingModel.Keys.Committees]
+                
+            case .byInitiators:
+                return settingsModel.filters![VTSettingModel.Keys.Initiators]
+                
+            case .byLaws:
+                return settingsModel.filters![VTSettingModel.Keys.Laws]
             }
         }
     }
@@ -76,9 +90,9 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     //MARK: - Interface Handling
     @IBAction func onOkButton(sender: AnyObject) {
         //save filteredArray
+        let selectedArray = filters.filter() { $0.selected == true }
         var filteredIds = [String]()
-        let selectedArray = filteredArray.filter() { $0.selected == true }
-        delegate.filtersDidSet()
+        
         for filterModel in selectedArray {
             filteredIds.append(filterModel.entity.id)
         }
@@ -91,7 +105,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     @IBAction func onCancelButton(sender: AnyObject) {
         //clear filters in Settings
         selectedFilters = []
-        delegate.filtersDidCancelled()
+        
         dismissViewControllerAnimated(true, completion: nil)
     }
     

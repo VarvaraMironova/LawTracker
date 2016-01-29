@@ -12,7 +12,7 @@ let titleOne = "За комітетами"
 let titleTwo = "За ініціаторами"
 let titleThree = "За законопроектами"
 
-class LTMainContentRootView: LTArrayRootView {
+class LTMainContentRootView: OTMView {
     @IBOutlet var headerView             : UIView!
     @IBOutlet var filterButton           : UIButton!
     @IBOutlet var menuButton             : UIButton!

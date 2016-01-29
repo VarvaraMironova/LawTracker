@@ -90,17 +90,6 @@ class LTChangesModel: NSObject, NSFetchedResultsControllerDelegate {
                 title = changeModel.law.committee.title
             }
             
-            //check if changesByKey array contains sectionModel with title. If true -> add changeModel to sectionModel.changes, else -> append sectionModel to changesByKey
-            var sectionModel = changesByKey.filter(){ $0.title == title }.first
-            
-            if nil == sectionModel {
-                sectionModel = LTSectionModel(title: title)
-                sectionModel!.changes.append(changeModel)
-                changesByKey.append(sectionModel!)
-            } else {
-                sectionModel!.changes.append(changeModel)
-            }
-            
             if filteredIds.count > 0 {
                 //filters applied -> for every id from ids check, if filteredIds contains it. If true -> create LTSectionModel
                 var contains = false
@@ -111,7 +100,26 @@ class LTChangesModel: NSObject, NSFetchedResultsControllerDelegate {
                 }
                 
                 if contains {
+                    //check if changesByKey array contains sectionModel with title. If true -> add changeModel to sectionModel.changes, else -> append sectionModel to changesByKey
+                    var sectionModel = changesByKey.filter(){ $0.title == title }.first
+                    
+                    if nil == sectionModel {
+                        sectionModel = LTSectionModel(title: title)
+                        sectionModel!.changes.append(changeModel)
+                        changesByKey.append(sectionModel!)
+                    } else {
+                        sectionModel!.changes.append(changeModel)
+                    }
+                }
+            } else {
+                var sectionModel = changesByKey.filter(){ $0.title == title }.first
+                
+                if nil == sectionModel {
+                    sectionModel = LTSectionModel(title: title)
+                    sectionModel!.changes.append(changeModel)
                     changesByKey.append(sectionModel!)
+                } else {
+                    sectionModel!.changes.append(changeModel)
                 }
             }
             

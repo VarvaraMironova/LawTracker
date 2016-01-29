@@ -140,6 +140,6 @@ class VTSettingModel: NSObject {
     
     func setup() {
         firstLaunch = true
-//        filters = [Keys.Initiators:[], Keys.Committees:[], Keys.Laws:[]]
+        filters = [Keys.Initiators:[], Keys.Committees:[], Keys.Laws:[]]
     }
 }

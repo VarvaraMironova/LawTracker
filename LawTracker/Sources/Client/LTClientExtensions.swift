@@ -9,7 +9,6 @@
 import Foundation
 
 extension LTClient {
-    
     func downloadConvocations(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/council/<Verkhovna Rada's id>/convocation/api/
         let urlVars = [kVTParameters.baseURL, kLTAPINames.council, kVTParameters.radaID, kLTMethodNames.convocation, kVTParameters.extras]

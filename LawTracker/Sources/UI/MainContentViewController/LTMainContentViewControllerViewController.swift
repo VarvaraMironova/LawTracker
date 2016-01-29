@@ -71,8 +71,6 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        selectedArray = byCommitteesArray
-        
         //add menuViewController as a childViewController to menuContainerView
         addChildViewController(menuViewController, view: rootView.menuContainerView)
         
@@ -96,10 +94,6 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         }
         
         rootView.fillSearchButton(downloadDate)
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
         
         //add refresh control
         let refreshControl = UIRefreshControl()
@@ -117,12 +111,6 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             if self.rootView.menuShown {
                 self.rootView.showMenu()
             }}, completion: {(UIViewControllerTransitionCoordinatorContext) -> Void in })
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        print(VTSettingModel().committees.count)
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -290,7 +278,16 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         byInitiatorsArray = changesModel.changesByKey(.byInitiators)
         byLawsArray = changesModel.changesByKey(.byLaws)
         
-        selectedArray = self.byCommitteesArray
+        switch filterType {
+        case .byCommittees:
+            selectedArray = byCommitteesArray
+            
+        case .byInitiators:
+            selectedArray = byInitiatorsArray
+            
+        case .byLaws:
+            selectedArray = byLawsArray
+        }
         
         view.contentTableView.reloadData()
         
@@ -347,11 +344,8 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         self.displayError(error)
     }
     
-    func filtersDidSet() {
-        rootView.selectedButton.filtersSet = true
+    func filtersDidApplied() {
+        setChangesModel()
     }
-    
-    func filtersDidCancelled() {
-        rootView.selectedButton.filtersSet = false
-    }
+
 }
