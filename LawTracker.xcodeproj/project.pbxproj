@@ -13,6 +13,8 @@
 		C707CF511C5A5538004A8640 /* LTArrayRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF4E1C5A5538004A8640 /* LTArrayRootView.swift */; };
 		C707CF521C5A5538004A8640 /* LTArrayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF4F1C5A5538004A8640 /* LTArrayViewController.swift */; };
 		C707CF531C5A5538004A8640 /* LTTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF501C5A5538004A8640 /* LTTableViewCell.swift */; };
+		C707CF561C5A8527004A8640 /* LTDateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF551C5A8527004A8640 /* LTDateButton.swift */; };
+		C707CF581C5A8AFD004A8640 /* LTDateButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF571C5A8AFD004A8640 /* LTDateButtonView.swift */; };
 		C71A07A11C23382700235D78 /* LTSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A01C23382700235D78 /* LTSwitchButton.swift */; };
 		C71A07A31C23383B00235D78 /* LTSwitchButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C71A07A21C23383B00235D78 /* LTSwitchButtonView.xib */; };
 		C71A07A81C23F9F600235D78 /* OTMLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */; };
@@ -79,6 +81,9 @@
 		C707CF4E1C5A5538004A8640 /* LTArrayRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTArrayRootView.swift; sourceTree = "<group>"; };
 		C707CF4F1C5A5538004A8640 /* LTArrayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTArrayViewController.swift; sourceTree = "<group>"; };
 		C707CF501C5A5538004A8640 /* LTTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTTableViewCell.swift; sourceTree = "<group>"; };
+		C707CF551C5A8527004A8640 /* LTDateButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTDateButton.swift; sourceTree = "<group>"; };
+		C707CF571C5A8AFD004A8640 /* LTDateButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTDateButtonView.swift; sourceTree = "<group>"; };
+		C707CF591C5A8B2E004A8640 /* LTDateButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTDateButtonView.xib; sourceTree = "<group>"; };
 		C71A07A01C23382700235D78 /* LTSwitchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButton.swift; sourceTree = "<group>"; };
 		C71A07A21C23383B00235D78 /* LTSwitchButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSwitchButtonView.xib; sourceTree = "<group>"; };
 		C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMLoadingView.swift; sourceTree = "<group>"; };
@@ -160,9 +165,20 @@
 			path = BaseClasses;
 			sourceTree = "<group>";
 		};
+		C707CF541C5A84F0004A8640 /* LTDateButton */ = {
+			isa = PBXGroup;
+			children = (
+				C707CF551C5A8527004A8640 /* LTDateButton.swift */,
+				C707CF571C5A8AFD004A8640 /* LTDateButtonView.swift */,
+				C707CF591C5A8B2E004A8640 /* LTDateButtonView.xib */,
+			);
+			path = LTDateButton;
+			sourceTree = "<group>";
+		};
 		C71A079E1C23380000235D78 /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
+				C707CF541C5A84F0004A8640 /* LTDateButton */,
 				C71A079F1C23382700235D78 /* LTSwitchButton */,
 			);
 			path = Buttons;
@@ -466,6 +482,7 @@
 				C707CF521C5A5538004A8640 /* LTArrayViewController.swift in Sources */,
 				C77397351C3A7AE70093CBCC /* LTTableViewExtensions.swift in Sources */,
 				C77397391C3A9C2C0093CBCC /* LTInitiatorModel.swift in Sources */,
+				C707CF561C5A8527004A8640 /* LTDateButton.swift in Sources */,
 				C7CFB5B91C2006F200211C6B /* VTSettingModel.swift in Sources */,
 				C71A07A81C23F9F600235D78 /* OTMLoadingView.swift in Sources */,
 				C77397471C3AFE140093CBCC /* LTEntityModel.swift in Sources */,
@@ -491,6 +508,7 @@
 				C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */,
 				C707CF531C5A5538004A8640 /* LTTableViewCell.swift in Sources */,
 				C7CFB5B71C2004F700211C6B /* LTHelpRootView.swift in Sources */,
+				C707CF581C5A8AFD004A8640 /* LTDateButtonView.swift in Sources */,
 				C707CF4C1C581EB3004A8640 /* LTFiltersModel.swift in Sources */,
 				C77397431C3AB9450093CBCC /* LTClient.swift in Sources */,
 				C773973D1C3AAA660093CBCC /* CoreDataStackManager.swift in Sources */,

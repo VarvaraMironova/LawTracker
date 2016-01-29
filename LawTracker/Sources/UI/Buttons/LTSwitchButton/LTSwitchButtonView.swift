@@ -17,7 +17,7 @@ class LTSwitchButtonView: UIView {
         if set {
             switchImageView.image = UIImage(named:"filterSet")
         } else {
-            switchImageView.image = UIImage(named:"filterNotSet")
+            switchImageView.image = nil
         }
     }
     

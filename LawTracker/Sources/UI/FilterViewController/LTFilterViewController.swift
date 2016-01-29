@@ -20,7 +20,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     var settingsModel = VTSettingModel()
     var filteredArray = [LTFilterModel]()
     
-    var filters           : [LTFilterModel]!
+    var filters : [LTFilterModel]!
     
     
     var selectedFilters : [String]! {
@@ -119,11 +119,13 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     
     //MARK: - UITableViewDelegate methods
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let searchBar = rootView.searchBar
+        let array = searchBar.text != "" || searchBar.selectedScopeButtonIndex > 0 ? filteredArray : filters
         let cell = tableView.cellForRowAtIndexPath(indexPath) as! LTFilterTableViewCell
-        let selectedModel = filters[indexPath.row]
+        let selectedModel = array[indexPath.row]
         selectedModel.selected = !cell.filtered
         
-        filterContentForSearchText(rootView.searchBar.text!, scope: rootView.searchBar.selectedScopeButtonIndex)
+        filterContentForSearchText(searchBar.text!, scope: rootView.searchBar.selectedScopeButtonIndex)
     }
     
     //MARK: - UISearchBarDelegate
