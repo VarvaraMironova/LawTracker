@@ -95,7 +95,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             }
         }
         
-        rootView.fillSearchButton(downloadDate.longString())
+        rootView.fillSearchButton(downloadDate)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -194,20 +194,21 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         rootView.hideDatePicker()
         let date = rootView.datePicker.date
         
-        rootView.fillSearchButton(date.longString())
         downloadChanges(date)
     }
     
     func reloadTableView() {
         refreshControl.beginRefreshing()
         
-        let alertViewController: UIAlertController = UIAlertController(title: "Оновити базу законопроектів, ініціаторів та комітетів?", message:"Це може зайняти кілька хвилин", preferredStyle: .Alert)
-        alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: {void in
-            self.loadData()
-        }))
-        alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
-        
-        presentViewController(alertViewController, animated: true, completion: nil)
+        dispatch_async(dispatch_get_main_queue()) {
+            let alertViewController: UIAlertController = UIAlertController(title: "Оновити базу законопроектів, ініціаторів та комітетів?", message:"Це може зайняти кілька хвилин", preferredStyle: .Alert)
+            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: {void in
+                self.loadData()
+            }))
+            alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
+            
+            self.presentViewController(alertViewController, animated: true, completion: nil)
+        }
         
         refreshControl.endRefreshing()
     }
@@ -259,11 +260,12 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     
     //MARK: - Private methods
     private func downloadChanges(date: NSDate) {
+        rootView.fillSearchButton(date)
         rootView.noSubscriptionsLabel.hidden = true
         CoreDataStackManager.sharedInstance().clearEntity("LTChangeModel") {success, error in
             if success {
                 let view = self.rootView
-                view.showLoadingViewWithMessage("Завантаження останніх змін. \nЗалишилося кілька секунд...")
+                view.showLoadingViewInViewWithMessage(view.contentView, message: "Завантажую новини за \(date.longString()). \nЗалишилося кілька секунд...")
                 LTClient.sharedInstance().downloadChanges(date) { (success, error) -> Void in
                     view.hideLoadingView()
                     if success {
@@ -296,7 +298,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     }
     
     private func loadData() {
-        rootView.showLoadingViewWithMessage("Зачекайте, будь ласка. Триває завантаження законопроектів, комітетів та ініціаторів...")
+        rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка. Триває завантаження законопроектів, комітетів та ініціаторів...")
         
         let client = LTClient.sharedInstance()
         

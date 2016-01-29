@@ -13,14 +13,12 @@
 		C707CF511C5A5538004A8640 /* LTArrayRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF4E1C5A5538004A8640 /* LTArrayRootView.swift */; };
 		C707CF521C5A5538004A8640 /* LTArrayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF4F1C5A5538004A8640 /* LTArrayViewController.swift */; };
 		C707CF531C5A5538004A8640 /* LTTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF501C5A5538004A8640 /* LTTableViewCell.swift */; };
-		C707CF561C5A8527004A8640 /* LTDateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF551C5A8527004A8640 /* LTDateButton.swift */; };
-		C707CF581C5A8AFD004A8640 /* LTDateButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF571C5A8AFD004A8640 /* LTDateButtonView.swift */; };
-		C71A07A11C23382700235D78 /* LTSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A01C23382700235D78 /* LTSwitchButton.swift */; };
-		C71A07A31C23383B00235D78 /* LTSwitchButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C71A07A21C23383B00235D78 /* LTSwitchButtonView.xib */; };
+		C707CF5F1C5B663C004A8640 /* LTSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF5C1C5B663C004A8640 /* LTSwitchButton.swift */; };
+		C707CF601C5B663C004A8640 /* LTSwitchButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF5D1C5B663C004A8640 /* LTSwitchButtonView.swift */; };
+		C707CF611C5B663C004A8640 /* LTSwitchButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C707CF5E1C5B663C004A8640 /* LTSwitchButtonView.xib */; };
 		C71A07A81C23F9F600235D78 /* OTMLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */; };
 		C71A07A91C23F9F600235D78 /* OTMLoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C71A07A61C23F9F600235D78 /* OTMLoadingView.xib */; };
 		C71A07AA1C23F9F600235D78 /* OTMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A71C23F9F600235D78 /* OTMView.swift */; };
-		C71A07AC1C2403DF00235D78 /* LTSwitchButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07AB1C2403DF00235D78 /* LTSwitchButtonView.swift */; };
 		C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F81C1194010090C2B8 /* LTChangeModel.swift */; };
 		C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73520D91C1EC62500993AEB /* LTLawModel.swift */; };
 		C76174AE1C4D431900C344FA /* LTInitiatorTypeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76174AD1C4D431900C344FA /* LTInitiatorTypeModel.swift */; };
@@ -81,15 +79,12 @@
 		C707CF4E1C5A5538004A8640 /* LTArrayRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTArrayRootView.swift; sourceTree = "<group>"; };
 		C707CF4F1C5A5538004A8640 /* LTArrayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTArrayViewController.swift; sourceTree = "<group>"; };
 		C707CF501C5A5538004A8640 /* LTTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTTableViewCell.swift; sourceTree = "<group>"; };
-		C707CF551C5A8527004A8640 /* LTDateButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTDateButton.swift; sourceTree = "<group>"; };
-		C707CF571C5A8AFD004A8640 /* LTDateButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTDateButtonView.swift; sourceTree = "<group>"; };
-		C707CF591C5A8B2E004A8640 /* LTDateButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTDateButtonView.xib; sourceTree = "<group>"; };
-		C71A07A01C23382700235D78 /* LTSwitchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButton.swift; sourceTree = "<group>"; };
-		C71A07A21C23383B00235D78 /* LTSwitchButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSwitchButtonView.xib; sourceTree = "<group>"; };
+		C707CF5C1C5B663C004A8640 /* LTSwitchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButton.swift; sourceTree = "<group>"; };
+		C707CF5D1C5B663C004A8640 /* LTSwitchButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButtonView.swift; sourceTree = "<group>"; };
+		C707CF5E1C5B663C004A8640 /* LTSwitchButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSwitchButtonView.xib; sourceTree = "<group>"; };
 		C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMLoadingView.swift; sourceTree = "<group>"; };
 		C71A07A61C23F9F600235D78 /* OTMLoadingView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OTMLoadingView.xib; sourceTree = "<group>"; };
 		C71A07A71C23F9F600235D78 /* OTMView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMView.swift; sourceTree = "<group>"; };
-		C71A07AB1C2403DF00235D78 /* LTSwitchButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButtonView.swift; sourceTree = "<group>"; };
 		C72800F81C1194010090C2B8 /* LTChangeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChangeModel.swift; sourceTree = "<group>"; };
 		C73520D91C1EC62500993AEB /* LTLawModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTLawModel.swift; sourceTree = "<group>"; };
 		C76174AD1C4D431900C344FA /* LTInitiatorTypeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTInitiatorTypeModel.swift; sourceTree = "<group>"; };
@@ -165,33 +160,22 @@
 			path = BaseClasses;
 			sourceTree = "<group>";
 		};
-		C707CF541C5A84F0004A8640 /* LTDateButton */ = {
+		C707CF5B1C5B663C004A8640 /* LTSwitchButton */ = {
 			isa = PBXGroup;
 			children = (
-				C707CF551C5A8527004A8640 /* LTDateButton.swift */,
-				C707CF571C5A8AFD004A8640 /* LTDateButtonView.swift */,
-				C707CF591C5A8B2E004A8640 /* LTDateButtonView.xib */,
+				C707CF5C1C5B663C004A8640 /* LTSwitchButton.swift */,
+				C707CF5D1C5B663C004A8640 /* LTSwitchButtonView.swift */,
+				C707CF5E1C5B663C004A8640 /* LTSwitchButtonView.xib */,
 			);
-			path = LTDateButton;
+			path = LTSwitchButton;
 			sourceTree = "<group>";
 		};
 		C71A079E1C23380000235D78 /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
-				C707CF541C5A84F0004A8640 /* LTDateButton */,
-				C71A079F1C23382700235D78 /* LTSwitchButton */,
+				C707CF5B1C5B663C004A8640 /* LTSwitchButton */,
 			);
 			path = Buttons;
-			sourceTree = "<group>";
-		};
-		C71A079F1C23382700235D78 /* LTSwitchButton */ = {
-			isa = PBXGroup;
-			children = (
-				C71A07A01C23382700235D78 /* LTSwitchButton.swift */,
-				C71A07A21C23383B00235D78 /* LTSwitchButtonView.xib */,
-				C71A07AB1C2403DF00235D78 /* LTSwitchButtonView.swift */,
-			);
-			path = LTSwitchButton;
 			sourceTree = "<group>";
 		};
 		C71A07A41C23F9F600235D78 /* OTMLoadingView */ = {
@@ -447,8 +431,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C707CF611C5B663C004A8640 /* LTSwitchButtonView.xib in Resources */,
 				C7A29E5B1C0C9EAD001B0EF5 /* LaunchScreen.storyboard in Resources */,
-				C71A07A31C23383B00235D78 /* LTSwitchButtonView.xib in Resources */,
 				C7CFB5BD1C2008D500211C6B /* LTCellHeaderView.xib in Resources */,
 				C7A29E581C0C9EAD001B0EF5 /* Assets.xcassets in Resources */,
 				C71A07A91C23F9F600235D78 /* OTMLoadingView.xib in Resources */,
@@ -482,7 +466,7 @@
 				C707CF521C5A5538004A8640 /* LTArrayViewController.swift in Sources */,
 				C77397351C3A7AE70093CBCC /* LTTableViewExtensions.swift in Sources */,
 				C77397391C3A9C2C0093CBCC /* LTInitiatorModel.swift in Sources */,
-				C707CF561C5A8527004A8640 /* LTDateButton.swift in Sources */,
+				C707CF601C5B663C004A8640 /* LTSwitchButtonView.swift in Sources */,
 				C7CFB5B91C2006F200211C6B /* VTSettingModel.swift in Sources */,
 				C71A07A81C23F9F600235D78 /* OTMLoadingView.swift in Sources */,
 				C77397471C3AFE140093CBCC /* LTEntityModel.swift in Sources */,
@@ -502,18 +486,16 @@
 				C7CFB5B01C1FFFDB00211C6B /* LTMainContentViewControllerViewController.swift in Sources */,
 				C71A07AA1C23F9F600235D78 /* OTMView.swift in Sources */,
 				C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */,
-				C71A07AC1C2403DF00235D78 /* LTSwitchButtonView.swift in Sources */,
 				C77397321C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift in Sources */,
 				C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */,
 				C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */,
 				C707CF531C5A5538004A8640 /* LTTableViewCell.swift in Sources */,
 				C7CFB5B71C2004F700211C6B /* LTHelpRootView.swift in Sources */,
-				C707CF581C5A8AFD004A8640 /* LTDateButtonView.swift in Sources */,
 				C707CF4C1C581EB3004A8640 /* LTFiltersModel.swift in Sources */,
+				C707CF5F1C5B663C004A8640 /* LTSwitchButton.swift in Sources */,
 				C77397431C3AB9450093CBCC /* LTClient.swift in Sources */,
 				C773973D1C3AAA660093CBCC /* CoreDataStackManager.swift in Sources */,
 				C7A29E4F1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld in Sources */,
-				C71A07A11C23382700235D78 /* LTSwitchButton.swift in Sources */,
 				C707CF481C5818ED004A8640 /* LTFilterModel.swift in Sources */,
 				C77397331C3A7AE70093CBCC /* LTFontSizeExtensions.swift in Sources */,
 				C7E792B11C18672C0031C55A /* LTFilterTableViewCell.swift in Sources */,

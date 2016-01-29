@@ -9,9 +9,9 @@
 import UIKit
 
 class LTSwitchButtonView: UIView {
-    @IBOutlet var headerLabel: UILabel!
-    @IBOutlet var switchImageView: UIImageView!
-    @IBOutlet var backgroundView: UIView!
+    @IBOutlet var headerLabel       : UILabel!
+    @IBOutlet var switchImageView   : UIImageView!
+    @IBOutlet var backgroundView    : UIView!
     
     func filtersSet(set: Bool) {
         if set {

@@ -64,6 +64,18 @@
                                                             <action selector="onMenuButton:" destination="QkK-Om-tMq" eventType="touchUpInside" id="PKu-v2-yVr"/>
                                                         </connections>
                                                     </button>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="leftArrow" translatesAutoresizingMaskIntoConstraints="NO" id="hJd-dh-XJ6">
+                                                        <rect key="frame" x="50" y="8" width="15" height="15"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" secondItem="hJd-dh-XJ6" secondAttribute="height" multiplier="1:1" id="NRg-Ja-uYT"/>
+                                                        </constraints>
+                                                    </imageView>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rightArrow" translatesAutoresizingMaskIntoConstraints="NO" id="fnB-Vj-DbR">
+                                                        <rect key="frame" x="315" y="7" width="15" height="15"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" secondItem="fnB-Vj-DbR" secondAttribute="height" multiplier="1:1" id="Tog-bZ-xCF"/>
+                                                        </constraints>
+                                                    </imageView>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7p1-bu-pnU">
                                                         <rect key="frame" x="50" y="0.0" width="280" height="30"/>
                                                         <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="19"/>
@@ -74,14 +86,20 @@
                                                 </subviews>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 <constraints>
+                                                    <constraint firstItem="hJd-dh-XJ6" firstAttribute="height" secondItem="kMU-By-IFF" secondAttribute="height" multiplier="1:2" id="3z5-Ak-MwV"/>
                                                     <constraint firstAttribute="bottom" secondItem="u0T-5y-GI8" secondAttribute="bottom" id="4lY-Ie-PkI"/>
                                                     <constraint firstItem="BLp-Ya-3ym" firstAttribute="height" secondItem="kMU-By-IFF" secondAttribute="height" multiplier="20:30" id="7fu-gc-1gN"/>
                                                     <constraint firstAttribute="bottom" secondItem="7p1-bu-pnU" secondAttribute="bottom" id="Azn-fm-qRZ"/>
                                                     <constraint firstItem="BLp-Ya-3ym" firstAttribute="leading" secondItem="kMU-By-IFF" secondAttribute="leading" id="S6c-RY-0cF"/>
+                                                    <constraint firstItem="fnB-Vj-DbR" firstAttribute="height" secondItem="hJd-dh-XJ6" secondAttribute="height" id="S8v-Xk-Yqf"/>
                                                     <constraint firstItem="7p1-bu-pnU" firstAttribute="top" secondItem="kMU-By-IFF" secondAttribute="top" id="Tpt-Mb-hWh"/>
                                                     <constraint firstItem="7p1-bu-pnU" firstAttribute="width" secondItem="kMU-By-IFF" secondAttribute="width" multiplier="280:380" id="UF0-5f-TqF"/>
                                                     <constraint firstItem="u0T-5y-GI8" firstAttribute="top" secondItem="kMU-By-IFF" secondAttribute="top" id="Wj0-Qq-BD8"/>
+                                                    <constraint firstItem="fnB-Vj-DbR" firstAttribute="trailing" secondItem="7p1-bu-pnU" secondAttribute="trailing" id="d9V-35-Dmj"/>
+                                                    <constraint firstItem="hJd-dh-XJ6" firstAttribute="centerY" secondItem="kMU-By-IFF" secondAttribute="centerY" id="dQ4-KZ-1OI"/>
+                                                    <constraint firstItem="hJd-dh-XJ6" firstAttribute="leading" secondItem="7p1-bu-pnU" secondAttribute="leading" id="e4P-iO-Cx3"/>
                                                     <constraint firstAttribute="trailing" secondItem="u0T-5y-GI8" secondAttribute="trailing" id="mai-xE-Q9w"/>
+                                                    <constraint firstItem="fnB-Vj-DbR" firstAttribute="centerY" secondItem="kMU-By-IFF" secondAttribute="centerY" id="o1x-4T-xIi"/>
                                                     <constraint firstItem="7p1-bu-pnU" firstAttribute="centerX" secondItem="kMU-By-IFF" secondAttribute="centerX" id="w0R-90-MbZ"/>
                                                     <constraint firstItem="BLp-Ya-3ym" firstAttribute="centerY" secondItem="kMU-By-IFF" secondAttribute="centerY" id="zLS-Lc-tcD"/>
                                                 </constraints>
@@ -460,7 +478,7 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bqq-qN-0Z3">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="70"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ubj-dj-4ze">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="bottom" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ubj-dj-4ze">
                                                 <rect key="frame" x="207" y="20" width="190" height="50"/>
                                                 <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="18"/>
                                                 <state key="normal" title="Зберегти">
@@ -470,7 +488,7 @@
                                                     <action selector="onOkButton:" destination="WXy-px-pXQ" eventType="touchUpInside" id="v0R-E4-Kh6"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mki-0R-KbR">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="bottom" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mki-0R-KbR">
                                                 <rect key="frame" x="17" y="20" width="190" height="50"/>
                                                 <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="18"/>
                                                 <state key="normal" title="Скасувати">
@@ -761,7 +779,9 @@
         <image name="checkboxOff" width="26" height="26"/>
         <image name="closeViolet" width="34" height="34"/>
         <image name="filter" width="221" height="221"/>
+        <image name="leftArrow" width="70" height="76"/>
         <image name="menu" width="40" height="40"/>
+        <image name="rightArrow" width="70" height="77"/>
         <image name="screenshot1" width="415" height="736"/>
         <image name="shadow" width="750" height="30"/>
     </resources>

@@ -49,8 +49,10 @@ class LTMainContentRootView: LTArrayRootView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        searchButton.titleLabel!.frame = searchButton.frame
         selectedButton = byCommitteesButton
+        if let label = searchButton.titleLabel {
+            label.font = label.font.screenProportionalFont()
+        }
     }
     
     func showHelpView() {
@@ -99,8 +101,8 @@ class LTMainContentRootView: LTArrayRootView {
         datePickerShown = false
     }
     
-    func fillSearchButton(date:String) {
-        searchButton.setTitle(date, forState: .Normal)
+    func fillSearchButton(date: NSDate) {
+        searchButton.setTitle(date.longString(), forState: .Normal)
     }
     
     private func animateMenu(width: CGFloat, show: Bool) {

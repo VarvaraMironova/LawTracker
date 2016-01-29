@@ -17,18 +17,17 @@ class LTFilterRootView: UIView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        //setup searchBar
         searchBar.returnKeyType = .Done
         searchBar.scopeButtonTitles = ["Всі", "Обрані", "Необрані"]
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
         
-        var okButtonFont = okButton.titleLabel!.font
-        okButtonFont = okButtonFont.screenProportionalFont()
+        if let label = okButton.titleLabel {
+            label.font = label.font.screenProportionalFont()
+        }
         
-        var cancelButtonFont = cancelButton.titleLabel!.font
-        cancelButtonFont = cancelButtonFont.screenProportionalFont()
+        if let label = cancelButton.titleLabel {
+            label.font = label.font.screenProportionalFont()
+        }
     }
     
     func fillSearchBar(text: String?) {

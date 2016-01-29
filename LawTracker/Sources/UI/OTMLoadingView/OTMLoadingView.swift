@@ -38,9 +38,31 @@ class OTMLoadingView: UIView {
         rootView.addSubview(self)
         
         self.rootView = rootView
-    
-        spinner.startAnimating();
+        
+        spinner.startAnimating()
+        animate(1.0)
     }
+    
+    private func animate(alpha: CGFloat) {
+        UIView.animateWithDuration(0.4, animations: {
+            self.alpha = alpha
+            }, completion: {(finished: Bool) -> Void in
+                
+        })
+    }
+    
+//    - (void)animateWithDuration:(CGFloat)duration
+//    withAlpha:(CGFloat)alpha
+//    withCompletionHandler:(void (^)(BOOL finished))completionBlock
+//    {
+//    [UIView animateWithDuration:duration
+//    delay:VMDilay
+//    options:UIViewAnimationOptionBeginFromCurrentState
+//    animations:^{
+//    self.alpha = alpha;
+//    }
+//    completion:completionBlock];
+//    }
     
     private func showWithMessage(rootView: UIView, message: String) {
         show(rootView)
@@ -55,7 +77,7 @@ class OTMLoadingView: UIView {
     
     func hide() {
         if isDescendantOfView(rootView) {
-            loadingLabel.hidden = true
+            animate(0.0)
             spinner.stopAnimating()
             removeFromSuperview()
         }
