@@ -1,6 +1,6 @@
 Zakonoproekt
 =======
-Dependencies: [LawTracker]().
+Dependencies: [LawTracker](https://github.com/VarvaraMironova/LawTracker).
 
 “Zakonoproekt” (“Bill”) application is designed for Ukrainian civic movement CHESNO ("honest") and let You keep an eye on the passage of bills You consider important. It is useful if You interested in lobbying new laws, or if You do not want lawmakers to catch you by surprise and harm your interests. You can also use it if You are journalist or just interested either in specific area of law or specific legislator.
 
