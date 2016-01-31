@@ -10,11 +10,25 @@ import UIKit
 
 class LTMainContentViewControllerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var refreshControl    : UIRefreshControl!
-    var changesModel      : LTChangesModel!
+    var changesModel      : LTArrayModel!
     
-    var byLawsArray       : [LTSectionModel] = []
-    var byCommitteesArray : [LTSectionModel] = []
-    var byInitiatorsArray : [LTSectionModel] = []
+    var byLawsArray       : LTChangesModel! {
+        didSet {
+            rootView.byLawsButton.filtersSet = byLawsArray.filtersIsApplied
+        }
+    }
+    
+    var byCommitteesArray : LTChangesModel! {
+        didSet {
+            rootView.byCommitteesButton.filtersSet = byCommitteesArray.filtersIsApplied
+        }
+    }
+    
+    var byInitiatorsArray : LTChangesModel! {
+        didSet {
+            rootView.byInitialisersButton.filtersSet = byInitiatorsArray.filtersIsApplied
+        }
+    }
     
     var cellClass: AnyClass {
         get {
@@ -22,7 +36,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         }
     }
     
-    var filterType: LTFilterType {
+    var filterType: LTType {
         get {
             switch rootView.selectedButton.tag {
             case 1:
@@ -55,7 +69,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         }
     }
     
-    var selectedArray: [LTSectionModel]!
+    var selectedArray: LTChangesModel!
     
     var rootView: LTMainContentRootView! {
         get {
@@ -80,6 +94,10 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         //check, if it is a first launch -> show helpViewController, create dictionary filters in SettingsModel
         let settingsModel = VTSettingModel()
         let downloadDate = NSDate().previousDay()
+        
+        if settingsModel.firstLaunch != true {
+            rootView.showHelpView()
+        }
         
         if true != settingsModel.firstLaunch {
             //download data from server
@@ -120,8 +138,10 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     //MARK: - Interface Handling
     @IBAction func onDismissFilterViewButton(sender: UIButton) {
         dispatch_async(dispatch_get_main_queue()) {
-            self.rootView.hideMenu() {finished in}
-            self.rootView.hideHelpView()
+            let view = self.rootView
+            view.hideMenu() {finished in}
+            view.hideHelpView()
+            view.hideAboutView()
         }
     }
     
@@ -135,9 +155,25 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         dispatch_async(dispatch_get_main_queue()) {
             let filterController = self.storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
             filterController.delegate = self
-            let filtersModel = LTFiltersModel()
-            filtersModel.fetchEntities(self.filterType)
-            filterController.filters = filtersModel.filters(self.filterType)
+            
+            var entityName = String()
+            switch self.filterType {
+            case .byCommittees:
+                entityName = "LTCommitteeModel"
+                break
+                
+            case .byInitiators:
+                entityName = "LTInitiatorModel"
+                break
+                
+            case .byLaws:
+                entityName = "LTLawModel"
+                break
+                
+            }
+            
+            let filters = LTArrayModel(entityName: entityName)
+            filterController.filters = filters.filters(self.filterType)
             
             self.presentViewController(filterController, animated: true, completion: nil)
         }
@@ -203,12 +239,12 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     
     //MARK: - UITableViewDataSource methods
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return selectedArray[section].changes.count
+        return selectedArray.changes[section].changes.count
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         if let model = selectedArray {
-            let count = model.count
+            let count = model.changes.count
             
             return count
         }
@@ -218,30 +254,42 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.reusableCell(cellClass, indexPath: indexPath) as! LTMainContentTableViewCell
-        let model = selectedArray[indexPath.section]
+        let model = selectedArray.changes[indexPath.section]
         cell.fillWithModel(model.changes[indexPath.row])
         
         return cell
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return selectedArray[section].title
+        return selectedArray.changes[section].title
     }
     
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = LTCellHeaderView.headerView() as LTCellHeaderView
-        headerView.fillWithString(selectedArray[section].title)
+        headerView.fillWithString(selectedArray.changes[section].title)
         
         return headerView
     }
     
+    //MARK: - UITableViewDelegate methods
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let sectionModel = selectedArray.changes[indexPath.section]
+        let changeModel = sectionModel.changes[indexPath.row]
+        if let url = NSURL(string: changeModel.law.url) as NSURL! {
+            let app = UIApplication.sharedApplication()
+            if app.canOpenURL(url) {
+                app.openURL(url)
+            }
+        }
+    }
+    
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let changes = selectedArray[indexPath.section].changes
+        let changes = selectedArray.changes[indexPath.section].changes
         let changeModel = changes[indexPath.row]
         let width = CGRectGetWidth(tableView.frame) - 20.0
         let descriptionFont = UIFont(name: "Arial-BoldMT", size: 14.0)
         let lawNameHeight = changeModel.law.title.getHeight(width, font: descriptionFont!)
-        let descriptionHeight = changeModel.text.getHeight(width, font: descriptionFont!)
+        let descriptionHeight = changeModel.title.getHeight(width, font: descriptionFont!)
         
         return lawNameHeight + descriptionHeight + 20.0
     }
@@ -272,7 +320,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     
     private func setChangesModel() {
         let view = rootView
-        changesModel = LTChangesModel()
+        changesModel = LTArrayModel(entityName: "LTChangeModel")
         
         byCommitteesArray = changesModel.changesByKey(.byCommittees)
         byInitiatorsArray = changesModel.changesByKey(.byInitiators)

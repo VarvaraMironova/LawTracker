@@ -9,10 +9,11 @@
 /* Begin PBXBuildFile section */
 		C707CF481C5818ED004A8640 /* LTFilterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF471C5818ED004A8640 /* LTFilterModel.swift */; };
 		C707CF4A1C581D58004A8640 /* LTNSObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF491C581D58004A8640 /* LTNSObject.swift */; };
-		C707CF4C1C581EB3004A8640 /* LTFiltersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF4B1C581EB3004A8640 /* LTFiltersModel.swift */; };
+		C707CF4C1C581EB3004A8640 /* LTArrayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF4B1C581EB3004A8640 /* LTArrayModel.swift */; };
 		C707CF5F1C5B663C004A8640 /* LTSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF5C1C5B663C004A8640 /* LTSwitchButton.swift */; };
 		C707CF601C5B663C004A8640 /* LTSwitchButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF5D1C5B663C004A8640 /* LTSwitchButtonView.swift */; };
 		C707CF611C5B663C004A8640 /* LTSwitchButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C707CF5E1C5B663C004A8640 /* LTSwitchButtonView.xib */; };
+		C707CF651C5D0079004A8640 /* LTHelpViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF641C5D0079004A8640 /* LTHelpViewCell.swift */; };
 		C71A07A81C23F9F600235D78 /* OTMLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */; };
 		C71A07A91C23F9F600235D78 /* OTMLoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C71A07A61C23F9F600235D78 /* OTMLoadingView.xib */; };
 		C71A07AA1C23F9F600235D78 /* OTMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A71C23F9F600235D78 /* OTMView.swift */; };
@@ -72,10 +73,11 @@
 /* Begin PBXFileReference section */
 		C707CF471C5818ED004A8640 /* LTFilterModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterModel.swift; sourceTree = "<group>"; };
 		C707CF491C581D58004A8640 /* LTNSObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNSObject.swift; sourceTree = "<group>"; };
-		C707CF4B1C581EB3004A8640 /* LTFiltersModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFiltersModel.swift; sourceTree = "<group>"; };
+		C707CF4B1C581EB3004A8640 /* LTArrayModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTArrayModel.swift; sourceTree = "<group>"; };
 		C707CF5C1C5B663C004A8640 /* LTSwitchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButton.swift; sourceTree = "<group>"; };
 		C707CF5D1C5B663C004A8640 /* LTSwitchButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButtonView.swift; sourceTree = "<group>"; };
 		C707CF5E1C5B663C004A8640 /* LTSwitchButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSwitchButtonView.xib; sourceTree = "<group>"; };
+		C707CF641C5D0079004A8640 /* LTHelpViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpViewCell.swift; sourceTree = "<group>"; };
 		C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMLoadingView.swift; sourceTree = "<group>"; };
 		C71A07A61C23F9F600235D78 /* OTMLoadingView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OTMLoadingView.xib; sourceTree = "<group>"; };
 		C71A07A71C23F9F600235D78 /* OTMView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMView.swift; sourceTree = "<group>"; };
@@ -276,7 +278,7 @@
 				C77397481C3D7DFA0093CBCC /* LTChangesModel.swift */,
 				C76174B11C5394B400C344FA /* LTConvocationModel.swift */,
 				C707CF471C5818ED004A8640 /* LTFilterModel.swift */,
-				C707CF4B1C581EB3004A8640 /* LTFiltersModel.swift */,
+				C707CF4B1C581EB3004A8640 /* LTArrayModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -306,6 +308,7 @@
 			children = (
 				C7CFB5B41C2004D100211C6B /* LTHelpViewController.swift */,
 				C7CFB5B61C2004F700211C6B /* LTHelpRootView.swift */,
+				C707CF641C5D0079004A8640 /* LTHelpViewCell.swift */,
 			);
 			path = HelpViewController;
 			sourceTree = "<group>";
@@ -456,6 +459,7 @@
 				C773973F1C3AB1180093CBCC /* LTNSDateExtensions.swift in Sources */,
 				C7CFB5B51C2004D100211C6B /* LTHelpViewController.swift in Sources */,
 				C707CF4A1C581D58004A8640 /* LTNSObject.swift in Sources */,
+				C707CF651C5D0079004A8640 /* LTHelpViewCell.swift in Sources */,
 				C7E792B01C18672C0031C55A /* LTFilterRootView.swift in Sources */,
 				C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */,
 				C76CE92F1C1B7461006262E8 /* LTMenuRootView.swift in Sources */,
@@ -471,7 +475,7 @@
 				C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */,
 				C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */,
 				C7CFB5B71C2004F700211C6B /* LTHelpRootView.swift in Sources */,
-				C707CF4C1C581EB3004A8640 /* LTFiltersModel.swift in Sources */,
+				C707CF4C1C581EB3004A8640 /* LTArrayModel.swift in Sources */,
 				C707CF5F1C5B663C004A8640 /* LTSwitchButton.swift in Sources */,
 				C77397431C3AB9450093CBCC /* LTClient.swift in Sources */,
 				C773973D1C3AAA660093CBCC /* CoreDataStackManager.swift in Sources */,

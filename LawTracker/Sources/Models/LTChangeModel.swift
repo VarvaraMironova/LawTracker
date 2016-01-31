@@ -9,14 +9,13 @@
 import Foundation
 import CoreData
 
-class LTChangeModel: NSManagedObject  {
+class LTChangeModel: LTEntityModel  {
     struct Keys {
-        static let text         = "status"
+        static let status       = "status"
         static let law          = "bill"
     }
     
     @NSManaged var date         : NSDate
-    @NSManaged var text         : String
     @NSManaged var law          : LTLawModel
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -30,8 +29,8 @@ class LTChangeModel: NSManagedObject  {
         
         date = NSDate()
         
-        if let text = dictionary[Keys.text] as? String {
-            self.text = text
+        if let title = dictionary[Keys.status] as? String {
+            self.title = title
         }
         
         if let lawNumber = dictionary[Keys.law] as? String {
@@ -48,5 +47,7 @@ class LTChangeModel: NSManagedObject  {
                 }
             }
         }
+        
+        self.id = date.string("yyyy-MM-dddd")+law.id
     }
 }

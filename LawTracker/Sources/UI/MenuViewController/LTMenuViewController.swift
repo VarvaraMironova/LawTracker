@@ -31,15 +31,15 @@ class LTMenuViewController: UIViewController, UITableViewDataSource, UITableView
         var string = ""
         switch indexPath.row {
         case 0:
-            string = "Про програму"
+            string = "Manual"
             break
             
         case 1:
-            string = "До веб-сайту Чесно"
+            string = "To web-site Chesno"
             break
             
         case 2:
-            string = "Про Чесно"
+            string = "About"
             break
             
         default:
@@ -54,9 +54,10 @@ class LTMenuViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         self.delegate.rootView.hideMenu(){finished in
             if finished {
+                let view = self.delegate.rootView
                 switch indexPath.row {
                 case 0:
-                    self.delegate.rootView.showHelpView()
+                    view.showHelpView()
                     
                     break
                     
@@ -70,6 +71,7 @@ class LTMenuViewController: UIViewController, UITableViewDataSource, UITableView
                     break
                     
                 case 2:
+                    view.showAboutView()
                     break
                     
                 default:

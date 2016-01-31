@@ -13,27 +13,28 @@ let titleTwo = "За ініціаторами"
 let titleThree = "За законопроектами"
 
 class LTMainContentRootView: OTMView {
+    @IBOutlet var contentTableView       : UITableView!
+    @IBOutlet var shadowImageView        : UIImageView!
+    @IBOutlet var noSubscriptionsLabel   : UILabel!
     @IBOutlet var headerView             : UIView!
+    @IBOutlet var menuContainerView      : UIView!
+    @IBOutlet var helpViewContainer      : UIView!
+    @IBOutlet var pickerBackgroundView   : UIView!
+    @IBOutlet var contentView            : UIView!
     @IBOutlet var filterButton           : UIButton!
     @IBOutlet var menuButton             : UIButton!
+    @IBOutlet var dismissFilterViewButton: UIButton!
+    @IBOutlet var searchButton           : UIButton!
+    @IBOutlet var hidePickerButton       : UIButton!
+    @IBOutlet var donePickerButton       : UIButton!
     @IBOutlet var byCommitteesButton     : LTSwitchButton!
     @IBOutlet var byInitialisersButton   : LTSwitchButton!
     @IBOutlet var byLawsButton           : LTSwitchButton!
-    @IBOutlet var shadowImageView        : UIImageView!
-    @IBOutlet var contentView            : UIView!
-    @IBOutlet var noSubscriptionsLabel   : UILabel!
-    @IBOutlet var contentTableView       : UITableView!
-    @IBOutlet var menuContainerView      : UIView!
-    @IBOutlet var dismissFilterViewButton: UIButton!
-    @IBOutlet var helpViewContainer      : UIView!
-    @IBOutlet var searchButton           : UIButton!
     @IBOutlet var datePicker             : UIDatePicker!
-    @IBOutlet var pickerBackgroundView   : UIView!
-    @IBOutlet var hidePickerButton       : UIButton!
-    @IBOutlet var donePickerButton       : UIButton!
+    @IBOutlet var aboutView              : UIView!
+    @IBOutlet var dismissAboutViewButton : UIButton!
     
     var menuShown       : Bool = false
-    
     var datePickerShown : Bool = false
     
     var selectedButton: LTSwitchButton! {
@@ -101,6 +102,20 @@ class LTMainContentRootView: OTMView {
         datePickerShown = false
     }
     
+    func showAboutView() {
+        UIView.animateWithDuration(0.4, animations: {
+            self.dismissFilterViewButton.alpha = 0.8
+            self.aboutView.alpha = 1.0
+            }, completion: nil)
+    }
+    
+    func hideAboutView() {
+        UIView.animateWithDuration(0.4, animations: {
+            self.dismissFilterViewButton.alpha = 0.0
+            self.aboutView.alpha = 0.0
+        }, completion: nil)
+    }
+
     func fillSearchButton(date: NSDate) {
         searchButton.setTitle(date.longString(), forState: .Normal)
     }

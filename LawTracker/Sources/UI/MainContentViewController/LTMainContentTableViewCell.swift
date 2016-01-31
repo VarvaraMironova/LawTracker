@@ -14,8 +14,12 @@ class LTMainContentTableViewCell: UITableViewCell {
     
     var separatorView: UIView?
     
+    override func setSelected(selected: Bool, animated: Bool) {
+        
+    }
+    
     func fillWithModel(model: LTChangeModel) {
-        newsLabel.text = model.text
+        newsLabel.text = model.title
         lawNameLabel.text = model.law.title
         
         newsLabel.fit()

@@ -15,6 +15,8 @@ class LTSwitchButton: UIButton {
             selected = on
             if let switchButtonView = switchButtonView as LTSwitchButtonView! {
                 switchButtonView.setOn(on)
+                let imageName = selected ? "filterSet" : "filterNotSet"
+                switchButtonView.switchImageView.image = UIImage(named: imageName)
             }
         }
     }

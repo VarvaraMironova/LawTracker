@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum LTFilterType : Int {
+enum LTType : Int {
     case byCommittees = 0, byInitiators = 1, byLaws = 2
     
     static let filterTypes = [byCommittees, byInitiators, byLaws]
