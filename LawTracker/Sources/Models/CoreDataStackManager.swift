@@ -172,10 +172,25 @@ class CoreDataStackManager {
         }
     }
     
-    func storeChanges(changes: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+    func storeChanges(date: NSDate, changes: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
         dispatch_async(dispatch_get_main_queue()) {
+            
+            let dateString = date.string("yyyy-MM-dd")
             for changeArray in changes {
-                _ = LTChangeModel(dictionary: changeArray as! [String : AnyObject], context: self.managedObjectContext)
+                var changeId = dateString
+                if let billID = changeArray["bill"] as? String {
+                    changeId += billID
+                } else if let billID = changeArray["bill"] as? Int {
+                    changeId = "\(billID)"
+                }
+                
+                if nil == LTChangeModel.modelWithID(changeId, entityName: "LTChangeModel") {
+                    if var mutableChangeArray = changeArray as? [String : AnyObject] {
+                        mutableChangeArray["date"] = date
+                        mutableChangeArray["id"] = changeId
+                        _ = LTChangeModel(dictionary: mutableChangeArray, context: self.managedObjectContext)
+                    }
+                }
             }
             
             self.saveContext()

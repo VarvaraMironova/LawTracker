@@ -31,8 +31,6 @@ class LTMainContentRootView: OTMView {
     @IBOutlet var byInitialisersButton   : LTSwitchButton!
     @IBOutlet var byLawsButton           : LTSwitchButton!
     @IBOutlet var datePicker             : UIDatePicker!
-    @IBOutlet var aboutView              : UIView!
-    @IBOutlet var dismissAboutViewButton : UIButton!
     
     var menuShown       : Bool = false
     var datePickerShown : Bool = false
@@ -50,6 +48,10 @@ class LTMainContentRootView: OTMView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        datePicker.date = NSDate().previousDay()
+        datePicker.maximumDate = NSDate()
+        fillSearchButton(NSDate())
+
         selectedButton = byCommitteesButton
         if let label = searchButton.titleLabel {
             label.font = label.font.screenProportionalFont()
@@ -102,20 +104,6 @@ class LTMainContentRootView: OTMView {
         datePickerShown = false
     }
     
-    func showAboutView() {
-        UIView.animateWithDuration(0.4, animations: {
-            self.dismissFilterViewButton.alpha = 0.8
-            self.aboutView.alpha = 1.0
-            }, completion: nil)
-    }
-    
-    func hideAboutView() {
-        UIView.animateWithDuration(0.4, animations: {
-            self.dismissFilterViewButton.alpha = 0.0
-            self.aboutView.alpha = 0.0
-        }, completion: nil)
-    }
-
     func fillSearchButton(date: NSDate) {
         searchButton.setTitle(date.longString(), forState: .Normal)
     }

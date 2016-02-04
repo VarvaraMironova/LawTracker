@@ -9,10 +9,17 @@
 import UIKit
 
 class LTFilterRootView: UIView {
-    @IBOutlet var okButton               : UIButton!
-    @IBOutlet var cancelButton           : UIButton!
-    @IBOutlet var searchBar              : UISearchBar!
-    @IBOutlet var tableView              : UITableView!
+    @IBOutlet var okButton        : UIButton!
+    @IBOutlet var cancelButton    : UIButton!
+    @IBOutlet var searchBar       : UISearchBar!
+    @IBOutlet var tableView       : UITableView!
+    @IBOutlet var selectAllButton : LTSelectAllButton!
+    
+    var searchBarActive : Bool {
+        get {
+            return searchBar.text != "" || searchBar.selectedScopeButtonIndex > 0
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()

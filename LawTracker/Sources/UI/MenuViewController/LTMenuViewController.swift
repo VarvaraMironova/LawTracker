@@ -12,10 +12,9 @@ let kLTChesnoURL = "http://www.chesno.org"
 
 enum LTMenuCells: Int {
     case Manual = 0,
-    WebSite     = 1,
-    About       = 2
+    WebSite     = 1
     
-    static let cellTypes = [Manual, WebSite, About]
+    static let cellTypes = [Manual, WebSite]
 };
 
 class LTMenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
@@ -31,15 +30,11 @@ class LTMenuViewController: UIViewController, UITableViewDataSource, UITableView
         var string = ""
         switch indexPath.row {
         case 0:
-            string = "Manual"
+            string = "Мануал"
             break
             
         case 1:
-            string = "To web-site Chesno"
-            break
-            
-        case 2:
-            string = "About"
+            string = "На веб-сайт Чесно"
             break
             
         default:
@@ -68,10 +63,6 @@ class LTMenuViewController: UIViewController, UITableViewDataSource, UITableView
                         app.openURL(url!)
                     }
                     
-                    break
-                    
-                case 2:
-                    view.showAboutView()
                     break
                     
                 default:

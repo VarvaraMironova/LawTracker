@@ -13,10 +13,11 @@ class LTChangeModel: LTEntityModel  {
     struct Keys {
         static let status       = "status"
         static let law          = "bill"
+        static let changeDate   = "date"
     }
     
-    @NSManaged var date         : NSDate
-    @NSManaged var law          : LTLawModel
+    @NSManaged var date : NSDate
+    @NSManaged var law  : LTLawModel
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -27,7 +28,9 @@ class LTChangeModel: LTEntityModel  {
         let entity =  NSEntityDescription.entityForName("LTChangeModel", inManagedObjectContext: context)!
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
-        date = NSDate()
+        if let date = dictionary[Keys.changeDate] as? NSDate {
+            self.date = date
+        }
         
         if let title = dictionary[Keys.status] as? String {
             self.title = title
@@ -47,7 +50,16 @@ class LTChangeModel: LTEntityModel  {
                 }
             }
         }
-        
-        self.id = date.string("yyyy-MM-dddd")+law.id
+    }
+    
+    class func changesForDate(date: NSDate) -> [LTChangeModel]? {
+        let predicate = NSPredicate(format:"date == %@", date)
+        let fetchRequest = NSFetchRequest(entityName: "LTChangeModel")
+        fetchRequest.predicate = predicate
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTChangeModel] {
+            return models.count > 0 ? models : nil
+        } else {
+            return nil
+        }
     }
 }

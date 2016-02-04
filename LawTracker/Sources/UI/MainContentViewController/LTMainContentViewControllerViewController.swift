@@ -8,6 +8,8 @@
 
 import UIKit
 
+let kLTMaxLoadingCount = 30
+
 class LTMainContentViewControllerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var refreshControl    : UIRefreshControl!
     var changesModel      : LTArrayModel!
@@ -71,7 +73,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     
     var selectedArray: LTChangesModel!
     
-    var rootView: LTMainContentRootView! {
+    var rootView     : LTMainContentRootView! {
         get {
             if isViewLoaded() && view.isKindOfClass(LTMainContentRootView) {
                 return view as! LTMainContentRootView
@@ -80,6 +82,9 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             }
         }
     }
+    
+    var loadedAtFirst : Bool = true
+    var loadingCount  : Int = 0
     
     //MARK: - View Life Cycle
     override func viewDidLoad() {
@@ -93,8 +98,6 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         
         //check, if it is a first launch -> show helpViewController, create dictionary filters in SettingsModel
         let settingsModel = VTSettingModel()
-        let downloadDate = NSDate().previousDay()
-        
         if settingsModel.firstLaunch != true {
             rootView.showHelpView()
         }
@@ -103,15 +106,8 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             //download data from server
             loadData()
         } else {
-            //check date
-            if downloadDate == settingsModel.lastDownloadDate {
-                setChangesModel()
-            } else {
-                downloadChanges(downloadDate)
-            }
+            downloadChanges(NSDate().previousDay())
         }
-        
-        rootView.fillSearchButton(downloadDate)
         
         //add refresh control
         let refreshControl = UIRefreshControl()
@@ -141,7 +137,6 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             let view = self.rootView
             view.hideMenu() {finished in}
             view.hideHelpView()
-            view.hideAboutView()
         }
     }
     
@@ -169,10 +164,9 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             case .byLaws:
                 entityName = "LTLawModel"
                 break
-                
             }
             
-            let filters = LTArrayModel(entityName: entityName)
+            let filters = LTArrayModel(entityName: entityName, predicate: NSPredicate(value: true))
             filterController.filters = filters.filters(self.filterType)
             
             self.presentViewController(filterController, animated: true, completion: nil)
@@ -221,6 +215,45 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         downloadChanges(date)
     }
     
+    //MARK: - gestureRecognizers
+    @IBAction func onLongTapGestureRecognizer(sender: UILongPressGestureRecognizer) {
+        //find indexPath for selected row
+        let tableView = rootView.contentTableView
+        let tapLocation = sender.locationInView(tableView)
+        if let indexPath = tableView.indexPathForRowAtPoint(tapLocation) as NSIndexPath! {
+            //model for selected rpw
+            let section = selectedArray.changes[indexPath.section]
+            let model = section.changes[indexPath.row]
+            //complete sharing text
+            let law = model.law
+            var initiators = [String]()
+            for initiator in law.initiators {
+                initiators.append(initiator.title!!)
+            }
+            
+            let titles:[String] = [model.date.longString(), "Статус:", model.title, "Законопроект:", law.title, "Ініційовано:", initiators.joinWithSeparator(", "), "Головний комітет:", (law.committee.title)]
+            let text = titles.joinWithSeparator("\n")
+            let url = model.law.url
+            
+            let shareItems = [text, url]
+            
+            let activityViewController = UIActivityViewController(activityItems: shareItems, applicationActivities: nil)
+            if presentedViewController != nil {
+                return
+            }
+            
+            presentViewController(activityViewController, animated: true, completion: nil)
+            
+            if UI_USER_INTERFACE_IDIOM() == .Pad {
+                if let popoverViewController = activityViewController.popoverPresentationController {
+                    popoverViewController.permittedArrowDirections = .Any
+                    popoverViewController.sourceRect = CGRectMake(UIScreen.mainScreen().bounds.width / 2, UIScreen.mainScreen().bounds.height / 4, 0, 0)
+                    popoverViewController.sourceView = rootView
+                }
+            }
+        }
+    }
+    
     func reloadTableView() {
         refreshControl.beginRefreshing()
         
@@ -254,6 +287,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.reusableCell(cellClass, indexPath: indexPath) as! LTMainContentTableViewCell
+        
         let model = selectedArray.changes[indexPath.section]
         cell.fillWithModel(model.changes[indexPath.row])
         
@@ -294,33 +328,60 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         return lawNameHeight + descriptionHeight + 20.0
     }
     
+//    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+//        let offset = scrollView.contentOffset;
+//        let bounds = scrollView.frame;
+//        let size = scrollView.contentSize;
+//        let inset = scrollView.contentInset;
+//        let y = offset.y + bounds.size.height - inset.bottom;
+//        let h = size.height;
+//        
+//        let reload_distance : CGFloat = 10.0;
+//        if y > h + reload_distance {
+//            //download status changes for previous day
+//            let currentDate = rootView.datePicker.date
+//            downloadChanges(currentDate.previousDay())
+//        }
+//    }
+    
     //MARK: - Private methods
     private func downloadChanges(date: NSDate) {
-        rootView.fillSearchButton(date)
-        rootView.noSubscriptionsLabel.hidden = true
-        CoreDataStackManager.sharedInstance().clearEntity("LTChangeModel") {success, error in
+        let view = self.rootView
+        
+        view.fillSearchButton(date)
+        view.noSubscriptionsLabel.hidden = true
+        
+        if let _ = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
+            setChangesModel(date)
+            
+            return
+        }
+        
+        view.showLoadingViewInViewWithMessage(view.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
+        LTClient.sharedInstance().downloadChanges(date) { (success, error) -> Void in
+            view.hideLoadingView()
             if success {
-                let view = self.rootView
-                view.showLoadingViewInViewWithMessage(view.contentView, message: "Завантажую новини за \(date.longString()). \nЗалишилося кілька секунд...")
-                LTClient.sharedInstance().downloadChanges(date) { (success, error) -> Void in
-                    view.hideLoadingView()
-                    if success {
-                        self.setChangesModel()
-                        let settingsModel = VTSettingModel()
-                        settingsModel.lastDownloadDate = date
-                    } else {
-                        self.processError(error!)
-                    }
-                }
+                self.setChangesModel(date)
+                let settingsModel = VTSettingModel()
+                settingsModel.lastDownloadDate = date
             } else {
-                self.displayError(error!)
+                self.processError(error!)
             }
         }
     }
     
-    private func setChangesModel() {
+    private func setChangesModel(date: NSDate) {
         let view = rootView
-        changesModel = LTArrayModel(entityName: "LTChangeModel")
+        changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date))
+        
+        if (loadedAtFirst) && (changesModel.count() == 0) && (loadingCount < kLTMaxLoadingCount) {
+            loadingCount += 1
+            downloadChanges(date.previousDay())
+            
+            return
+        }
+        
+        loadedAtFirst = false
         
         byCommitteesArray = changesModel.changesByKey(.byCommittees)
         byInitiatorsArray = changesModel.changesByKey(.byInitiators)
@@ -332,7 +393,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
             
         case .byInitiators:
             selectedArray = byInitiatorsArray
-            
+        
         case .byLaws:
             selectedArray = byLawsArray
         }
@@ -343,7 +404,7 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
     }
     
     private func loadData() {
-        rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка. Триває завантаження законопроектів, комітетів та ініціаторів...")
+        rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів...")
         
         let client = LTClient.sharedInstance()
         
@@ -392,8 +453,9 @@ class LTMainContentViewControllerViewController: UIViewController, UITableViewDa
         self.displayError(error)
     }
     
+    //MARK: - LTFilterDelegate methods
     func filtersDidApplied() {
-        setChangesModel()
+        setChangesModel(rootView.datePicker.date)
     }
 
 }

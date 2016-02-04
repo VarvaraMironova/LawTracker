@@ -21,7 +21,7 @@ class LTFilterTableViewCell: UITableViewCell {
     func fillWithModel(model: LTFilterModel) {
         filtered = model.selected
         titleLabel.text = model.entity.title
-        
-        titleLabel.fit()
     }
+    
+    
 }

@@ -9,14 +9,12 @@
 import UIKit
 
 class LTSwitchButton: UIButton {
-    var switchButtonView: LTSwitchButtonView!
+    var switchButtonView    : LTSwitchButtonView!
     var on: Bool! = false {
         didSet {
             selected = on
             if let switchButtonView = switchButtonView as LTSwitchButtonView! {
                 switchButtonView.setOn(on)
-                let imageName = selected ? "filterSet" : "filterNotSet"
-                switchButtonView.switchImageView.image = UIImage(named: imageName)
             }
         }
     }
@@ -32,7 +30,7 @@ class LTSwitchButton: UIButton {
         
         if let titleLabel = titleLabel as UILabel! {
             if let text = titleLabel.text as String! {
-                switchButtonView = LTSwitchButtonView.switchButtonView(self, title: text)
+                switchButtonView = LTSwitchButtonView.switchButtonView(self, title: text, selectedImageName: "filterSet", deselectedImageName: "filterNotSet")
                 titleLabel.text = ""
                 
                 switchButtonView.setOn(on)

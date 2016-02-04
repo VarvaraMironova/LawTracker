@@ -206,7 +206,8 @@ extension LTClient {
             return
         }
         
-        let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.billStatuses, date.string("yyyy-MM-dd"), kVTParameters.extras]
+        let dateString = date.string("yyyy-MM-dd")
+        let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.billStatuses, dateString, kVTParameters.extras]
         let urlString = urlVars.joinWithSeparator("/")
         let url = NSURL(string: urlString)!
         let request = NSURLRequest(URL: url)
@@ -220,7 +221,7 @@ extension LTClient {
                         completionHandler(success: false, error: error)
                     } else {
                         if let changes = result as? [[String: AnyObject]] {
-                            CoreDataStackManager.sharedInstance().storeChanges(changes){finished in
+                            CoreDataStackManager.sharedInstance().storeChanges(date, changes: changes){finished in
                                 if finished {
                                     completionHandler(success: true, error: nil)
                                 }

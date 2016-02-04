@@ -6,7 +6,7 @@
         </attribute>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="law" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LTLawModel" inverseName="change" inverseEntity="LTLawModel" syncable="YES"/>
+        <relationship name="law" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LTLawModel" inverseName="changes" inverseEntity="LTLawModel" syncable="YES"/>
         <userInfo/>
     </entity>
     <entity name="LTCommitteeModel" representedClassName=".LTCommitteeModel" syncable="YES">
@@ -44,7 +44,7 @@
         <attribute name="presentationDate" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="change" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LTChangeModel" inverseName="law" inverseEntity="LTChangeModel" syncable="YES"/>
+        <relationship name="changes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTChangeModel" inverseName="law" inverseEntity="LTChangeModel" syncable="YES"/>
         <relationship name="committee" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LTCommitteeModel" inverseName="laws" inverseEntity="LTCommitteeModel" syncable="YES"/>
         <relationship name="convocation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LTConvocationModel" inverseName="laws" inverseEntity="LTConvocationModel" syncable="YES"/>
         <relationship name="initiators" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTInitiatorModel" inverseName="laws" inverseEntity="LTInitiatorModel" syncable="YES"/>

@@ -18,9 +18,9 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     weak var delegate: LTMainContentViewControllerViewController!
     
     var settingsModel = VTSettingModel()
-    var filteredArray = [LTFilterModel]()
+    var filteredArray = [LTSectionModel]()
     
-    var filters          : [LTFilterModel]!
+    var filters          : [LTSectionModel]!
     
     var selectedFilters  : [String]? {
         set {
@@ -86,11 +86,21 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .LightContent
     }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        rootView.endEditing(true)
+    }
         
     //MARK: - Interface Handling
     @IBAction func onOkButton(sender: AnyObject) {
         //save filteredArray
-        let selectedArray = filters.filter() { $0.selected == true }
+        var selectedArray = [LTFilterModel]()
+        for sectionModel in filters {
+            selectedArray.appendContentsOf(sectionModel.filters.filter() { $0.selected == true })
+        }
+        
         var filteredIds = [String]()
         
         for filterModel in selectedArray {
@@ -109,32 +119,84 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         dismissViewControllerAnimated(true, completion: nil)
     }
     
-    //MARK: - UITableViewDataSource methods
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if rootView.searchBar.text != "" || rootView.searchBar.selectedScopeButtonIndex > 0 {
-            return filteredArray.count
+    @IBAction func onSelectAllButton(sender: AnyObject) {
+        rootView.endEditing(true)
+        
+        let select = rootView.selectAllButton.on
+        rootView.selectAllButton.on = !select
+        
+        for sectionModel in filters {
+            for filterModel in sectionModel.filters {
+                filterModel.selected = !select
+            }
         }
         
-        return filters.count
+        filterContentForSearchText("", scope: rootView.searchBar.selectedScopeButtonIndex)
+        
+        rootView.tableView.reloadData()
+    }
+    
+    func headerTapped() {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.rootView.endEditing(true)
+            let deputiesArray = self.filters.filter(){ $0.title == "Народні депутати України" }.first
+            if let deputies = deputiesArray as LTSectionModel! {
+                for model in deputies.filters {
+                    model.selected = !model.selected
+                }
+            }
+            
+            self.filterContentForSearchText(self.rootView.searchBar.text!, scope: self.rootView.searchBar.selectedScopeButtonIndex)
+        }
+    }
+    
+    //MARK: - UITableViewDataSource methods
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let sectionModel = rootView.searchBarActive ? filteredArray[section] : filters[section]
+        
+        return sectionModel.filters.count
+    }
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return rootView.searchBarActive ? filteredArray.count : filters.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("LTFilterTableViewCell", forIndexPath: indexPath) as! LTFilterTableViewCell
-        if rootView.searchBar.text != "" || rootView.searchBar.selectedScopeButtonIndex > 0 {
-            let model = filteredArray[indexPath.row]
-            cell.fillWithModel(model)
-        } else {
-            let model = filters[indexPath.row]
-            cell.fillWithModel(model)
-        }
+        let model = rootView.searchBarActive ? filteredArray[indexPath.section].filters[indexPath.row] : filters[indexPath.section].filters[indexPath.row]
+        
+        cell.fillWithModel(model)
         
         return cell
     }
     
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return rootView.searchBarActive ? filteredArray[section].title : filters[section].title
+    }
+    
+    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = LTCellHeaderView.headerView() as LTCellHeaderView
+        let title = rootView.searchBarActive ? filteredArray[section].title : filters[section].title
+        headerView.fillWithString(title)
+        let button = UIButton()
+        button.frame = headerView.frame
+        button.addTarget(self, action: "headerTapped", forControlEvents: .TouchUpInside)
+        headerView.addSubview(button)
+        
+        return headerView
+    }
+    
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let title = rootView.searchBarActive ? filteredArray[section].title : filters[section].title
+        
+        return title == "" ? 0.1 : 30.0
+    }
+    
     //MARK: - UITableViewDelegate methods
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        rootView.endEditing(true)
         let searchBar = rootView.searchBar
-        let array = searchBar.text != "" || searchBar.selectedScopeButtonIndex > 0 ? filteredArray : filters
+        let array = rootView.searchBarActive ? filteredArray[indexPath.section].filters : filters[indexPath.section].filters
         let cell = tableView.cellForRowAtIndexPath(indexPath) as! LTFilterTableViewCell
         let selectedModel = array[indexPath.row]
         selectedModel.selected = !cell.filtered
@@ -161,22 +223,32 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     
     //MARK: - Private methods
     private func filterContentForSearchText(searchText: String, scope: Int = 0) {
-        filteredArray = filters.filter({( filter : LTFilterModel) -> Bool in
-            let category = filter.selected == true ? 1 : 2
-            let categoryMatch = (scope == 0) || (category == scope)
-            if searchText != "" {
-                let containsInTitle = filter.entity.title.lowercaseString.containsString(searchText.lowercaseString)
-                if let entity = filter.entity as? LTLawModel {
-                    let containsInNumber = entity.number.lowercaseString.containsString(searchText.lowercaseString)
-                    
-                    return categoryMatch && (containsInTitle || containsInNumber)
+        filteredArray = [LTSectionModel]()
+        for sectionModel in filters {
+            let filters = sectionModel.filters.filter({( filter : LTFilterModel) -> Bool in
+                let category = filter.selected == true ? 1 : 2
+                let categoryMatch = (scope == 0) || (category == scope)
+                if searchText != "" {
+                    let containsInTitle = filter.entity.title.lowercaseString.containsString(searchText.lowercaseString)
+                    if let entity = filter.entity as? LTLawModel {
+                        let containsInNumber = entity.number.lowercaseString.containsString(searchText.lowercaseString)
+                        
+                        return categoryMatch && (containsInTitle || containsInNumber)
+                    } else {
+                        return categoryMatch && containsInTitle
+                    }
                 } else {
-                    return categoryMatch && containsInTitle
+                    return categoryMatch
                 }
-            } else {
-                return categoryMatch
+            })
+            
+            if filters.count > 0 {
+                let filteredSection = LTSectionModel(title: sectionModel.title)
+                filteredSection.filters = filters
+                
+                filteredArray.append(filteredSection)
             }
-        })
+        }
         
         rootView.tableView.reloadData()
     }

@@ -12,6 +12,7 @@ import Foundation
 class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     var entityName  : String!
     var settings    = VTSettingModel()
+    var predicate   : NSPredicate!
     
     lazy var models: [LTEntityModel] = {
         return self.fetchedResultsController.fetchedObjects as! [LTEntityModel]
@@ -20,7 +21,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     // MARK: - NSFetchedResultsController
     lazy var fetchedResultsController: NSFetchedResultsController = {
         let fetchRequest = NSFetchRequest(entityName: self.entityName)
-        fetchRequest.predicate = NSPredicate(value: true);
+        fetchRequest.predicate = self.predicate
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: false)]
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
@@ -31,9 +32,10 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         return fetchedResultsController
     }()
     
-    init(entityName: String) {
+    init(entityName: String, predicate: NSPredicate) {
         super.init()
         
+        self.predicate = predicate
         self.entityName = entityName
         
         do {
@@ -44,28 +46,51 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     }
     
     //MARK: - Public
-    func filters(key: LTType) -> [LTFilterModel] {
-        var filters = [LTFilterModel]()
+    func filters(key: LTType) -> [LTSectionModel] {
+        var filters = [LTSectionModel]()
         var filteredIds = [String]()
         let settings = VTSettingModel()
         
         switch key {
         case .byCommittees:
+            filters.append(LTSectionModel(title: ""))
             filteredIds = settings.committees
             break
             
         case .byInitiators:
+            filters.append(LTSectionModel(title: ""))
+            filters.append(LTSectionModel(title: "Народні депутати України"))
             filteredIds = settings.initiators
             break
             
         case .byLaws:
+            filters.append(LTSectionModel(title: ""))
             filteredIds = settings.laws
             break
         }
         
         for model in models {
             let filterModel = LTFilterModel(entity: model, selected:filteredIds.contains(model.id))
-            filters.append(filterModel)
+            
+            switch key {
+            case .byInitiators:
+                if let initiator = model as? LTInitiatorModel {
+                    let title = initiator.isDeputy ? "Народні депутати України" : ""
+                    let sectionModel = filters.filter(){ $0.title == title }.first
+                    if let section = sectionModel as LTSectionModel! {
+                        section.filters.append(filterModel)
+                    }
+                }
+                
+                break
+                
+            default:
+                if let sectionModel = filters.first as LTSectionModel! {
+                    sectionModel.filters.append(filterModel)
+                }
+                
+                break
+            }
         }
         
         return filters
@@ -161,5 +186,9 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         let changesModel = LTChangesModel(changes: changesByKey, filtersIsApplied:filteredIds.count > 0, date:NSDate().string("yyyy-MM-dddd"))
         
         return changesModel
+    }
+    
+    func count() -> Int {
+        return models.count
     }
 }

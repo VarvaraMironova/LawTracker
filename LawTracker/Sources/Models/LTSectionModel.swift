@@ -11,6 +11,7 @@ import Foundation
 class LTSectionModel: NSObject {
     var title   : String!
     var changes = [LTChangeModel]()
+    var filters = [LTFilterModel]()
     
     init(title: String!) {
         super.init()
