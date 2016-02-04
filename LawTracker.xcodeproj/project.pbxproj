@@ -58,6 +58,8 @@
 		C7CFB5B91C2006F200211C6B /* VTSettingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5B81C2006F200211C6B /* VTSettingModel.swift */; };
 		C7CFB5BC1C2008D500211C6B /* LTCellHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5BA1C2008D400211C6B /* LTCellHeaderView.swift */; };
 		C7CFB5BD1C2008D500211C6B /* LTCellHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7CFB5BB1C2008D400211C6B /* LTCellHeaderView.xib */; };
+		C7E61A7E1C632DCD00F0B79E /* LTNewsFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E61A7D1C632DCD00F0B79E /* LTNewsFeedViewController.swift */; };
+		C7E61A801C632DE600F0B79E /* LTNewsFeedRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E61A7F1C632DE600F0B79E /* LTNewsFeedRootView.swift */; };
 		C7E792B01C18672C0031C55A /* LTFilterRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A71C18672C0031C55A /* LTFilterRootView.swift */; };
 		C7E792B11C18672C0031C55A /* LTFilterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */; };
 		C7E792B21C18672C0031C55A /* LTFilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A91C18672C0031C55A /* LTFilterViewController.swift */; };
@@ -129,6 +131,8 @@
 		C7CFB5B81C2006F200211C6B /* VTSettingModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VTSettingModel.swift; sourceTree = "<group>"; };
 		C7CFB5BA1C2008D400211C6B /* LTCellHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTCellHeaderView.swift; sourceTree = "<group>"; };
 		C7CFB5BB1C2008D400211C6B /* LTCellHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTCellHeaderView.xib; sourceTree = "<group>"; };
+		C7E61A7D1C632DCD00F0B79E /* LTNewsFeedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsFeedViewController.swift; sourceTree = "<group>"; };
+		C7E61A7F1C632DE600F0B79E /* LTNewsFeedRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsFeedRootView.swift; sourceTree = "<group>"; };
 		C7E792A71C18672C0031C55A /* LTFilterRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterRootView.swift; sourceTree = "<group>"; };
 		C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterTableViewCell.swift; sourceTree = "<group>"; };
 		C7E792A91C18672C0031C55A /* LTFilterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterViewController.swift; sourceTree = "<group>"; };
@@ -303,6 +307,7 @@
 		C7A29E731C0C9F97001B0EF5 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				C7E61A7C1C632DAA00F0B79E /* NewsFeedViewController */,
 				C71A07A41C23F9F600235D78 /* OTMLoadingView */,
 				C71A079E1C23380000235D78 /* Buttons */,
 				C7CFB5A21C1FFFDB00211C6B /* HelpViewController */,
@@ -340,6 +345,15 @@
 				C7CFB5BB1C2008D400211C6B /* LTCellHeaderView.xib */,
 			);
 			path = MainContentViewController;
+			sourceTree = "<group>";
+		};
+		C7E61A7C1C632DAA00F0B79E /* NewsFeedViewController */ = {
+			isa = PBXGroup;
+			children = (
+				C7E61A7D1C632DCD00F0B79E /* LTNewsFeedViewController.swift */,
+				C7E61A7F1C632DE600F0B79E /* LTNewsFeedRootView.swift */,
+			);
+			path = NewsFeedViewController;
 			sourceTree = "<group>";
 		};
 		C7E792A61C18672C0031C55A /* FilterViewController */ = {
@@ -470,12 +484,14 @@
 				C77397351C3A7AE70093CBCC /* LTTableViewExtensions.swift in Sources */,
 				C77397391C3A9C2C0093CBCC /* LTInitiatorModel.swift in Sources */,
 				C707CF601C5B663C004A8640 /* LTSwitchButtonView.swift in Sources */,
+				C7E61A7E1C632DCD00F0B79E /* LTNewsFeedViewController.swift in Sources */,
 				C7CFB5B91C2006F200211C6B /* VTSettingModel.swift in Sources */,
 				C71A07A81C23F9F600235D78 /* OTMLoadingView.swift in Sources */,
 				C77397471C3AFE140093CBCC /* LTEntityModel.swift in Sources */,
 				C76CE92D1C1B744F006262E8 /* LTMenuViewController.swift in Sources */,
 				C773973F1C3AB1180093CBCC /* LTNSDateExtensions.swift in Sources */,
 				C7CFB5B51C2004D100211C6B /* LTHelpViewController.swift in Sources */,
+				C7E61A801C632DE600F0B79E /* LTNewsFeedRootView.swift in Sources */,
 				C707CF4A1C581D58004A8640 /* LTNSObject.swift in Sources */,
 				C707CF651C5D0079004A8640 /* LTHelpViewCell.swift in Sources */,
 				C707CF681C5FBEB6004A8640 /* LTSelectAllButtonView.swift in Sources */,

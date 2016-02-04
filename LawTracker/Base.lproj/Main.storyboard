@@ -408,6 +408,36 @@
             </objects>
             <point key="canvasLocation" x="417" y="129"/>
         </scene>
+        <!--News Feed View Controller-->
+        <scene sceneID="v7M-Vr-nAh">
+            <objects>
+                <viewController storyboardIdentifier="LTNewsFeedViewController" id="Gc8-QQ-71K" customClass="LTNewsFeedViewController" customModule="LawTracker" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="eDV-K6-1A2"/>
+                        <viewControllerLayoutGuide type="bottom" id="skb-aZ-bH9"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="xGm-xT-HVD" customClass="LTNewsFeedRootView" customModule="LawTracker" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xfL-cV-0JU">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="skb-aZ-bH9" firstAttribute="top" secondItem="xfL-cV-0JU" secondAttribute="bottom" id="9FM-7C-1JV"/>
+                            <constraint firstAttribute="trailing" secondItem="xfL-cV-0JU" secondAttribute="trailing" id="HB4-Wd-LM2"/>
+                            <constraint firstItem="xfL-cV-0JU" firstAttribute="leading" secondItem="xGm-xT-HVD" secondAttribute="leading" id="lNe-RQ-nzS"/>
+                            <constraint firstItem="xfL-cV-0JU" firstAttribute="top" secondItem="xGm-xT-HVD" secondAttribute="top" id="vks-bV-0oG"/>
+                        </constraints>
+                    </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="54q-aN-PL1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="417" y="960"/>
+        </scene>
         <!--Filter View Controller-->
         <scene sceneID="fJO-9j-2Bn">
             <objects>
