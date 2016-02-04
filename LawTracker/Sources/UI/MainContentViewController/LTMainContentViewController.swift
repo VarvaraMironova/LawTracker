@@ -1,5 +1,5 @@
 //
-//  LTMainContentViewControllerViewController.swift
+//  LTMainContentViewController.swift
 //  LawTracker
 //
 //  Created by Varvara Mironova on 12/3/15.
@@ -10,7 +10,7 @@ import UIKit
 
 let kLTMaxLoadingCount = 30
 
-class LTMainContentViewControllerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class LTMainContentViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var refreshControl    : UIRefreshControl!
     var changesModel      : LTArrayModel!
     

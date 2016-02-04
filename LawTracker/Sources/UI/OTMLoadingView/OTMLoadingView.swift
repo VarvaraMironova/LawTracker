@@ -51,19 +51,6 @@ class OTMLoadingView: UIView {
         })
     }
     
-//    - (void)animateWithDuration:(CGFloat)duration
-//    withAlpha:(CGFloat)alpha
-//    withCompletionHandler:(void (^)(BOOL finished))completionBlock
-//    {
-//    [UIView animateWithDuration:duration
-//    delay:VMDilay
-//    options:UIViewAnimationOptionBeginFromCurrentState
-//    animations:^{
-//    self.alpha = alpha;
-//    }
-//    completion:completionBlock];
-//    }
-    
     private func showWithMessage(rootView: UIView, message: String) {
         show(rootView)
         

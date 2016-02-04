@@ -18,6 +18,12 @@ extension UIViewController {
         childController.didMoveToParentViewController(self)
     }
     
+    func removeChildViewController(childController: UIViewController) {
+        childController.willMoveToParentViewController(nil)
+        childController.view.removeFromSuperview()
+        childController.removeFromParentViewController()
+    }
+    
     func displayError(error: NSError) {
         dispatch_async(dispatch_get_main_queue()) {
             let alertViewController: UIAlertController = UIAlertController(title: "", message: error.localizedDescription, preferredStyle: .Alert)
