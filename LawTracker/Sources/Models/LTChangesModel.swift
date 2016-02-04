@@ -11,9 +11,9 @@ import Foundation
 class LTChangesModel: NSObject {
     var changes         : [LTSectionModel] = []
     var filtersIsApplied: Bool!
-    var date            : String!
+    var date            : NSDate!
     
-    init(changes: [LTSectionModel], filtersIsApplied: Bool, date: String) {
+    init(changes: [LTSectionModel], filtersIsApplied: Bool, date: NSDate) {
         super.init()
         
         self.changes = changes

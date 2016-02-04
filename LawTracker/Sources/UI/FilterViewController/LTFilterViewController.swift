@@ -15,7 +15,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         static let Laws       = "Номер або назва законопроекту"
     }
     
-    weak var delegate: LTMainContentViewController!
+    weak var delegate: LTNewsFeedViewController!
     
     var settingsModel = VTSettingModel()
     var filteredArray = [LTSectionModel]()

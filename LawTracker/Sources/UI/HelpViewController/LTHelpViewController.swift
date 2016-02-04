@@ -18,7 +18,7 @@ private let kHelpTopText4    = "If filters are set, filter icon appears on corre
 private let kHelpBottomText4 = "To get more info about 'Zakonoproekt' app, to review this manual or to visit Chesno web site, tap at menu button."
 
 class LTHelpViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-    weak var delegate: LTMainContentViewController!
+    weak var delegate: LTNewsFeedViewController!
     
     var helpModel: [[String]]! {
         get {

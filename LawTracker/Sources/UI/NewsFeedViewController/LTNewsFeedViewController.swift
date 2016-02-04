@@ -7,6 +7,7 @@
 //
 
 import UIKit
+let kLTMaxLoadingCount = 30
 
 class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     @IBOutlet var navigationGesture: LTPanGestureRacognizer!
@@ -14,7 +15,74 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var currentController : LTMainContentViewController!
     var newsFeedModel     : LTChangesModel!
     var animator          : LTSliderAnimator?
-    var currentDate       : NSDate!
+    var currentDate       : NSDate! {
+        didSet {
+            rootView.fillSearchButton(selectedArray.date)
+        }
+    }
+    
+    var loadedAtFirst : Bool = true
+    var loadingCount  : Int = 0
+    
+    var filterType: LTType {
+        get {
+            switch rootView.selectedButton.tag {
+            case 1:
+                return .byInitiators
+                
+            case 2:
+                return .byLaws
+                
+            default:
+                return .byCommittees
+            }
+        }
+    }
+    
+    var changesModel      : LTArrayModel!
+    
+    var selectedArray     : LTChangesModel! {
+        didSet {
+            currentController.arrayModel = selectedArray
+            currentDate = selectedArray.date
+        }
+    }
+    
+    var byLawsArray       : LTChangesModel! {
+        didSet {
+            rootView.byBillsButton.filtersSet = byLawsArray.filtersIsApplied
+        }
+    }
+    
+    var byCommitteesArray : LTChangesModel! {
+        didSet {
+            rootView.byCommitteesButton.filtersSet = byCommitteesArray.filtersIsApplied
+        }
+    }
+    
+    var byInitiatorsArray : LTChangesModel! {
+        didSet {
+            rootView.byInitiatorsButton.filtersSet = byInitiatorsArray.filtersIsApplied
+        }
+    }
+    
+    var menuViewController: LTMenuViewController {
+        get {
+            let menuViewController = self.storyboard!.instantiateViewControllerWithIdentifier("LTMenuViewController") as! LTMenuViewController
+            menuViewController.delegate = self
+            
+            return menuViewController
+        }
+    }
+    
+    var helpViewController: LTHelpViewController {
+        get {
+            let helpViewController = self.storyboard!.instantiateViewControllerWithIdentifier("LTHelpViewController") as! LTHelpViewController
+            helpViewController.delegate = self
+            
+            return helpViewController
+        }
+    }
     
     var rootView     : LTNewsFeedRootView! {
         get {
@@ -28,15 +96,40 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        
+        let settingsModel = VTSettingModel()
+        if true != settingsModel.firstLaunch {
+            //download data from server
+            loadData()
+        } else {
+            downloadChanges(NSDate().previousDay())
+        }
+        
+        //add menuViewController as a childViewController to menuContainerView
+        addChildViewController(menuViewController, view: rootView.menuContainerView)
+        
+        //add helpViewController as a childViewController to menuContainerView
+        addChildViewController(helpViewController, view: rootView.helpContainerView)
+        
+        //check, if it is a first launch -> show helpViewController, create dictionary filters in SettingsModel
+        if settingsModel.firstLaunch != true {
+            rootView.showHelpView()
+        }
     }
     
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
+        
+        coordinator.animateAlongsideTransition({(UIViewControllerTransitionCoordinatorContext) -> Void in
+            if self.rootView.menuShown {
+                self.rootView.showMenu()
+            }}, completion: {(UIViewControllerTransitionCoordinatorContext) -> Void in })
+    }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
+    }
+
     //MARK: - Interface Handling
     @IBAction func onGesture(sender: LTPanGestureRacognizer) {
         let direction = sender.direction
@@ -45,21 +138,101 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
+    @IBAction func onDismissFilterViewButton(sender: UIButton) {
+        dispatch_async(dispatch_get_main_queue()) {
+            let view = self.rootView
+            view.hideMenu() {finished in}
+            view.hideHelpView()
+        }
+    }
+    
+    @IBAction func onMenuButton(sender: AnyObject) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.rootView.showMenu()
+        }
+    }
+    
+    @IBAction func onFilterButton(sender: UIButton) {
+        dispatch_async(dispatch_get_main_queue()) {
+            let filterController = self.storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
+            filterController.delegate = self
+            
+            var entityName = String()
+            switch self.filterType {
+            case .byCommittees:
+                entityName = "LTCommitteeModel"
+                break
+                
+            case .byInitiators:
+                entityName = "LTInitiatorModel"
+                break
+                
+            case .byLaws:
+                entityName = "LTLawModel"
+                break
+            }
+            
+            let filters = LTArrayModel(entityName: entityName, predicate: NSPredicate(value: true))
+            filterController.filters = filters.filters(self.filterType)
+            
+            self.presentViewController(filterController, animated: true, completion: nil)
+        }
+    }
+    
+    @IBAction func onByCommitteesButton(sender: LTSwitchButton) {
+        if rootView.selectedButton != sender {
+            rootView.selectedButton = sender
+            selectedArray = byCommitteesArray
+        }
+    }
+    
+    @IBAction func onByInitializersButton(sender: LTSwitchButton) {
+        if rootView.selectedButton != sender {
+            rootView.selectedButton = sender
+            selectedArray = byInitiatorsArray
+        }
+    }
+    
+    @IBAction func byLawsButton(sender: LTSwitchButton) {
+        if rootView.selectedButton != sender {
+            rootView.selectedButton = sender
+            selectedArray = byLawsArray
+        }
+    }
+    
+    @IBAction func onSearchButton(sender: AnyObject) {
+        rootView.showDatePicker()
+    }
+    
+    @IBAction func onHidePickerButton(sender: AnyObject) {
+        rootView.hideDatePicker()
+    }
+    
+    @IBAction func onDonePickerButton(sender: AnyObject) {
+        rootView.hideDatePicker()
+        let date = rootView.datePicker.date
+        
+        downloadChanges(date)
+    }
+    
     // MARK: - Public
     func setupNews(changesModel: LTChangesModel) {
+        currentController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
+        let containerView = rootView.contentView
+        addChildViewController(currentController, view: containerView)
         
-//        NWZArticleContext *context = [model contextForCategoryAtIndex:index];
-//        NWZTableViewController *tableViewController = [NWZTableViewController viewControllerWithDefaultNib];
-//        
-//        tableViewController.context = context;
-//        model.currentCategoryIndex = index;
-//        
-//        [self setCurrentController:tableViewController];
-//        [self scrollToTop];
+        currentController.arrayModel = selectedArray
+        
+        setCurrentController(currentController)
+        scrollToTop()
     }
     
     // MARK: - Private
-    func handlePageSwitchingGesture(recognizer: LTPanGestureRacognizer) {
+    private func scrollToTop() {
+        currentController.rootView.contentTableView.setContentOffset(CGPointZero, animated: true)
+    }
+    
+    private func handlePageSwitchingGesture(recognizer: LTPanGestureRacognizer) {
         let location = recognizer.locationInView(recognizer.view)
         let direction = recognizer.direction
         let translation = recognizer.translationInView(recognizer.view)
@@ -115,7 +288,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
         
         let containerView = rootView.contentView
-        addChildViewController(toViewController, view: containerView)
         let destinationView = toViewController.rootView
         destinationView.translatesAutoresizingMaskIntoConstraints = true
         destinationView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
@@ -163,6 +335,120 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             currentController = feedController
             feedController.didMoveToParentViewController(self)
         }
+    }
+    
+    private func downloadChanges(date: NSDate) {
+        let view = self.rootView
+        
+        view.fillSearchButton(date)
+        
+        if let _ = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
+            setChangesModel(date)
+            
+            return
+        }
+        
+        view.showLoadingViewInViewWithMessage(view.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
+        LTClient.sharedInstance().downloadChanges(date) { (success, error) -> Void in
+            view.hideLoadingView()
+            if success {
+                self.setChangesModel(date)
+                let settingsModel = VTSettingModel()
+                settingsModel.lastDownloadDate = date
+            } else {
+                self.processError(error!)
+            }
+        }
+    }
+    
+    private func setChangesModel(date: NSDate) {
+        changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date))
+        
+        if (loadedAtFirst) && (changesModel.count() == 0) && (loadingCount < kLTMaxLoadingCount) {
+            loadingCount += 1
+            downloadChanges(date.previousDay())
+            
+            return
+        }
+        
+        loadedAtFirst = false
+        
+        byCommitteesArray = changesModel.changesByKey(.byCommittees)
+        byInitiatorsArray = changesModel.changesByKey(.byInitiators)
+        byLawsArray = changesModel.changesByKey(.byLaws)
+        
+        switch filterType {
+        case .byCommittees:
+            setupNews(byCommitteesArray)
+            selectedArray = byCommitteesArray
+            
+        case .byInitiators:
+            setupNews(byInitiatorsArray)
+            selectedArray = byInitiatorsArray
+            
+        case .byLaws:
+            setupNews(byLawsArray)
+            selectedArray = byLawsArray
+        }
+    }
+    
+    private func loadData() {
+        rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів...")
+        
+        let client = LTClient.sharedInstance()
+        
+        client.downloadConvocations({ (success, error) -> Void in
+            if success {
+                client.downloadCommittees({ (success, error) -> Void in
+                    if success {
+                        client.downloadInitiatorTypes({ (success, error) -> Void in
+                            if success {
+                                client.downloadPersons({ (success, error) -> Void in
+                                    if success {
+                                        client.downloadLaws({ (success, error) -> Void in
+                                            if success {
+                                                let settings = VTSettingModel()
+                                                if settings.firstLaunch != true {
+                                                    settings.setup()
+                                                }
+                                                
+                                                self.rootView.hideLoadingView()
+                                                self.downloadChanges(NSDate().previousDay())
+                                            } else {
+                                                self.processError(error!)
+                                            }
+                                        })
+                                    } else {
+                                        self.processError(error!)
+                                    }
+                                })
+                            } else {
+                                self.processError(error!)
+                            }
+                        })
+                    } else {
+                        self.processError(error!)
+                    }
+                })
+            } else {
+                self.processError(error!)
+            }
+        })
+    }
+    
+    private func processError(error:NSError) {
+        rootView.hideLoadingView()
+        
+        self.displayError(error)
+    }
+    
+    private func setCurrentController(controller: LTMainContentViewController) {
+        setCurrentController(controller, animated: false, forwardDirection: false)
+    }
+    
+    //MARK: - LTFilterDelegate methods
+    func filtersDidApplied() {
+        setChangesModel(rootView.datePicker.date)
     }
     
 }

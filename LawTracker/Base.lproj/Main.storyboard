@@ -26,7 +26,7 @@
         <!--Main Content View Controller-->
         <scene sceneID="31S-Kd-G53">
             <objects>
-                <viewController id="QkK-Om-tMq" customClass="LTMainContentViewController" customModule="LawTracker" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LTMainContentViewController" id="QkK-Om-tMq" customClass="LTMainContentViewController" customModule="LawTracker" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="in4-IK-glq"/>
                         <viewControllerLayoutGuide type="bottom" id="uja-R7-cpk"/>
@@ -186,6 +186,9 @@
                                                         </constraints>
                                                         <inset key="contentEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
                                                         <state key="normal" image="filter"/>
+                                                        <connections>
+                                                            <action selector="onFilterButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="jbd-Gu-z7m"/>
+                                                        </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HjJ-oN-ftc">
                                                         <rect key="frame" x="0.0" y="5" width="40" height="40"/>
@@ -194,11 +197,17 @@
                                                         </constraints>
                                                         <inset key="contentEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
                                                         <state key="normal" image="menu"/>
+                                                        <connections>
+                                                            <action selector="onMenuButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="wOA-KE-31I"/>
+                                                        </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AL4-n6-1oZ">
                                                         <rect key="frame" x="108" y="0.0" width="164" height="50"/>
                                                         <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="19"/>
                                                         <state key="normal" title="26 лютого 2016 р."/>
+                                                        <connections>
+                                                            <action selector="onSearchButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="Rga-mh-lNo"/>
+                                                        </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mxe-ku-t9k">
                                                         <rect key="frame" x="272" y="15" width="20" height="20"/>
@@ -206,6 +215,9 @@
                                                             <constraint firstAttribute="width" secondItem="mxe-ku-t9k" secondAttribute="height" multiplier="1:1" id="Om3-5a-4P0"/>
                                                         </constraints>
                                                         <state key="normal" backgroundImage="downArrow"/>
+                                                        <connections>
+                                                            <action selector="onSearchButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="ddV-iv-1Al"/>
+                                                        </connections>
                                                     </button>
                                                 </subviews>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -236,7 +248,7 @@
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="sWg-Sk-tyg"/>
                                         </constraints>
                                     </view>
-                                    <containerView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xfL-cV-0JU">
+                                    <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xfL-cV-0JU">
                                         <rect key="frame" x="0.0" y="140" width="414" height="596"/>
                                     </containerView>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Muc-BV-xbv">
@@ -260,6 +272,9 @@
                                                 <state key="normal" title="Відмінити">
                                                     <color key="titleColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="onHidePickerButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="aUI-lE-2WP"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zQL-qD-kMy">
                                                 <rect key="frame" x="207" y="0.0" width="207" height="69"/>
@@ -268,6 +283,9 @@
                                                 <state key="normal" title="Готово">
                                                     <color key="titleColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="onDonePickerButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="Kqs-uL-1QW"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -289,22 +307,6 @@
                                             <constraint firstAttribute="trailing" secondItem="pf2-5n-rlR" secondAttribute="trailing" id="qXY-Dj-gZx"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="i6m-Jy-fGD">
-                                        <rect key="frame" x="-250" y="70" width="250" height="100"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="100" id="0HB-wq-8dn"/>
-                                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="250" id="ZrP-XT-vmJ"/>
-                                        </constraints>
-                                    </view>
-                                    <button opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gk7-42-5S2">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
-                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                    </button>
-                                    <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4bD-yj-gA8">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                    </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aVb-YE-9Nq">
                                         <rect key="frame" x="0.0" y="70" width="414" height="70"/>
                                         <subviews>
@@ -315,6 +317,9 @@
                                                 <state key="normal" title="Комітети">
                                                     <color key="titleColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="onByCommitteesButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="TFm-yu-ThU"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FEU-SM-qI3" customClass="LTSwitchButton" customModule="LawTracker" customModuleProvider="target">
                                                 <rect key="frame" x="138" y="0.0" width="138" height="69"/>
@@ -323,6 +328,9 @@
                                                 <state key="normal" title="Ініціатори">
                                                     <color key="titleColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="onByInitializersButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="N7m-EB-y7E"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ncg-93-UVv" customClass="LTSwitchButton" customModule="LawTracker" customModuleProvider="target">
                                                 <rect key="frame" x="277" y="0.0" width="137" height="69"/>
@@ -331,6 +339,9 @@
                                                 <state key="normal" title="Законопроекти">
                                                     <color key="titleColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="byLawsButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="1XI-wJ-Egg"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <color key="backgroundColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
@@ -347,6 +358,25 @@
                                             <constraint firstItem="Ncg-93-UVv" firstAttribute="leading" secondItem="FEU-SM-qI3" secondAttribute="trailing" constant="1" id="kFZ-1i-Ox0"/>
                                             <constraint firstItem="Ncg-93-UVv" firstAttribute="width" secondItem="jfu-hX-wR2" secondAttribute="width" id="luB-zd-qSo"/>
                                             <constraint firstItem="FEU-SM-qI3" firstAttribute="leading" secondItem="jfu-hX-wR2" secondAttribute="trailing" constant="1" id="xIw-w9-5GH"/>
+                                        </constraints>
+                                    </view>
+                                    <button opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gk7-42-5S2">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <connections>
+                                            <action selector="onDismissFilterViewButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="Fxj-5P-7xx"/>
+                                        </connections>
+                                    </button>
+                                    <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4bD-yj-gA8">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="i6m-Jy-fGD">
+                                        <rect key="frame" x="-250" y="70" width="250" height="100"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="100" id="0HB-wq-8dn"/>
+                                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="250" id="ZrP-XT-vmJ"/>
                                         </constraints>
                                     </view>
                                 </subviews>

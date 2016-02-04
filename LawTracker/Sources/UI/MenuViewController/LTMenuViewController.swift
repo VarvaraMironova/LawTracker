@@ -18,7 +18,7 @@ enum LTMenuCells: Int {
 };
 
 class LTMenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    weak var delegate: LTMainContentViewControllerViewController!
+    weak var delegate: LTNewsFeedViewController!
     
     //MARK: - UITableViewDataSource methods
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

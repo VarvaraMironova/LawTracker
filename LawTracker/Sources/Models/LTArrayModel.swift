@@ -117,7 +117,9 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
                 return element as! LTChangeModel
         })
         
+        var date = NSDate()
         for changeModel in changes {
+            date = changeModel.date
             var ids = [String]()
             var title = String()
             
@@ -183,7 +185,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             }
         }
         
-        let changesModel = LTChangesModel(changes: changesByKey, filtersIsApplied:filteredIds.count > 0, date:NSDate().string("yyyy-MM-dddd"))
+        let changesModel = LTChangesModel(changes: changesByKey, filtersIsApplied:filteredIds.count > 0, date:date)
         
         return changesModel
     }
