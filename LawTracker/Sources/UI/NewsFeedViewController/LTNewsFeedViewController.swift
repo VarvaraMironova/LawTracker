@@ -15,7 +15,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var currentController : LTMainContentViewController!
     var newsFeedModel     : LTChangesModel!
     var animator          : LTSliderAnimator?
-    var currentDate       : NSDate! {
+    var shownDate         : NSDate! {
         didSet {
             rootView.fillSearchButton(selectedArray.date)
         }
@@ -44,7 +44,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var selectedArray     : LTChangesModel! {
         didSet {
             currentController.arrayModel = selectedArray
-            currentDate = selectedArray.date
+            shownDate = selectedArray.date
         }
     }
     
@@ -96,6 +96,8 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupContent()
         
         let settingsModel = VTSettingModel()
         if true != settingsModel.firstLaunch {
@@ -216,12 +218,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     // MARK: - Public
-    func setupNews(changesModel: LTChangesModel) {
+    func setupContent() {
         currentController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
         let containerView = rootView.contentView
         addChildViewController(currentController, view: containerView)
-        
-        currentController.arrayModel = selectedArray
         
         setCurrentController(currentController)
         scrollToTop()
@@ -379,15 +379,12 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         
         switch filterType {
         case .byCommittees:
-            setupNews(byCommitteesArray)
             selectedArray = byCommitteesArray
             
         case .byInitiators:
-            setupNews(byInitiatorsArray)
             selectedArray = byInitiatorsArray
             
         case .byLaws:
-            setupNews(byLawsArray)
             selectedArray = byLawsArray
         }
     }
