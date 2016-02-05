@@ -256,7 +256,41 @@
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pf2-5n-rlR">
                                                 <rect key="frame" x="0.0" y="0.0" width="414" height="70"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WDV-Vm-ToY">
+                                                        <rect key="frame" x="0.0" y="0.0" width="206" height="69"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="18"/>
+                                                        <state key="normal" title="Відмінити">
+                                                            <color key="titleColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="onHidePickerButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="aUI-lE-2WP"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zQL-qD-kMy">
+                                                        <rect key="frame" x="207" y="1" width="207" height="69"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="18"/>
+                                                        <state key="normal" title="Готово">
+                                                            <color key="titleColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="onDonePickerButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="Kqs-uL-1QW"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
                                                 <color key="backgroundColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                <constraints>
+                                                    <constraint firstItem="zQL-qD-kMy" firstAttribute="leading" secondItem="WDV-Vm-ToY" secondAttribute="trailing" constant="1" id="0ou-xy-ffS"/>
+                                                    <constraint firstItem="WDV-Vm-ToY" firstAttribute="leading" secondItem="pf2-5n-rlR" secondAttribute="leading" id="13w-TM-QJo"/>
+                                                    <constraint firstItem="WDV-Vm-ToY" firstAttribute="top" secondItem="pf2-5n-rlR" secondAttribute="top" id="6Ds-Zd-DU0"/>
+                                                    <constraint firstItem="zQL-qD-kMy" firstAttribute="top" secondItem="pf2-5n-rlR" secondAttribute="top" constant="1" id="PgG-HK-VqY"/>
+                                                    <constraint firstAttribute="bottom" secondItem="zQL-qD-kMy" secondAttribute="bottom" id="SQg-Nz-7ae"/>
+                                                    <constraint firstAttribute="trailing" secondItem="zQL-qD-kMy" secondAttribute="trailing" id="V2k-RZ-pvE"/>
+                                                    <constraint firstAttribute="bottom" secondItem="WDV-Vm-ToY" secondAttribute="bottom" constant="1" id="pci-tc-B5w"/>
+                                                    <constraint firstItem="zQL-qD-kMy" firstAttribute="width" secondItem="pf2-5n-rlR" secondAttribute="width" multiplier="1:2" id="vmN-aL-FMc"/>
+                                                </constraints>
                                             </view>
                                             <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" minuteInterval="1" useCurrentDate="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xg0-Uk-qEL">
                                                 <rect key="frame" x="0.0" y="70" width="414" height="216"/>
@@ -265,45 +299,15 @@
                                                 </date>
                                                 <locale key="locale" localeIdentifier="uk_UA"/>
                                             </datePicker>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WDV-Vm-ToY">
-                                                <rect key="frame" x="0.0" y="0.0" width="206" height="69"/>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="18"/>
-                                                <state key="normal" title="Відмінити">
-                                                    <color key="titleColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
-                                                </state>
-                                                <connections>
-                                                    <action selector="onHidePickerButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="aUI-lE-2WP"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zQL-qD-kMy">
-                                                <rect key="frame" x="207" y="0.0" width="207" height="69"/>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="18"/>
-                                                <state key="normal" title="Готово">
-                                                    <color key="titleColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
-                                                </state>
-                                                <connections>
-                                                    <action selector="onDonePickerButton:" destination="Gc8-QQ-71K" eventType="touchUpInside" id="Kqs-uL-1QW"/>
-                                                </connections>
-                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
-                                            <constraint firstItem="WDV-Vm-ToY" firstAttribute="leading" secondItem="Muc-BV-xbv" secondAttribute="leading" id="2mX-2F-dFL"/>
-                                            <constraint firstItem="zQL-qD-kMy" firstAttribute="top" secondItem="Muc-BV-xbv" secondAttribute="top" id="Bn8-Rn-27M"/>
                                             <constraint firstItem="pf2-5n-rlR" firstAttribute="height" secondItem="Muc-BV-xbv" secondAttribute="height" multiplier="70:666" id="Ffa-00-eZa"/>
-                                            <constraint firstItem="zQL-qD-kMy" firstAttribute="leading" secondItem="WDV-Vm-ToY" secondAttribute="trailing" constant="1" id="Hg0-jM-agk"/>
                                             <constraint firstItem="Xg0-Uk-qEL" firstAttribute="leading" secondItem="Muc-BV-xbv" secondAttribute="leading" id="MUz-pO-iub"/>
-                                            <constraint firstItem="zQL-qD-kMy" firstAttribute="height" secondItem="pf2-5n-rlR" secondAttribute="height" constant="-1" id="Qaf-aC-4T6"/>
                                             <constraint firstItem="pf2-5n-rlR" firstAttribute="leading" secondItem="Muc-BV-xbv" secondAttribute="leading" id="UHa-iB-ymL"/>
-                                            <constraint firstItem="WDV-Vm-ToY" firstAttribute="height" secondItem="pf2-5n-rlR" secondAttribute="height" constant="-1" id="WU7-Gx-7jL"/>
-                                            <constraint firstItem="WDV-Vm-ToY" firstAttribute="top" secondItem="Muc-BV-xbv" secondAttribute="top" id="Wt5-oY-AuQ"/>
                                             <constraint firstItem="pf2-5n-rlR" firstAttribute="top" secondItem="Muc-BV-xbv" secondAttribute="top" id="b60-ag-XDl"/>
                                             <constraint firstItem="Xg0-Uk-qEL" firstAttribute="top" secondItem="pf2-5n-rlR" secondAttribute="bottom" id="czQ-Zi-EQM"/>
                                             <constraint firstAttribute="trailing" secondItem="Xg0-Uk-qEL" secondAttribute="trailing" id="dbY-oQ-C7K"/>
-                                            <constraint firstItem="zQL-qD-kMy" firstAttribute="width" secondItem="Muc-BV-xbv" secondAttribute="width" multiplier="1:2" id="lQ6-7E-Zwk"/>
-                                            <constraint firstAttribute="trailing" secondItem="zQL-qD-kMy" secondAttribute="trailing" id="q4l-N9-15L"/>
                                             <constraint firstAttribute="trailing" secondItem="pf2-5n-rlR" secondAttribute="trailing" id="qXY-Dj-gZx"/>
                                         </constraints>
                                     </view>
