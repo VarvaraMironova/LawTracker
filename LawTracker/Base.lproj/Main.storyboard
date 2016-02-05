@@ -385,6 +385,7 @@
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstItem="aVb-YE-9Nq" firstAttribute="height" secondItem="g1L-GO-s7z" secondAttribute="height" id="0XZ-h7-dsl"/>
                                     <constraint firstItem="4bD-yj-gA8" firstAttribute="top" secondItem="esc-7j-lc2" secondAttribute="top" id="3Rq-wa-VxN"/>
@@ -441,6 +442,7 @@
                             <outlet property="menuContainerView" destination="i6m-Jy-fGD" id="nFx-pG-CyB"/>
                             <outlet property="searchDateButton" destination="AL4-n6-1oZ" id="x83-5l-Tfp"/>
                             <outlet property="tabBarContainerView" destination="aVb-YE-9Nq" id="BaC-rf-jOr"/>
+                            <outletCollection property="gestureRecognizers" destination="uBE-VW-pGf" appends="YES" id="zmU-sj-c7T"/>
                         </connections>
                     </view>
                     <navigationItem key="navigationItem" id="tXv-Mm-GrY"/>

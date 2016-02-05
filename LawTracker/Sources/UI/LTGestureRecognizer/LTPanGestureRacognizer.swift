@@ -29,12 +29,10 @@ class LTPanGestureRacognizer: UIPanGestureRecognizer {
                 direction = CGPointEqualToPoint(CGPointZero, translation) ? directionForTranslation(velocityInView(view)) : directionForTranslation(translation)
                 startLocation = locationInView(view)
             }
-            
-            self.state = newValue
         }
         
         get {
-            return self.state
+            return super.state
         }
     }
     
