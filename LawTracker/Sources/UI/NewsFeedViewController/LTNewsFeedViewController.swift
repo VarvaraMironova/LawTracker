@@ -17,10 +17,11 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var animator          : LTSliderAnimator?
     var shownDate         : NSDate! {
         didSet {
-            rootView.fillSearchButton(selectedArray.date)
+            rootView.fillSearchButton(shownDate)
         }
     }
     
+    var isLoading     : Bool = false
     var loadedAtFirst : Bool = true
     var loadingCount  : Int = 0
     
@@ -42,9 +43,22 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var changesModel      : LTArrayModel!
     
     var selectedArray     : LTChangesModel! {
-        didSet {
+        set {
             currentController.arrayModel = selectedArray
             shownDate = selectedArray.date
+        }
+
+        get {
+            switch filterType {
+            case .byCommittees:
+                return byCommitteesArray
+                
+            case .byInitiators:
+                return byInitiatorsArray
+                
+            case .byLaws:
+                return byLawsArray
+            }
         }
     }
     
@@ -97,15 +111,20 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        automaticallyAdjustsScrollViewInsets = false
+
         setupContent()
         
         let settingsModel = VTSettingModel()
+        let date = NSDate().previousDay()
         if true != settingsModel.firstLaunch {
             //download data from server
             loadData()
         } else {
-            downloadChanges(NSDate().previousDay())
+            downloadChanges(date)
         }
+        
+        shownDate = date
         
         //add menuViewController as a childViewController to menuContainerView
         addChildViewController(menuViewController, view: rootView.menuContainerView)
@@ -134,6 +153,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
 
     //MARK: - Interface Handling
     @IBAction func onGesture(sender: LTPanGestureRacognizer) {
+        if isLoading {
+            return
+        }
+        
         let direction = sender.direction
         if direction != .Right {
             handlePageSwitchingGesture(sender)
@@ -149,12 +172,20 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func onMenuButton(sender: AnyObject) {
+        if isLoading {
+            return
+        }
+        
         dispatch_async(dispatch_get_main_queue()) {
             self.rootView.showMenu()
         }
     }
     
     @IBAction func onFilterButton(sender: UIButton) {
+        if isLoading {
+            return
+        }
+        
         dispatch_async(dispatch_get_main_queue()) {
             let filterController = self.storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
             filterController.delegate = self
@@ -174,7 +205,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                 break
             }
             
-            let filters = LTArrayModel(entityName: entityName, predicate: NSPredicate(value: true))
+            let filters = LTArrayModel(entityName: entityName, predicate: NSPredicate(value: true), date: NSDate())
             filterController.filters = filters.filters(self.filterType)
             
             self.presentViewController(filterController, animated: true, completion: nil)
@@ -182,6 +213,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func onByCommitteesButton(sender: LTSwitchButton) {
+        if isLoading {
+            return
+        }
+        
         if rootView.selectedButton != sender {
             rootView.selectedButton = sender
             selectedArray = byCommitteesArray
@@ -189,6 +224,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func onByInitializersButton(sender: LTSwitchButton) {
+        if isLoading {
+            return
+        }
+        
         if rootView.selectedButton != sender {
             rootView.selectedButton = sender
             selectedArray = byInitiatorsArray
@@ -196,6 +235,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func byLawsButton(sender: LTSwitchButton) {
+        if isLoading {
+            return
+        }
+        
         if rootView.selectedButton != sender {
             rootView.selectedButton = sender
             selectedArray = byLawsArray
@@ -203,6 +246,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func onSearchButton(sender: AnyObject) {
+        if isLoading {
+            return
+        }
+        
         rootView.showDatePicker()
     }
     
@@ -217,6 +264,61 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         downloadChanges(date)
     }
     
+    func refreshData() {
+        dispatch_async(dispatch_get_main_queue()) {
+            let alertViewController: UIAlertController = UIAlertController(title: "Оновити базу законопроектів, ініціаторів та комітетів?", message:"Це може зайняти кілька хвилин", preferredStyle: .Alert)
+            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: {void in
+                self.loadData()
+            }))
+            
+            alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
+    
+            self.presentViewController(alertViewController, animated: true, completion: nil)
+        }
+    }
+
+    
+    // MARK: - UIGestureRecognizerDelegate
+    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return navigationGesture == gestureRecognizer || navigationGesture == otherGestureRecognizer
+    }
+    
+    func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if isLoading {
+            return false
+        }
+        
+        navigationGesture.changeDirection()
+        if let navigationController = navigationController as UINavigationController! {
+            let shouldPop = navigationController.viewControllers.count > 1
+            var isNavigationGesture = false
+            if let gestureRecognizer = navigationGesture as LTPanGestureRacognizer! {
+                let direction = gestureRecognizer.direction
+                isNavigationGesture = .Right == direction
+            }
+            
+            if shouldPop && isNavigationGesture {
+                return true
+            }
+            
+            if self != navigationController.topViewController {
+                return false
+            }
+            
+            let tableView = currentController.rootView.contentTableView
+            let bounds = tableView.bounds
+            let shouldBegin = (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && shownDate.compare(NSDate().previousDay()) == .OrderedAscending) || ((CGRectGetMaxY(bounds) >= (tableView.contentSize.height - 1)) && .Up == navigationGesture.direction)
+            
+            if CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && shownDate.compare(NSDate().previousDay()) == .OrderedSame {
+                refreshData()
+            }
+            
+            return shouldBegin
+        }
+        
+        return false
+    }
+    
     // MARK: - Public
     func setupContent() {
         currentController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
@@ -229,13 +331,14 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     // MARK: - Private
     private func scrollToTop() {
-        currentController.rootView.contentTableView.setContentOffset(CGPointZero, animated: true)
+        currentController.rootView.contentTableView.setContentOffset(CGPointZero, animated: false)
     }
     
     private func handlePageSwitchingGesture(recognizer: LTPanGestureRacognizer) {
-        let location = recognizer.locationInView(recognizer.view)
+        let recognizerView = recognizer.view
+        let location = recognizer.locationInView(recognizerView)
         let direction = recognizer.direction
-        let translation = recognizer.translationInView(recognizer.view)
+        let translation = recognizer.translationInView(recognizerView)
         let state = recognizer.state
         
         if .Changed == state {
@@ -245,24 +348,29 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             let distance = sqrt(dx*dx + dy*dy)
             if distance >= 0.0 {
                 if let animator = animator as LTSliderAnimator! {
-                    let percent = (.Down == direction && location.y < recognizer.startLocation.y) || (.Up == direction && location.y > recognizer.startLocation.y) ? 0.0 : fabs(distance/CGRectGetHeight(view.bounds))
+                    let percent = (.Down == direction && location.y < recognizer.startLocation.y) || (.Up == direction && location.y > recognizer.startLocation.y) ? 0.0 : fabs(distance/CGRectGetHeight(recognizerView!.bounds))
                     animator.updateInteractiveTransition(percent)
                 } else {
                     animator = LTSliderAnimator()
+                    
                     if .Down == direction && translation.y > 0 {
-                        //downloadChanges previous day -> LTChangesModel
+                        if shownDate.compare(NSDate()) == .OrderedAscending {
+                            downloadChanges(shownDate.nextDay())
+                        }
                     } else if translation.y < 0 {
-                        //downloadChanges for next day -> LTChangesModel
+                        downloadChanges(shownDate.previousDay())
                     }
                     
                     //instantiate LTMainContentViewController with LTChangesModel
-                    let currentController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
-                    setCurrentController(currentController, animated: true, forwardDirection: .Up == direction)
+                    let nextController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
+                    setCurrentController(nextController, animated: true, forwardDirection: .Up == direction)
                 }
             }
         } else if .Ended == state {
-            let velocity = recognizer.velocityInView(recognizer.view)
+            let velocity = recognizer.velocityInView(recognizerView)
             if (velocity.y > 0 && .Down == direction) || (velocity.y < 0 && .Up == direction) {
+                scrollToTop()
+                
                 animator?.finishInteractiveTransition()
             } else {
                 animator?.cancelInteractiveTransition()
@@ -288,15 +396,19 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
         
         let containerView = rootView.contentView
-        let destinationView = toViewController.rootView
-        destinationView.translatesAutoresizingMaskIntoConstraints = true
-        destinationView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         
-        if let _ = fromViewController as LTMainContentViewController! {
+        toViewController.view.translatesAutoresizingMaskIntoConstraints = true
+        toViewController.view.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        
+        addChildViewController(toViewController, view:containerView)
+        
+        if nil == fromViewController {
             commitFeedController(toViewController)
             
             return
         }
+        
+        toViewController.arrayModel = selectedArray
         
         let context = LTTransitionContext(source: fromViewController, destination: toViewController, containerView: containerView, animated: animated, forward: forward)
         context.animator = animator
@@ -304,15 +416,13 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         let interactiveFeedScrollController = false == context.isInteractive() ? LTSliderAnimator() : animator
         if let interactiveFeedScrollController = interactiveFeedScrollController as LTSliderAnimator! {
             interactiveFeedScrollController.operation = forward ? .Pop : .Push
-            interactiveFeedScrollController.duration = 0.75
+            interactiveFeedScrollController.duration = 0.5
             context.completionBlock = {complete in
                 if true == complete {
                     self.commitFeedController(toViewController)
                 } else {
-                    toViewController.rootView.removeFromSuperview()
-                    if let fromViewController = fromViewController as LTMainContentViewController! {
-                         fromViewController.rootView.frame = containerView.bounds
-                    }
+                    toViewController.view.removeFromSuperview()
+                    fromViewController!.view.frame = containerView.bounds
                 }
                 
                 interactiveFeedScrollController.animationEnded(complete)
@@ -322,7 +432,9 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             containerView.userInteractionEnabled = false
             
             if context.isInteractive() {
-                context.animator.startInteractiveTransition(context)
+                if let _ = animator as LTSliderAnimator! {
+                    context.animator!.startInteractiveTransition(context)
+                }
             } else {
                 interactiveFeedScrollController.animateTransition(context)
             }
@@ -348,13 +460,15 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             return
         }
         
-        view.showLoadingViewInViewWithMessage(view.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
+        view.showLoadingViewInViewWithMessage(rootView.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
         LTClient.sharedInstance().downloadChanges(date) { (success, error) -> Void in
             view.hideLoadingView()
             if success {
-                self.setChangesModel(date)
-                let settingsModel = VTSettingModel()
-                settingsModel.lastDownloadDate = date
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.setChangesModel(date)
+                    let settingsModel = VTSettingModel()
+                    settingsModel.lastDownloadDate = date
+                }
             } else {
                 self.processError(error!)
             }
@@ -362,7 +476,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func setChangesModel(date: NSDate) {
-        changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date))
+        changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date), date: date)
         
         if (loadedAtFirst) && (changesModel.count() == 0) && (loadingCount < kLTMaxLoadingCount) {
             loadingCount += 1
@@ -390,6 +504,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func loadData() {
+        isLoading = true
         rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів...")
         
         let client = LTClient.sharedInstance()
@@ -410,6 +525,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                                 }
                                                 
                                                 self.rootView.hideLoadingView()
+                                                self.isLoading = false
                                                 self.downloadChanges(NSDate().previousDay())
                                             } else {
                                                 self.processError(error!)
@@ -435,6 +551,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     private func processError(error:NSError) {
         rootView.hideLoadingView()
+        isLoading = false
         
         self.displayError(error)
     }

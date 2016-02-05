@@ -79,18 +79,18 @@
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="trailing" secondItem="zbL-bK-vNN" secondAttribute="trailing" id="28O-bd-Eif"/>
+                                <constraint firstItem="zbL-bK-vNN" firstAttribute="centerX" secondItem="37a-ST-1fu" secondAttribute="centerX" id="3Ji-bn-kuL"/>
                                 <constraint firstItem="zbL-bK-vNN" firstAttribute="leading" secondItem="37a-ST-1fu" secondAttribute="leading" id="Q4h-Gy-CTH"/>
                                 <constraint firstItem="I6m-AF-G8q" firstAttribute="height" secondItem="37a-ST-1fu" secondAttribute="height" multiplier="38:50" id="Rtf-xZ-3jF"/>
                                 <constraint firstItem="I6m-AF-G8q" firstAttribute="height" secondItem="37a-ST-1fu" secondAttribute="height" multiplier="29:50" priority="999" id="SUG-Ui-GDc"/>
                                 <constraint firstItem="zbL-bK-vNN" firstAttribute="centerY" secondItem="37a-ST-1fu" secondAttribute="centerY" id="W52-SP-OXV"/>
-                                <constraint firstItem="I6m-AF-G8q" firstAttribute="leading" secondItem="37a-ST-1fu" secondAttribute="leading" constant="4" id="Ye4-p0-tm5"/>
+                                <constraint firstItem="I6m-AF-G8q" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="37a-ST-1fu" secondAttribute="leading" priority="750" constant="4" id="Ye4-p0-tm5"/>
+                                <constraint firstItem="zbL-bK-vNN" firstAttribute="leading" secondItem="I6m-AF-G8q" secondAttribute="trailing" constant="7" id="byg-Gu-03G"/>
                                 <constraint firstItem="I6m-AF-G8q" firstAttribute="centerX" secondItem="37a-ST-1fu" secondAttribute="centerX" id="eds-5J-6hN"/>
                                 <constraint firstItem="zbL-bK-vNN" firstAttribute="top" secondItem="37a-ST-1fu" secondAttribute="top" id="k8Q-S0-VeD"/>
-                                <constraint firstAttribute="trailing" secondItem="zbL-bK-vNN" secondAttribute="trailing" id="kwD-mQ-0vB"/>
                                 <constraint firstItem="I6m-AF-G8q" firstAttribute="centerY" secondItem="37a-ST-1fu" secondAttribute="centerY" id="nFK-fm-UXB"/>
                                 <constraint firstItem="I6m-AF-G8q" firstAttribute="height" secondItem="37a-ST-1fu" secondAttribute="height" multiplier="29:50" id="qZr-LH-qzy"/>
                                 <constraint firstAttribute="bottom" secondItem="I6m-AF-G8q" secondAttribute="bottom" id="ucD-56-hKd"/>
-                                <constraint firstItem="zbL-bK-vNN" firstAttribute="leading" secondItem="37a-ST-1fu" secondAttribute="leading" id="yh0-Tk-Pdf"/>
                             </constraints>
                             <variation key="default">
                                 <mask key="constraints">
@@ -102,11 +102,11 @@
                                     <exclude reference="qZr-LH-qzy"/>
                                     <exclude reference="ucD-56-hKd"/>
                                     <exclude reference="28O-bd-Eif"/>
+                                    <exclude reference="3Ji-bn-kuL"/>
                                     <exclude reference="Q4h-Gy-CTH"/>
                                     <exclude reference="W52-SP-OXV"/>
+                                    <exclude reference="byg-Gu-03G"/>
                                     <exclude reference="k8Q-S0-VeD"/>
-                                    <exclude reference="kwD-mQ-0vB"/>
-                                    <exclude reference="yh0-Tk-Pdf"/>
                                 </mask>
                             </variation>
                             <variation key="heightClass=compact">
@@ -114,9 +114,9 @@
                                     <include reference="Rtf-xZ-3jF"/>
                                     <include reference="Ye4-p0-tm5"/>
                                     <include reference="nFK-fm-UXB"/>
+                                    <include reference="3Ji-bn-kuL"/>
                                     <include reference="W52-SP-OXV"/>
-                                    <include reference="kwD-mQ-0vB"/>
-                                    <include reference="yh0-Tk-Pdf"/>
+                                    <include reference="byg-Gu-03G"/>
                                 </mask>
                             </variation>
                             <variation key="heightClass=regular">

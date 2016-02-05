@@ -43,11 +43,19 @@ extension NSDate {
         return calendar.dateFromComponents(components)!
     }
     
+    func nextDay() -> NSDate {
+        let calendar = NSCalendar.currentCalendar()
+        let components = calendar.components([.Year, .Month, .Day], fromDate: self)
+        components.day += 1
+        
+        return calendar.dateFromComponents(components)!
+    }
+    
     func dateWithoutTime() -> NSDate {
         let calendar = NSCalendar.currentCalendar()
         let components = calendar.components([.Year, .Month, .Day], fromDate: self)
         
         return calendar.dateFromComponents(components)!
     }
-    
+
 }

@@ -13,6 +13,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     var entityName  : String!
     var settings    = VTSettingModel()
     var predicate   : NSPredicate!
+    var downloadDate: NSDate!
     
     lazy var models: [LTEntityModel] = {
         return self.fetchedResultsController.fetchedObjects as! [LTEntityModel]
@@ -32,11 +33,12 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         return fetchedResultsController
     }()
     
-    init(entityName: String, predicate: NSPredicate) {
+    init(entityName: String, predicate: NSPredicate, date: NSDate) {
         super.init()
         
         self.predicate = predicate
         self.entityName = entityName
+        self.downloadDate = date
         
         do {
             try fetchedResultsController.performFetch()
@@ -117,9 +119,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
                 return element as! LTChangeModel
         })
         
-        var date = NSDate()
         for changeModel in changes {
-            date = changeModel.date
             var ids = [String]()
             var title = String()
             
@@ -185,7 +185,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             }
         }
         
-        let changesModel = LTChangesModel(changes: changesByKey, filtersIsApplied:filteredIds.count > 0, date:date)
+        let changesModel = LTChangesModel(changes: changesByKey, filtersIsApplied:filteredIds.count > 0, date:downloadDate)
         
         return changesModel
     }

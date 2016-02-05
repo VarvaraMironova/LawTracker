@@ -9,7 +9,6 @@
 import UIKit
 
 class LTMainContentViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-//    var refreshControl    : UIRefreshControl!
     var arrayModel : LTChangesModel! {
         didSet {
             rootView.contentTableView.reloadData()
@@ -33,16 +32,6 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     //MARK: - View Life Cycle
-    override func viewDidLoad() {
-        super.viewDidLoad()
-//        //add refresh control
-//        let refreshControl = UIRefreshControl()
-//        rootView.contentTableView.addSubview(refreshControl)
-//        refreshControl.addTarget(self, action: "reloadTableView", forControlEvents: .ValueChanged)
-//        
-//        self.refreshControl = refreshControl
-    }
-    
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
@@ -85,22 +74,6 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
             }
         }
     }
-    
-//    func reloadTableView() {
-//        refreshControl.beginRefreshing()
-//        
-//        dispatch_async(dispatch_get_main_queue()) {
-//            let alertViewController: UIAlertController = UIAlertController(title: "Оновити базу законопроектів, ініціаторів та комітетів?", message:"Це може зайняти кілька хвилин", preferredStyle: .Alert)
-//            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: {void in
-//                self.loadData()
-//            }))
-//            alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
-//            
-//            self.presentViewController(alertViewController, animated: true, completion: nil)
-//        }
-//        
-//        refreshControl.endRefreshing()
-//    }
     
     //MARK: - UITableViewDataSource methods
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

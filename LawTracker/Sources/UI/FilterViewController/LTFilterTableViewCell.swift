@@ -21,6 +21,13 @@ class LTFilterTableViewCell: UITableViewCell {
     func fillWithModel(model: LTFilterModel) {
         filtered = model.selected
         titleLabel.text = model.entity.title
+        
+        if let entity = model.entity as? LTCommitteeModel {
+            if let _ = entity.ends as NSDate! {
+                self.userInteractionEnabled = false
+                self.titleLabel.textColor = UIColor.darkGrayColor()
+            }
+        }
     }
     
     

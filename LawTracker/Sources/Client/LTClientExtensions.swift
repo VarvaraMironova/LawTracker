@@ -244,10 +244,6 @@ extension LTClient {
         
     }
     
-    func getInitiatorTypeWithId(id: String, completionHandler:(type:LTInitiatorTypeModel, success: Bool, error: NSError?) -> Void) {
-        
-    }
-    
     func getCommitteeWithId(id: String, completionHandler:(committee:LTCommitteeModel, success: Bool, error: NSError?) -> Void) {
         
     }

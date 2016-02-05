@@ -36,6 +36,10 @@ class LTHelpViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
     
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
+    }
+    
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator)
     {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)

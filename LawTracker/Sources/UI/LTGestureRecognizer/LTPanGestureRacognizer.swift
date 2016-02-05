@@ -22,21 +22,13 @@ class LTPanGestureRacognizer: UIPanGestureRecognizer {
     var direction      : LTPanDirection!
     var startLocation  : CGPoint!
     
-    override var state : UIGestureRecognizerState {
-        set {
-            if .Began == newValue {
-                let translation = translationInView(view)
-                direction = CGPointEqualToPoint(CGPointZero, translation) ? directionForTranslation(velocityInView(view)) : directionForTranslation(translation)
-                startLocation = locationInView(view)
-            }
-        }
-        
-        get {
-            return super.state
-        }
+    //MARK: - Public methods
+    func changeDirection() {
+        let translation = translationInView(view)
+        direction = CGPointEqualToPoint(CGPointZero, translation) ? directionForTranslation(velocityInView(view)) : directionForTranslation(translation)
+        startLocation = locationInView(view)
     }
     
-    //MARK: - Public methods
     func reset() {
         direction = .Unknown
         startLocation = CGPointZero
@@ -44,9 +36,9 @@ class LTPanGestureRacognizer: UIPanGestureRecognizer {
     
     //MARK: - Private methods
     func directionForTranslation(translation: CGPoint) -> LTPanDirection {
-        let size = CGSizeMake(translation.x, translation.y)
-        let verticalOffset = size.height
-        let horizontalOffset = size.width
+        let frame = CGRectMake(0, 0, translation.x, translation.y)
+        let verticalOffset = CGRectGetHeight(frame)
+        let horizontalOffset = CGRectGetWidth(frame)
         
         if verticalOffset < horizontalOffset {
             return translation.x > 0 ? .Right : .Left

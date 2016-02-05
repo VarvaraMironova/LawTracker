@@ -10,8 +10,8 @@ import CoreData
 
 class LTCommitteeModel: LTEntityModel {
     @NSManaged var url         : String
-    @NSManaged var starts      : NSDate
-    @NSManaged var ends        : NSDate
+    @NSManaged var starts      : NSDate?
+    @NSManaged var ends        : NSDate?
     @NSManaged var laws        : NSMutableSet
     @NSManaged var convocation : LTConvocationModel
     

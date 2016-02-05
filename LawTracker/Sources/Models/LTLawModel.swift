@@ -53,9 +53,9 @@ class LTLawModel: LTEntityModel {
                 if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
                     self.addValueForKey(initiatorModel, key: Keys.initiators)
                 } else {
-                    LTClient.sharedInstance().getInitiatorTypeWithId(typeID) {type, success, error in
+                    LTClient.sharedInstance().downloadInitiatorTypes({ (success, error) -> Void in
                         
-                    }
+                    })
                 }
             }
         }

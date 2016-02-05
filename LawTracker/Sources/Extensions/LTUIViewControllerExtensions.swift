@@ -21,7 +21,6 @@ extension UIViewController {
     func removeChildViewController(childController: UIViewController) {
         childController.willMoveToParentViewController(nil)
         childController.view.removeFromSuperview()
-        childController.removeFromParentViewController()
     }
     
     func displayError(error: NSError) {

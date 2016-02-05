@@ -12,7 +12,7 @@ typealias LTCompletionBlock = (complete: Bool!) -> Void
 
 class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
     var completionBlock : LTCompletionBlock?
-    weak var animator   : LTSliderAnimator!
+    weak var animator   : LTSliderAnimator?
     
     internal var viewControllers = [String: UIViewController]()
     internal var container       : UIView?
@@ -21,19 +21,7 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
     
     var cancelled                : Bool = false
     
-    internal var interactive   : Bool {
-        return nil != animator
-    }
-    
-    internal var percentComplete : CGFloat {
-        set {
-            self.percentComplete = newValue
-        }
-        
-        get {
-            return isInteractive() ? self.percentComplete : 1.0
-        }
-    }
+    internal var percentComplete : CGFloat!
     
     init(source: UIViewController?, destination: UIViewController?, containerView: UIView, animated: Bool, forward: Bool) {
         super.init()
@@ -62,7 +50,7 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
     }
     
     func isInteractive() -> Bool {
-        return interactive
+        return nil != animator
     }
     
     func transitionWasCancelled() -> Bool {
@@ -99,16 +87,16 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
         if let containerView = containerView() as UIView! {
             if let key = allKeysForValue(viewControllers, value: vc).first as String! {
                 switch key {
-                case UITransitionContextFromViewKey:
+                case UITransitionContextToViewControllerKey:
                     result = containerView.bounds
                     
-                    if true == forward {
+                    if false == forward {
                         result.origin.y -= result.size.height
                     }
                     
                     break
                     
-                case UITransitionContextToViewKey:
+                case UITransitionContextFromViewControllerKey:
                     result = containerView.bounds
                     break
                     
@@ -126,7 +114,7 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
         if let containerView = containerView() as UIView! {
             if let key = allKeysForValue(viewControllers, value: vc).first as String! {
                 switch key {
-                case UITransitionContextFromViewKey:
+                case UITransitionContextFromViewControllerKey:
                     result = containerView.bounds
                     
                     if true == forward {
@@ -135,7 +123,7 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
                     
                     break
                     
-                case UITransitionContextToViewKey:
+                case UITransitionContextToViewControllerKey:
                     result = containerView.bounds
                     break
                     
@@ -151,9 +139,10 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
         let offsetWidth = CGRectGetWidth(result) - CGRectGetWidth(initialFrame)
         let offsetHeight = CGRectGetHeight(result) - CGRectGetHeight(initialFrame)
         
-        result = CGRectOffset(initialFrame, offsetX * percentComplete, offsetY * percentComplete)
-        result.size.width += offsetWidth * percentComplete
-        result.size.height += offsetHeight * percentComplete
+        let percents = isInteractive() ? percentComplete : 1.0
+        result = CGRectOffset(initialFrame, offsetX * percents, offsetY * percents)
+        result.size.width += offsetWidth * percents
+        result.size.height += offsetHeight * percents
         
         return result
     }
@@ -164,8 +153,8 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
         }
     }
     
-    func updateInteractiveTransition(percentComplete: CGFloat) {
-        self.percentComplete = percentComplete
+    func updateInteractiveTransition(complete: CGFloat) {
+        percentComplete = complete
     }
     
     func finishInteractiveTransition() {

@@ -9,19 +9,10 @@
 import UIKit
 
 class LTHelpViewCell: UICollectionViewCell {
-    @IBOutlet var topImageView          : UIImageView!
-    @IBOutlet var topTextView           : UITextView!
-    @IBOutlet var bottomImageView       : UIImageView!
-    @IBOutlet var bottomTextView        : UITextView!
     @IBOutlet var backArrowImageView    : UIImageView!
     @IBOutlet var forwardArrowImageView : UIImageView!
     
-    func fill(topText: String, topImage: String, bottomText: String, bottomImage: String, index: Int) {
-        topImageView.image = UIImage(named: topImage)
-        bottomImageView.image = UIImage(named: bottomImage)
-        topTextView.text = topText
-        bottomTextView.text = bottomText
-        
+    func fill(topText: String, topImage: String, bottomText: String, bottomImage: String, index: Int) {        
         switch index {
         case 0:
             backArrowImageView.hidden = true

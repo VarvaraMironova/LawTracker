@@ -44,7 +44,6 @@ class LTNewsFeedRootView: OTMView {
         
         datePicker.date = NSDate().previousDay()
         datePicker.maximumDate = NSDate()
-        fillSearchButton(NSDate().previousDay())
         
         selectedButton = byCommitteesButton
         if let label = searchDateButton.titleLabel {
@@ -99,7 +98,10 @@ class LTNewsFeedRootView: OTMView {
     }
     
     func fillSearchButton(date: NSDate) {
-        searchDateButton.setTitle(date.longString(), forState: .Normal)
+        dispatch_async(dispatch_get_main_queue()) {
+            self.searchDateButton.setTitle(date.longString(), forState: .Normal)
+            self.datePicker.date = date
+        }
     }
     
     private func animateMenu(width: CGFloat, show: Bool) {

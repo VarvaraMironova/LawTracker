@@ -77,14 +77,14 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
+    override func prefersStatusBarHidden() -> Bool {
+        return true
+    }
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
         rootView.fillSearchBarPlaceholder(placeholderString)
-    }
-    
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -127,7 +127,15 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         
         for sectionModel in filters {
             for filterModel in sectionModel.filters {
-                filterModel.selected = !select
+                if let committeeModel = filterModel.entity as? LTCommitteeModel {
+                    if let _ = committeeModel.ends as NSDate! {
+                        filterModel.selected = false
+                    } else {
+                        filterModel.selected = !select
+                    }
+                } else {
+                    filterModel.selected = !select
+                }
             }
         }
         
