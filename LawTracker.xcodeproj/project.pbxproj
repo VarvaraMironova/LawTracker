@@ -30,7 +30,6 @@
 		C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76CE9301C1B7477006262E8 /* LTMenuTableViewCell.swift */; };
 		C76F84071C633F070085A12C /* LTSliderAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F84061C633F070085A12C /* LTSliderAnimator.swift */; };
 		C76F84091C6340D90085A12C /* LTTransitionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F84081C6340D90085A12C /* LTTransitionContext.swift */; };
-		C76F840C1C637E580085A12C /* LTMacro.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F840B1C637E580085A12C /* LTMacro.swift */; };
 		C77397321C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972C1C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift */; };
 		C77397331C3A7AE70093CBCC /* LTFontSizeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972D1C3A7AE60093CBCC /* LTFontSizeExtensions.swift */; };
 		C77397341C3A7AE70093CBCC /* LTStringHeightExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972E1C3A7AE60093CBCC /* LTStringHeightExtensions.swift */; };
@@ -103,7 +102,6 @@
 		C76CE9301C1B7477006262E8 /* LTMenuTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMenuTableViewCell.swift; sourceTree = "<group>"; };
 		C76F84061C633F070085A12C /* LTSliderAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSliderAnimator.swift; sourceTree = "<group>"; };
 		C76F84081C6340D90085A12C /* LTTransitionContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTTransitionContext.swift; sourceTree = "<group>"; };
-		C76F840B1C637E580085A12C /* LTMacro.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMacro.swift; sourceTree = "<group>"; };
 		C773972C1C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		C773972D1C3A7AE60093CBCC /* LTFontSizeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFontSizeExtensions.swift; sourceTree = "<group>"; };
 		C773972E1C3A7AE60093CBCC /* LTStringHeightExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTStringHeightExtensions.swift; sourceTree = "<group>"; };
@@ -213,14 +211,6 @@
 			path = MenuViewController;
 			sourceTree = "<group>";
 		};
-		C76F840A1C637E480085A12C /* Macro */ = {
-			isa = PBXGroup;
-			children = (
-				C76F840B1C637E580085A12C /* LTMacro.swift */,
-			);
-			path = Macro;
-			sourceTree = "<group>";
-		};
 		C773971D1C3A7ABD0093CBCC /* Client */ = {
 			isa = PBXGroup;
 			children = (
@@ -291,7 +281,6 @@
 		C7A29E701C0C9F97001B0EF5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				C76F840A1C637E480085A12C /* Macro */,
 				C7A29E721C0C9F97001B0EF5 /* Models */,
 				C773971D1C3A7ABD0093CBCC /* Client */,
 				C7A29E731C0C9F97001B0EF5 /* UI */,
@@ -502,7 +491,6 @@
 			files = (
 				C77397341C3A7AE70093CBCC /* LTStringHeightExtensions.swift in Sources */,
 				C76174B01C4D445700C344FA /* LTPersonModel.swift in Sources */,
-				C76F840C1C637E580085A12C /* LTMacro.swift in Sources */,
 				C77397451C3AB9450093CBCC /* LTClientExtensions.swift in Sources */,
 				C76F84091C6340D90085A12C /* LTTransitionContext.swift in Sources */,
 				C77397491C3D7DFA0093CBCC /* LTChangesModel.swift in Sources */,

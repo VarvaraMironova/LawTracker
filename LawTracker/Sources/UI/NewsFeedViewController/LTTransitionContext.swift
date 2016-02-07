@@ -158,7 +158,7 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
     }
     
     func finishInteractiveTransition() {
-        cancelled = true
+        cancelled = false
     }
     
     func cancelInteractiveTransition() {

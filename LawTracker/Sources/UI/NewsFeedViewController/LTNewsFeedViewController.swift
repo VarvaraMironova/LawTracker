@@ -42,10 +42,13 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     var changesModel      : LTArrayModel!
     
-    var selectedArray     : LTChangesModel! {
+    var selectedArray     : LTChangesModel? {
         set {
-            currentController.arrayModel = selectedArray
-            shownDate = selectedArray.date
+            currentController.arrayModel = newValue
+            
+            if let newValue = newValue as LTChangesModel! {
+                shownDate = newValue.date
+            }
         }
 
         get {
@@ -172,10 +175,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func onMenuButton(sender: AnyObject) {
-        if isLoading {
-            return
-        }
-        
         dispatch_async(dispatch_get_main_queue()) {
             self.rootView.showMenu()
         }
@@ -185,7 +184,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         if isLoading {
             return
         }
-        
+
         dispatch_async(dispatch_get_main_queue()) {
             let filterController = self.storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
             filterController.delegate = self
@@ -213,55 +212,60 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func onByCommitteesButton(sender: LTSwitchButton) {
-        if isLoading {
-            return
-        }
-        
-        if rootView.selectedButton != sender {
-            rootView.selectedButton = sender
-            selectedArray = byCommitteesArray
+        dispatch_async(dispatch_get_main_queue()) {
+            if self.rootView.selectedButton != sender {
+                self.scrollToTop()
+                self.rootView.selectedButton = sender
+                self.selectedArray = self.byCommitteesArray
+            }
         }
     }
     
     @IBAction func onByInitializersButton(sender: LTSwitchButton) {
-        if isLoading {
-            return
-        }
-        
-        if rootView.selectedButton != sender {
-            rootView.selectedButton = sender
-            selectedArray = byInitiatorsArray
+        dispatch_async(dispatch_get_main_queue()) {
+            if self.rootView.selectedButton != sender {
+                self.scrollToTop()
+                self.rootView.selectedButton = sender
+                self.selectedArray = self.byInitiatorsArray
+            }
         }
     }
     
     @IBAction func byLawsButton(sender: LTSwitchButton) {
-        if isLoading {
-            return
-        }
-        
-        if rootView.selectedButton != sender {
-            rootView.selectedButton = sender
-            selectedArray = byLawsArray
+        dispatch_async(dispatch_get_main_queue()) {
+            self.scrollToTop()
+            if self.rootView.selectedButton != sender {
+                self.rootView.selectedButton = sender
+                self.selectedArray = self.byLawsArray
+            }
         }
     }
     
     @IBAction func onSearchButton(sender: AnyObject) {
-        if isLoading {
-            return
+        dispatch_async(dispatch_get_main_queue()) {
+            self.rootView.showDatePicker()
         }
-        
-        rootView.showDatePicker()
     }
     
     @IBAction func onHidePickerButton(sender: AnyObject) {
-        rootView.hideDatePicker()
+        dispatch_async(dispatch_get_main_queue()) {
+            self.rootView.hideDatePicker()
+        }
     }
     
     @IBAction func onDonePickerButton(sender: AnyObject) {
-        rootView.hideDatePicker()
-        let date = rootView.datePicker.date
-        
-        downloadChanges(date)
+        dispatch_async(dispatch_get_main_queue()) {
+            self.rootView.hideDatePicker()
+            
+            if self.isLoading {
+                return
+            }
+            
+            self.scrollToTop()
+            let date = self.rootView.datePicker.date
+            
+            self.downloadChanges(date)
+        }
     }
     
     func refreshData() {
@@ -353,6 +357,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                 } else {
                     animator = LTSliderAnimator()
                     
+                    //instantiate LTMainContentViewController with LTChangesModel
+                    let nextController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
+                    setCurrentController(nextController, animated: true, forwardDirection: .Up == direction)
+                    
                     if .Down == direction && translation.y > 0 {
                         if shownDate.compare(NSDate()) == .OrderedAscending {
                             downloadChanges(shownDate.nextDay())
@@ -360,10 +368,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     } else if translation.y < 0 {
                         downloadChanges(shownDate.previousDay())
                     }
-                    
-                    //instantiate LTMainContentViewController with LTChangesModel
-                    let nextController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
-                    setCurrentController(nextController, animated: true, forwardDirection: .Up == direction)
                 }
             }
         } else if .Ended == state {
@@ -387,6 +391,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     func setCurrentController(controller: LTMainContentViewController, animated: Bool, forwardDirection: Bool) {
         if currentController != controller {
             transitionFromViewController(currentController, toViewController: controller, animated: animated, forward: forwardDirection)
+            currentController = controller
         }
     }
     
@@ -408,8 +413,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             return
         }
         
-        toViewController.arrayModel = selectedArray
-        
         let context = LTTransitionContext(source: fromViewController, destination: toViewController, containerView: containerView, animated: animated, forward: forward)
         context.animator = animator
         
@@ -423,6 +426,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                 } else {
                     toViewController.view.removeFromSuperview()
                     fromViewController!.view.frame = containerView.bounds
+                    self.currentController = fromViewController
+                    if let arrayModel = fromViewController!.arrayModel as LTChangesModel! {
+                        self.shownDate = arrayModel.date
+                    }
                 }
                 
                 interactiveFeedScrollController.animationEnded(complete)

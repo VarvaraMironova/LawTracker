@@ -20,7 +20,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     var settingsModel = VTSettingModel()
     var filteredArray = [LTSectionModel]()
     
-    var filters          : [LTSectionModel]!
+    var filters          : [LTSectionModel]?
     
     var selectedFilters  : [String]? {
         set {
@@ -96,18 +96,20 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     //MARK: - Interface Handling
     @IBAction func onOkButton(sender: AnyObject) {
         //save filteredArray
-        var selectedArray = [LTFilterModel]()
-        for sectionModel in filters {
-            selectedArray.appendContentsOf(sectionModel.filters.filter() { $0.selected == true })
+        if let filters = filters as [LTSectionModel]! {
+            var selectedArray = [LTFilterModel]()
+            for sectionModel in filters {
+                selectedArray.appendContentsOf(sectionModel.filters.filter() { $0.selected == true })
+            }
+            
+            var filteredIds = [String]()
+            
+            for filterModel in selectedArray {
+                filteredIds.append(filterModel.entity.id)
+            }
+            
+            selectedFilters = filteredIds
         }
-        
-        var filteredIds = [String]()
-        
-        for filterModel in selectedArray {
-            filteredIds.append(filterModel.entity.id)
-        }
-        
-        selectedFilters = filteredIds
         
         dismissViewControllerAnimated(true, completion: nil)
     }
@@ -122,94 +124,123 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     @IBAction func onSelectAllButton(sender: AnyObject) {
         rootView.endEditing(true)
         
-        let select = rootView.selectAllButton.on
-        rootView.selectAllButton.on = !select
-        
-        for sectionModel in filters {
-            for filterModel in sectionModel.filters {
-                if let committeeModel = filterModel.entity as? LTCommitteeModel {
-                    if let _ = committeeModel.ends as NSDate! {
-                        filterModel.selected = false
+        if let filters = filters as [LTSectionModel]! {
+            let select = rootView.selectAllButton.on
+            rootView.selectAllButton.on = !select
+            
+            for sectionModel in filters {
+                for filterModel in sectionModel.filters {
+                    if let committeeModel = filterModel.entity as? LTCommitteeModel {
+                        if let _ = committeeModel.ends as NSDate! {
+                            filterModel.selected = false
+                        } else {
+                            filterModel.selected = !select
+                        }
                     } else {
                         filterModel.selected = !select
                     }
-                } else {
-                    filterModel.selected = !select
-                }
-            }
-        }
-        
-        filterContentForSearchText("", scope: rootView.searchBar.selectedScopeButtonIndex)
-        
-        rootView.tableView.reloadData()
-    }
-    
-    func headerTapped() {
-        dispatch_async(dispatch_get_main_queue()) {
-            self.rootView.endEditing(true)
-            let deputiesArray = self.filters.filter(){ $0.title == "Народні депутати України" }.first
-            if let deputies = deputiesArray as LTSectionModel! {
-                for model in deputies.filters {
-                    model.selected = !model.selected
                 }
             }
             
-            self.filterContentForSearchText(self.rootView.searchBar.text!, scope: self.rootView.searchBar.selectedScopeButtonIndex)
+            filterContentForSearchText("", scope: rootView.searchBar.selectedScopeButtonIndex)
+            
+            rootView.tableView.reloadData()
+        }
+    }
+    
+    func headerTapped() {
+        let view = rootView
+        dispatch_async(dispatch_get_main_queue()) {
+            if let filters = self.filters as [LTSectionModel]! {
+                view.endEditing(true)
+                let deputiesArray = filters.filter(){ $0.title == "Народні депутати України" }.first
+                if let deputies = deputiesArray as LTSectionModel! {
+                    for model in deputies.filters {
+                        model.selected = !model.selected
+                    }
+                }
+                
+                self.filterContentForSearchText(view.searchBar.text!, scope: view.searchBar.selectedScopeButtonIndex)
+            }
         }
     }
     
     //MARK: - UITableViewDataSource methods
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionModel = rootView.searchBarActive ? filteredArray[section] : filters[section]
+        if let filters = filters as [LTSectionModel]! {
+            let sectionModel = rootView.searchBarActive ? filteredArray[section] : filters[section]
+            
+            return sectionModel.filters.count
+        }
         
-        return sectionModel.filters.count
+        return 0
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return rootView.searchBarActive ? filteredArray.count : filters.count
+        if let filters = filters as [LTSectionModel]! {
+            return rootView.searchBarActive ? filteredArray.count : filters.count
+        }
+        
+        return 0
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("LTFilterTableViewCell", forIndexPath: indexPath) as! LTFilterTableViewCell
-        let model = rootView.searchBarActive ? filteredArray[indexPath.section].filters[indexPath.row] : filters[indexPath.section].filters[indexPath.row]
-        
-        cell.fillWithModel(model)
+        if let filters = filters as [LTSectionModel]! {
+            let model = rootView.searchBarActive ? filteredArray[indexPath.section].filters[indexPath.row] : filters[indexPath.section].filters[indexPath.row]
+            
+            cell.fillWithModel(model)
+        }
         
         return cell
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return rootView.searchBarActive ? filteredArray[section].title : filters[section].title
+        if let filters = filters as [LTSectionModel]! {
+            return rootView.searchBarActive ? filteredArray[section].title : filters[section].title
+        }
+        
+        return nil
     }
     
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = LTCellHeaderView.headerView() as LTCellHeaderView
-        let title = rootView.searchBarActive ? filteredArray[section].title : filters[section].title
-        headerView.fillWithString(title)
-        let button = UIButton()
-        button.frame = headerView.frame
-        button.addTarget(self, action: "headerTapped", forControlEvents: .TouchUpInside)
-        headerView.addSubview(button)
+        if let filters = filters as [LTSectionModel]! {
+            let headerView = LTCellHeaderView.headerView() as LTCellHeaderView
+            let title = rootView.searchBarActive ? filteredArray[section].title : filters[section].title
+            headerView.fillWithString(title)
+            let button = UIButton()
+            button.frame = headerView.frame
+            button.addTarget(self, action: "headerTapped", forControlEvents: .TouchUpInside)
+            headerView.addSubview(button)
+            
+            return headerView
+        }
         
-        return headerView
+        return nil
     }
     
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        let title = rootView.searchBarActive ? filteredArray[section].title : filters[section].title
+        if let filters = filters as [LTSectionModel]! {
+            let title = rootView.searchBarActive ? filteredArray[section].title : filters[section].title
+            
+            return title == "" ? 0.1 : 30.0
+        }
         
-        return title == "" ? 0.1 : 30.0
+        return 0.0
     }
     
     //MARK: - UITableViewDelegate methods
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         rootView.endEditing(true)
-        let searchBar = rootView.searchBar
-        let array = rootView.searchBarActive ? filteredArray[indexPath.section].filters : filters[indexPath.section].filters
-        let cell = tableView.cellForRowAtIndexPath(indexPath) as! LTFilterTableViewCell
-        let selectedModel = array[indexPath.row]
-        selectedModel.selected = !cell.filtered
-        
-        filterContentForSearchText(searchBar.text!, scope: rootView.searchBar.selectedScopeButtonIndex)
+        if let filters = filters as [LTSectionModel]! {
+            let searchBar = rootView.searchBar
+            let array = rootView.searchBarActive ? filteredArray[indexPath.section].filters : filters[indexPath.section].filters
+            let cell = tableView.cellForRowAtIndexPath(indexPath) as! LTFilterTableViewCell
+            let selectedModel = array[indexPath.row]
+            selectedModel.selected = !cell.filtered
+            
+            filterContentForSearchText(searchBar.text!, scope: rootView.searchBar.selectedScopeButtonIndex)
+        }
     }
     
     //MARK: - UISearchBarDelegate
@@ -231,34 +262,36 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     
     //MARK: - Private methods
     private func filterContentForSearchText(searchText: String, scope: Int = 0) {
-        filteredArray = [LTSectionModel]()
-        for sectionModel in filters {
-            let filters = sectionModel.filters.filter({( filter : LTFilterModel) -> Bool in
-                let category = filter.selected == true ? 1 : 2
-                let categoryMatch = (scope == 0) || (category == scope)
-                if searchText != "" {
-                    let containsInTitle = filter.entity.title.lowercaseString.containsString(searchText.lowercaseString)
-                    if let entity = filter.entity as? LTLawModel {
-                        let containsInNumber = entity.number.lowercaseString.containsString(searchText.lowercaseString)
-                        
-                        return categoryMatch && (containsInTitle || containsInNumber)
+        if let filters = filters as [LTSectionModel]! {
+            filteredArray = [LTSectionModel]()
+            for sectionModel in filters {
+                let filters = sectionModel.filters.filter({( filter : LTFilterModel) -> Bool in
+                    let category = filter.selected == true ? 1 : 2
+                    let categoryMatch = (scope == 0) || (category == scope)
+                    if searchText != "" {
+                        let containsInTitle = filter.entity.title.lowercaseString.containsString(searchText.lowercaseString)
+                        if let entity = filter.entity as? LTLawModel {
+                            let containsInNumber = entity.number.lowercaseString.containsString(searchText.lowercaseString)
+                            
+                            return categoryMatch && (containsInTitle || containsInNumber)
+                        } else {
+                            return categoryMatch && containsInTitle
+                        }
                     } else {
-                        return categoryMatch && containsInTitle
+                        return categoryMatch
                     }
-                } else {
-                    return categoryMatch
-                }
-            })
-            
-            if filters.count > 0 {
-                let filteredSection = LTSectionModel(title: sectionModel.title)
-                filteredSection.filters = filters
+                })
                 
-                filteredArray.append(filteredSection)
+                if filters.count > 0 {
+                    let filteredSection = LTSectionModel(title: sectionModel.title)
+                    filteredSection.filters = filters
+                    
+                    filteredArray.append(filteredSection)
+                }
             }
+            
+            rootView.tableView.reloadData()
         }
-        
-        rootView.tableView.reloadData()
     }
     
 }

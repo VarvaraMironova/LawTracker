@@ -123,6 +123,10 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             var ids = [String]()
             var title = String()
             
+            if changeModel.law.initiators.count == 0 {
+                break
+            }
+            
             switch key {
             case .byLaws:
                 ids = [changeModel.law.id]
