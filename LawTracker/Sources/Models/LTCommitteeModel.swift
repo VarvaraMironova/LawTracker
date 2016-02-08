@@ -15,6 +15,12 @@ class LTCommitteeModel: LTEntityModel {
     @NSManaged var laws        : NSMutableSet
     @NSManaged var convocation : LTConvocationModel
     
+    var expired : Bool {
+        get {
+            return ends != nil
+        }
+    }
+    
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }

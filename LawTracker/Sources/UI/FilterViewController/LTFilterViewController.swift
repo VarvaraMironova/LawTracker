@@ -131,7 +131,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
             for sectionModel in filters {
                 for filterModel in sectionModel.filters {
                     if let committeeModel = filterModel.entity as? LTCommitteeModel {
-                        if let _ = committeeModel.ends as NSDate! {
+                        if committeeModel.expired {
                             filterModel.selected = false
                         } else {
                             filterModel.selected = !select

@@ -18,11 +18,11 @@ struct LTPersonModel {
         static let convocations = "convocations"
     }
     
-    var id         : String!
-    var firstName  : String!
-    var secondName : String!
-    var lastName   : String!
-    var fullName   : String!
+    var id         : String?
+    var firstName  : String?
+    var secondName : String?
+    var lastName   : String?
+    var fullName   : String?
     
     var initiator  : LTInitiatorModel!
     
@@ -35,40 +35,52 @@ struct LTPersonModel {
             self.id = "\(id)"
         }
         
-        if nil == LTInitiatorModel.modelWithID(id, entityName: "LTInitiatorModel") {
-            if let firstName = dictionary[Keys.firstName] as? String {
-                self.firstName = firstName
-            }
-            
-            if let secondName = dictionary[Keys.secondName] as? String {
-                self.secondName = secondName
-            }
-            
-            if let lastName = dictionary[Keys.lastName] as? String {
-                self.lastName = lastName
-            }
-            
-            if let fullName = dictionary[Keys.fullName] as? String {
-                self.fullName = fullName
-            }
-            
-            //save convocations
-            if let convocationsArray = dictionary[Keys.convocations] as? [String] {
-                for convocation in convocationsArray {
-                    if let convocationModel = LTConvocationModel.convocationWithNumber(convocation) {
-                        convocations.addObject(convocationModel)
-                    } else {
-                        //download convocation with number = convocation
+        if let id = id as String! {
+            if nil == LTInitiatorModel.modelWithID(id, entityName: "LTInitiatorModel") {
+                if let firstName = dictionary[Keys.firstName] as? String {
+                    self.firstName = firstName
+                }
+                
+                if let secondName = dictionary[Keys.secondName] as? String {
+                    self.secondName = secondName
+                }
+                
+                if let lastName = dictionary[Keys.lastName] as? String {
+                    self.lastName = lastName
+                }
+                
+                if let fullName = dictionary[Keys.fullName] as? String {
+                    self.fullName = fullName
+                } else {
+                    if let firstName = firstName as String! {
+                        if let secondName = secondName as String! {
+                            if let lastName = lastName as String! {
+                                self.fullName = [lastName, firstName, secondName].joinWithSeparator(" ")
+                            }
+                        }
                     }
                 }
-            }
-            
-            //create initiatorModel
-            if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName:"LTInitiatorModel") as? LTInitiatorModel {
-                initiator = initiatorModel
-            } else {
-                let dictionary = ["id":id, "title":fullName, "isDeputy":"true", "convocations":convocations]
-                initiator = LTInitiatorModel(dictionary: dictionary, context: context, entityName: "LTInitiatorModel")
+                
+                //save convocations
+                if let convocationsArray = dictionary[Keys.convocations] as? [String] {
+                    for convocation in convocationsArray {
+                        if let convocationModel = LTConvocationModel.convocationWithNumber(convocation) {
+                            convocations.addObject(convocationModel)
+                        } else {
+                            print("Cannot find convocation with id \(convocation)")
+                        }
+                    }
+                }
+                
+                //create initiatorModel
+                if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName:"LTInitiatorModel") as? LTInitiatorModel {
+                    initiator = initiatorModel
+                } else {
+                    if let fullName = fullName as String! {
+                        let dictionary = ["id":id, "title":fullName, "isDeputy":"true", "convocations":convocations]
+                        initiator = LTInitiatorModel(dictionary: dictionary, context: context, entityName: "LTInitiatorModel")
+                    }
+                }
             }
         }
     }

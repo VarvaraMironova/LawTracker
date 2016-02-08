@@ -236,16 +236,116 @@ extension LTClient {
         }
     }
     
-    func getLawWithId(id: String, completionHandler:(law: LTLawModel, success: Bool, error: NSError?) -> Void) {
+    func getLawWithId(id: String, completionHandler:(law: LTLawModel?, success: Bool, error: NSError?) -> Void) {
+        //http://www.chesno.org/legislation/<convocation's id>/bill/<номер законопроекту>/api/
+        if nil == currentConvocation {
+            let contentError = LTClient.errorForMessage("Cannot download bills. " + LTClient.KLTMessages.noCurrentConvocation)
+            completionHandler(law: nil, success: false, error: contentError)
+            
+            return
+        }
         
+        let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, id, kVTParameters.extras]
+        let urlString = urlVars.joinWithSeparator("/")
+        let url = NSURL(string: urlString)!
+        let request = NSURLRequest(URL: url)
+        
+        downloadTask = task(request){data, error in
+            if nil != error {
+                completionHandler(law: nil, success: false, error: error)
+            } else {
+                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                    if nil != error {
+                        completionHandler(law: nil, success: false, error: error)
+                    } else {
+                        if var lawDictionary = result as? [String: AnyObject] {
+                            lawDictionary["number"] = id
+                            var lawArray = [NSDictionary]()
+                            lawArray.append(lawDictionary)
+                            
+                            CoreDataStackManager.sharedInstance().storeLaws(lawArray, convocation: self.currentConvocation!.id){finished in
+                                if finished {
+                                    if let lawModel = LTLawModel.lawWithNumber(id) as? LTLawModel {
+                                        completionHandler(law: lawModel, success: true, error: nil)
+                                    }
+                                    
+                                    completionHandler(law: nil, success: true, error: nil)
+                                }
+                            }
+                        } else {
+                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                            completionHandler(law: nil, success: false, error: contentError)
+                        }
+                    }
+                }
+            }
+        }
     }
     
-    func getInitiatorWithId(id: String, completionHandler:(initiator: LTInitiatorModel, success: Bool, error: NSError?) -> Void) {
+    func getInitiatorWithId(id: String, completionHandler:(initiator: LTInitiatorModel?, success: Bool, error: NSError?) -> Void) {
+        //http://www.chesno.org/legislation/initiators/<person_id>/api/
+        let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, kLTMethodNames.initiators, id, kVTParameters.extras]
+        let urlString = urlVars.joinWithSeparator("/")
+        let url = NSURL(string: urlString)!
+        let request = NSURLRequest(URL: url)
         
+        downloadTask = task(request){data, error in
+            if nil != error {
+                completionHandler(initiator: nil, success: false, error: error)
+            } else {
+                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                    if nil != error {
+                        completionHandler(initiator: nil, success: false, error: error)
+                    } else {
+                        if let person = result as? [String: AnyObject] {
+                            var personArray = [NSDictionary]()
+                            personArray.append(person)
+                            CoreDataStackManager.sharedInstance().storePersons(personArray){finished in
+                                if finished {
+                                    if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName: "LTInitiatorModel") as? LTInitiatorModel {
+                                        
+                                        completionHandler(initiator: initiatorModel, success: true, error: nil)
+                                    } else {
+                                        completionHandler(initiator: nil, success: true, error: nil)
+                                    }
+                                }
+                            }
+                        } else {
+                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                            completionHandler(initiator: nil, success: false, error: contentError)
+                        }
+                    }
+                }
+            }
+        }
     }
     
-    func getCommitteeWithId(id: String, completionHandler:(committee:LTCommitteeModel, success: Bool, error: NSError?) -> Void) {
-        
+    func getCommitteeWithId(id: String, completionHandler:(committee:LTCommitteeModel?, success: Bool, error: NSError?) -> Void) {
+        downloadCommittees { (success, error) -> Void in
+            if success {
+                if let committeeModel = LTCommitteeModel.modelWithID(id, entityName: "LTCommitteeModel") as? LTCommitteeModel {
+                    completionHandler(committee: committeeModel, success: success, error: nil)
+                } else {
+                    completionHandler(committee: nil, success: success, error: nil)
+                }
+            } else {
+                completionHandler(committee: nil, success: success, error: error)
+            }
+        }
+    }
+    
+    func getInitiatorTypeWithId(id: String, completionHandler:(initiatorModel:LTInitiatorModel?, success: Bool, error: NSError?) -> Void) {
+        downloadInitiatorTypes { (success, error) -> Void in
+            if success {
+                if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName: "LTInitiatorModel") as? LTInitiatorModel {
+                    completionHandler(initiatorModel:initiatorModel, success: success, error: nil)
+                } else {
+                    completionHandler(initiatorModel:nil, success: success, error: nil)
+                }
+            } else {
+                completionHandler(initiatorModel:nil, success: success, error: error)
+            }
+        }
     }
     
     func cancel() {

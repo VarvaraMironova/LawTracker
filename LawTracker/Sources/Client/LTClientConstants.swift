@@ -25,6 +25,7 @@ extension LTClient {
         static let bill             = "bill"
         static let committees       = "committees"
         static let deputies         = "deputies"
+        static let initiators       = "initiators"
         static let initiatorTypes   = "initiator-types"
         static let billStatuses     = "bill-statuses"
     }

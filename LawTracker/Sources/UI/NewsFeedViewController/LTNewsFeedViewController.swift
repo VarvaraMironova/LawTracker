@@ -311,9 +311,11 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             
             let tableView = currentController.rootView.contentTableView
             let bounds = tableView.bounds
-            let shouldBegin = (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && shownDate.dateWithoutTime().compare(NSDate().dateWithoutTime()) == .OrderedAscending) || ((CGRectGetMaxY(bounds) >= (tableView.contentSize.height - 1)) && .Up == navigationGesture.direction)
+            let shouldAnimateToTop = (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && shownDate.dateWithoutTime().compare(NSDate().dateWithoutTime()) == .OrderedAscending)
+            let shouldAnimateToBottom = ((CGRectGetMaxY(bounds) >= (tableView.contentSize.height - 1)) && .Up == navigationGesture.direction)
+            let shouldBegin = shouldAnimateToTop || shouldAnimateToBottom
             
-            if !shouldBegin {
+            if !shouldBegin && (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && shownDate.dateWithoutTime().compare(NSDate().dateWithoutTime()) == .OrderedSame) {
                 refreshData()
             }
             

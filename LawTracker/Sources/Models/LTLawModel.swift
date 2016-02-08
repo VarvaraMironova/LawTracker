@@ -53,22 +53,43 @@ class LTLawModel: LTEntityModel {
                 if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
                     self.addValueForKey(initiatorModel, key: Keys.initiators)
                 } else {
-                    LTClient.sharedInstance().downloadInitiatorTypes({ (success, error) -> Void in
-                        
-                    })
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
+                        LTClient.sharedInstance().getInitiatorTypeWithId(typeID){initiatorModel, success, error in
+                            if success {
+                                dispatch_async(dispatch_get_main_queue()){
+                                    if let initiatorModel = initiatorModel as LTInitiatorModel! {
+                                        self.addValueForKey(initiatorModel, key: Keys.initiators)
+                                    } else {
+                                        print("Cannot get info about initiator type \(typeID)")
+                                    }
+                                }
+                            } else {
+                                print("Cannot get info about initiator type \(typeID)")
+                            }
+                        }
+                    }
                 }
             }
         }
         
         if let committeeID = dictionary[Keys.committee] as? Int {
-            if let committeeModel = LTCommitteeModel.modelWithID("\(committeeID)", entityName:"LTCommitteeModel") as! LTCommitteeModel! {
+            let committeeIDString = "\(committeeID)"
+            if let committeeModel = LTCommitteeModel.modelWithID(committeeIDString, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
                 self.committee = committeeModel
             } else {
-                LTClient.sharedInstance().getCommitteeWithId("\(committeeID)"){committee, success, error in
-                    if success {
-                        self.committee = committee
-                    } else {
-                        //notify observers with error
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
+                    LTClient.sharedInstance().getCommitteeWithId(committeeIDString){committee, success, error in
+                        if success {
+                            dispatch_async(dispatch_get_main_queue()){
+                                if let committee = committee as LTCommitteeModel! {
+                                    self.committee = committee
+                                } else {
+                                    print("Cannot get info about committee with id \(committeeID)")
+                                }
+                            }
+                        } else {
+                            print("Cannot get info about committee with id \(committeeID)")
+                        }
                     }
                 }
             }
@@ -77,16 +98,25 @@ class LTLawModel: LTEntityModel {
     
     func storeDeputies(deputies: [Int]) {
         for deputyId in deputies {
-            if let initiatorModel = LTInitiatorModel.modelWithID("\(deputyId)", entityName:"LTInitiatorModel") as! LTInitiatorModel! {
+            let idString : String = "\(deputyId)"
+            if let initiatorModel = LTInitiatorModel.modelWithID(idString, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
                 self.addValueForKey(initiatorModel, key: Keys.initiators)
             } else {
-                LTClient.sharedInstance().getInitiatorWithId("\(deputyId)"){initiator, success, error in
-                    if success {
-                        self.addValueForKey(initiator, key: Keys.initiators)
-                    } else {
-                        //notify observers with error
-                    }
-                }
+//                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
+//                    LTClient.sharedInstance().getInitiatorWithId(idString){initiator, success, error in
+//                        if success {
+//                            dispatch_async(dispatch_get_main_queue()){
+//                                if let initiator = initiator as LTInitiatorModel! {
+//                                    self.addValueForKey(initiator, key: Keys.initiators)
+//                                } else {
+//                                    print("Cannot get info about deputy with id \(idString)")
+//                                }
+//                            }
+//                        } else {
+//                            print("Cannot get info about deputy with id \(idString)")
+//                        }
+//                    }
+//                }
             }
         }
     }

@@ -23,9 +23,9 @@ class LTFilterTableViewCell: UITableViewCell {
         titleLabel.text = model.entity.title
         
         if let entity = model.entity as? LTCommitteeModel {
-            if let _ = entity.ends as NSDate! {
-                self.userInteractionEnabled = false
-                self.titleLabel.textColor = UIColor.darkGrayColor()
+            if entity.expired {
+                userInteractionEnabled = false
+                titleLabel.textColor = UIColor.darkGrayColor()
             }
         }
     }

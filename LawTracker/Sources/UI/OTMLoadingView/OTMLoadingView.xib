@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -19,7 +18,7 @@
                             <rect key="frame" x="197" y="358" width="20" height="20"/>
                         </activityIndicatorView>
                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="juS-ZK-8Mv">
-                            <rect key="frame" x="0.0" y="258" width="414" height="100"/>
+                            <rect key="frame" x="0.0" y="341" width="414" height="17"/>
                             <fontDescription key="fontDescription" name="Arial-ItalicMT" family="Arial" pointSize="15"/>
                             <color key="textColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
@@ -27,7 +26,6 @@
                     </subviews>
                     <color key="backgroundColor" red="0.92549019607843142" green="0.9137254901960784" blue="0.93725490196078431" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
-                        <constraint firstItem="juS-ZK-8Mv" firstAttribute="height" secondItem="Amu-H3-aOt" secondAttribute="height" multiplier="100:736" id="8SJ-AT-zuL"/>
                         <constraint firstItem="Xvw-UF-j6y" firstAttribute="top" secondItem="juS-ZK-8Mv" secondAttribute="bottom" id="IU6-T6-IvS"/>
                         <constraint firstItem="Xvw-UF-j6y" firstAttribute="centerY" secondItem="Amu-H3-aOt" secondAttribute="centerY" id="ctg-Jy-Oqr"/>
                         <constraint firstAttribute="trailing" secondItem="juS-ZK-8Mv" secondAttribute="trailing" id="nRl-CB-Y5g"/>

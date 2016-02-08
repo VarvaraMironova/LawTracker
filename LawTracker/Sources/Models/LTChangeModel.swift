@@ -41,11 +41,19 @@ class LTChangeModel: LTEntityModel  {
                 self.law = lawModel
             } else {
                 //there is no law with lawID so, make request to server
-                LTClient.sharedInstance().getLawWithId(lawNumber) {law, success, error in
-                    if success {
-                        self.law = law
-                    } else {
-                        print("cannot find law with number\(lawNumber)")
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
+                    LTClient.sharedInstance().getLawWithId(lawNumber) {law, success, error in
+                        if success {
+                            dispatch_async(dispatch_get_main_queue()){
+                                if let law = law as LTLawModel! {
+                                    self.law = law
+                                } else {
+                                    print("Cannot find law with number \(lawNumber)")
+                                }
+                            }
+                        } else {
+                            print("Cannot find law with number \(lawNumber)")
+                        }
                     }
                 }
             }
