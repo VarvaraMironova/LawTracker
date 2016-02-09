@@ -115,7 +115,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         super.viewDidLoad()
         
         automaticallyAdjustsScrollViewInsets = false
-
+        
         setupContent()
         
         let settingsModel = VTSettingModel()
@@ -137,7 +137,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         
         //check, if it is a first launch -> show helpViewController, create dictionary filters in SettingsModel
         if settingsModel.firstLaunch != true {
-            rootView.showHelpView()
+            //rootView.showHelpView()
         }
     }
     
@@ -280,7 +280,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             self.presentViewController(alertViewController, animated: true, completion: nil)
         }
     }
-
     
     // MARK: - UIGestureRecognizerDelegate
     func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -485,7 +484,22 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func setChangesModel(date: NSDate) {
-        changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date), date: date)
+        changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date.dateWithoutTime()), date: date.dateWithoutTime())
+        
+//        if changesModel.count() == 0 {
+//            var loadingDate = date
+//            if shownDate.dateWithoutTime().compare(date.dateWithoutTime()) == .OrderedAscending {
+//                //if NSDate().dateWithoutTime().compare(date.dateWithoutTime()) == .OrderedAscending {
+//                    loadingDate = date.nextDay()
+//                //}
+//            } else {
+//                loadingDate = date.previousDay()
+//            }
+//            
+//            downloadChanges(loadingDate)
+//            
+//            return
+//        }
         
         if (loadedAtFirst) && (changesModel.count() == 0) && (loadingCount < kLTMaxLoadingCount) {
             loadingCount += 1

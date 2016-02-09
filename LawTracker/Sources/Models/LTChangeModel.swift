@@ -36,6 +36,10 @@ class LTChangeModel: LTEntityModel  {
             self.title = title
         }
         
+        if let id = dictionary[Keys.id] as? String {
+            self.id = id
+        }
+        
         if let lawNumber = dictionary[Keys.law] as? String {
             if let lawModel = LTLawModel.lawWithNumber(lawNumber) as! LTLawModel! {
                 self.law = lawModel

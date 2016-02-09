@@ -119,21 +119,18 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
                 return element as! LTChangeModel
         })
         
-        for changeModel in changes {
+        for var index = 0; index < changes.count; ++index {
+            let changeModel = changes[index]
             var ids = [String]()
             var title = String()
-            
-            if changeModel.law.initiators.count == 0 {
-                break
-            }
+            let law = changeModel.law
             
             switch key {
             case .byLaws:
-                ids = [changeModel.law.id]
-                title = changeModel.law.number
-                
+                ids = [law.id]
+                title = law.number
             case .byInitiators:
-                let initiators = changeModel.law.initiators.allObjects as! [LTInitiatorModel]
+                let initiators = law.initiators.allObjects as! [LTInitiatorModel]
                 //changeModel has more than 2 initiators
                 if initiators.count > 2 {
                     var titles = [String]()
@@ -151,8 +148,8 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
                 }
                 
             case .byCommittees:
-                ids = [changeModel.law.committee.id]
-                title = changeModel.law.committee.title
+                ids = [law.committee.id]
+                title = law.committee.title
             }
             
             if filteredIds.count > 0 {
@@ -182,13 +179,14 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
                 if nil == sectionModel {
                     sectionModel = LTSectionModel(title: title)
                     sectionModel!.changes.append(changeModel)
+                    
                     changesByKey.append(sectionModel!)
                 } else {
                     sectionModel!.changes.append(changeModel)
                 }
             }
         }
-        
+
         let changesModel = LTChangesModel(changes: changesByKey, filtersIsApplied:filteredIds.count > 0, date:downloadDate)
         
         return changesModel
@@ -196,5 +194,11 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     
     func count() -> Int {
         return models.count
+    }
+    
+    func synchronized(lock: AnyObject, closure:() -> ()) {
+        objc_sync_enter(lock)
+        closure()
+        objc_sync_exit(lock)
     }
 }
