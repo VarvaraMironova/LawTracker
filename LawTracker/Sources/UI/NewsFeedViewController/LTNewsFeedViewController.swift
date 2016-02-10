@@ -7,7 +7,7 @@
 //
 
 import UIKit
-let kLTMaxLoadingCount = 30
+let kLTMaxLoadingCount = 60
 
 class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     @IBOutlet var navigationGesture: LTPanGestureRacognizer!
@@ -15,14 +15,13 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var currentController : LTMainContentViewController!
     var newsFeedModel     : LTChangesModel!
     var animator          : LTSliderAnimator?
-    var shownDate         : NSDate! {
+    var shownDate         : NSDate! = NSDate() {
         didSet {
             rootView.fillSearchButton(shownDate)
         }
     }
     
     var isLoading     : Bool = false
-    var loadedAtFirst : Bool = true
     var loadingCount  : Int = 0
     
     var filterType: LTType {
@@ -42,13 +41,13 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     var changesModel      : LTArrayModel!
     
-    var selectedArray     : LTChangesModel? {
+    var selectedArray     : LTChangesModel! {
         set {
             currentController.arrayModel = newValue
             
-            if let newValue = newValue as LTChangesModel! {
-                shownDate = newValue.date
-            }
+//            if let newValue = newValue as LTChangesModel! {
+//                shownDate = newValue.date
+//            }
         }
 
         get {
@@ -124,7 +123,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             //download data from server
             loadData()
         } else {
-            downloadChanges(date)
+            downloadChanges(date, choosenInPicker: false)
         }
         
         shownDate = date
@@ -252,7 +251,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             self.scrollToTop()
             let date = self.rootView.datePicker.date
             
-            self.downloadChanges(date)
+            self.downloadChanges(date, choosenInPicker: true)
         }
     }
     
@@ -352,10 +351,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     
                     if .Down == direction && translation.y > 0 {
                         if shownDate.compare(NSDate()) == .OrderedAscending {
-                            downloadChanges(shownDate.nextDay())
+                            downloadChanges(shownDate.nextDay(), choosenInPicker: false)
                         }
                     } else if translation.y < 0 {
-                        downloadChanges(shownDate.previousDay())
+                        downloadChanges(shownDate.previousDay(), choosenInPicker: false)
                     }
                 }
             }
@@ -445,13 +444,13 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-    private func downloadChanges(date: NSDate) {
+    private func downloadChanges(date: NSDate, choosenInPicker: Bool) {
         let view = self.rootView
         
         view.fillSearchButton(date)
         
         if let _ = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
-            setChangesModel(date)
+            setChangesModel(date, choosenInPicker: choosenInPicker)
             
             return
         }
@@ -461,7 +460,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             view.hideLoadingView()
             if success {
                 dispatch_async(dispatch_get_main_queue()) {
-                    self.setChangesModel(date)
+                    self.setChangesModel(date, choosenInPicker: choosenInPicker)
                     let settingsModel = VTSettingModel()
                     settingsModel.lastDownloadDate = date
                 }
@@ -471,17 +470,9 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-    private func setChangesModel(date: NSDate) {
+    private func setChangesModel(date: NSDate, choosenInPicker: Bool) {
         changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date.dateWithoutTime()), date: date.dateWithoutTime())
         
-        if (loadedAtFirst) && (changesModel.count() == 0) && (loadingCount < kLTMaxLoadingCount) {
-            loadingCount += 1
-            downloadChanges(date.previousDay())
-            
-            return
-        }
-        
-        loadedAtFirst = false
         changesModel.changes { (bills, committees, initiators, finish) -> Void in
             if finish {
                 self.byLawsArray = bills
@@ -500,6 +491,27 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         case .byLaws:
             selectedArray = byLawsArray
         }
+        
+        if !choosenInPicker && (selectedArray.count() == 0) && (date.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (loadingCount < kLTMaxLoadingCount) {
+            loadingCount += 1
+            var newDate = date
+            if shownDate.dateWithoutTime().compare(date.dateWithoutTime()) == .OrderedAscending {
+                newDate = date.nextDay()
+            } else {
+                newDate = date.previousDay()
+            }
+            
+            downloadChanges(newDate, choosenInPicker: false)
+            
+            return
+        }
+        
+        if loadingCount == kLTMaxLoadingCount {
+            currentController.rootView.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом \(kLTMaxLoadingCount) днів з \(shownDate.longString())"
+        }
+        
+        shownDate = date
+        loadingCount = 0
     }
     
     private func loadData() {
@@ -525,7 +537,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                                 
                                                 self.rootView.hideLoadingView()
                                                 self.isLoading = false
-                                                self.downloadChanges(NSDate().previousDay())
+                                                self.downloadChanges(NSDate().previousDay(), choosenInPicker: false)
                                             } else {
                                                 self.processError(error!)
                                             }
@@ -561,7 +573,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     //MARK: - LTFilterDelegate methods
     func filtersDidApplied() {
-        setChangesModel(rootView.datePicker.date)
+        setChangesModel(rootView.datePicker.date, choosenInPicker: false)
     }
     
 }

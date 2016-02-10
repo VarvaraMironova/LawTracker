@@ -24,4 +24,8 @@ class LTChangesModel: NSObject {
     func addModel(model: LTSectionModel) {
         changes.append(model)
     }
+    
+    func count() -> Int {
+        return changes.count
+    }
 }

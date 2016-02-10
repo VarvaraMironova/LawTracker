@@ -72,13 +72,15 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     
     @IBAction func onCancelButton(sender: AnyObject) {
         //clear filters in Settings
-        for sectionModel in filteredArray {
-            for filter in sectionModel.filters {
-                filter.entity.filterSet = false
+        if let filters = filters as [LTSectionModel]! {
+            for sectionModel in filters {
+                for filter in sectionModel.filters {
+                    filter.entity.filterSet = false
+                }
             }
+            
+            CoreDataStackManager.sharedInstance().saveContext()
         }
-        
-        CoreDataStackManager.sharedInstance().saveContext()
         
         delegate.filtersDidApplied()
         

@@ -93,6 +93,7 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         if let model = arrayModel {
             let count = model.changes.count
             rootView.noSubscriptionsLabel.hidden = count > 0
+            rootView.noSubscriptionsLabel.text = "Немає данних щодо змін статусів законопроектів на цей день."
             
             return count
         }

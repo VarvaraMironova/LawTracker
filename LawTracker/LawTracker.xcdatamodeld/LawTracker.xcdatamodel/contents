@@ -11,7 +11,7 @@
     </entity>
     <entity name="LTCommitteeModel" representedClassName=".LTCommitteeModel" syncable="YES">
         <attribute name="ends" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="filterSet" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="filterSet" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="starts" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
@@ -29,7 +29,7 @@
         <relationship name="laws" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTLawModel" inverseName="convocation" inverseEntity="LTLawModel" syncable="YES"/>
     </entity>
     <entity name="LTInitiatorModel" representedClassName=".LTInitiatorModel" syncable="YES">
-        <attribute name="filterSet" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="filterSet" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isDeputy" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
@@ -41,7 +41,7 @@
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="LTLawModel" representedClassName=".LTLawModel" syncable="YES">
-        <attribute name="filterSet" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="filterSet" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="number" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="presentationDate" optional="YES" attributeType="Date" syncable="YES"/>
