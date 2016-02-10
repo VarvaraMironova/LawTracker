@@ -11,6 +11,7 @@
     </entity>
     <entity name="LTCommitteeModel" representedClassName=".LTCommitteeModel" syncable="YES">
         <attribute name="ends" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="filterSet" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="starts" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
@@ -28,6 +29,7 @@
         <relationship name="laws" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LTLawModel" inverseName="convocation" inverseEntity="LTLawModel" syncable="YES"/>
     </entity>
     <entity name="LTInitiatorModel" representedClassName=".LTInitiatorModel" syncable="YES">
+        <attribute name="filterSet" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isDeputy" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
@@ -39,6 +41,7 @@
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="LTLawModel" representedClassName=".LTLawModel" syncable="YES">
+        <attribute name="filterSet" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="number" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="presentationDate" optional="YES" attributeType="Date" syncable="YES"/>
@@ -51,10 +54,10 @@
     </entity>
     <elements>
         <element name="LTChangeModel" positionX="-146" positionY="558" width="128" height="103"/>
-        <element name="LTCommitteeModel" positionX="171" positionY="234" width="128" height="150"/>
+        <element name="LTCommitteeModel" positionX="171" positionY="234" width="128" height="165"/>
         <element name="LTConvocationModel" positionX="-126" positionY="45" width="128" height="148"/>
-        <element name="LTInitiatorModel" positionX="-360" positionY="180" width="128" height="118"/>
+        <element name="LTInitiatorModel" positionX="-360" positionY="180" width="128" height="135"/>
         <element name="LTInitiatorTypeModel" positionX="-360" positionY="351" width="128" height="75"/>
-        <element name="LTLawModel" positionX="-153" positionY="351" width="128" height="180"/>
+        <element name="LTLawModel" positionX="-153" positionY="351" width="128" height="195"/>
     </elements>
 </model>

@@ -9,13 +9,27 @@
 import Foundation
 
 class LTSectionModel: NSObject {
-    var title   : String!
-    var changes = [LTChangeModel]()
-    var filters = [LTFilterModel]()
+    var entities  : [LTEntityModel]!
     
-    init(title: String!) {
+    var changes = [LTChangeModel]()
+    var filters = [LTFilterCellModel]()
+    var title   = String()
+    
+    override init() {
         super.init()
         
-        self.title = title
+        self.entities = [LTEntityModel]()
+    }
+    
+    init(entities: [LTEntityModel]) {
+        super.init()
+        
+        self.entities = entities
+        var titles = [String]()
+        for entity in entities {
+            titles.append(entity.title)
+        }
+        
+        self.title = titles.joinWithSeparator("\n")
     }
 }

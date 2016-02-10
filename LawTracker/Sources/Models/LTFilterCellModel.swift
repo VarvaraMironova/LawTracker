@@ -1,5 +1,5 @@
 //
-//  LTFilterModel.swift
+//  LTFilterCellModel
 //  LawTracker
 //
 //  Created by Varvara Mironova on 1/26/16.
@@ -8,15 +8,15 @@
 
 import Foundation
 
-class LTFilterModel: NSObject {
+class LTFilterCellModel: NSObject {
     var entity: LTEntityModel!
     var selected: Bool!
     
-    init(entity: LTEntityModel, selected: Bool) {
+    init(entity: LTEntityModel) {
         super.init()
         
         self.entity = entity
-        self.selected = selected
+        self.selected = entity.filterSet
     }
     
 }

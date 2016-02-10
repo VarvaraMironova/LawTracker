@@ -18,12 +18,13 @@ class LTFilterTableViewCell: UITableViewCell {
         }
     }
     
-    func fillWithModel(model: LTFilterModel) {
-        filtered = model.selected
-        titleLabel.text = model.entity.title
+    func fillWithModel(model: LTFilterCellModel) {
+        let entity = model.entity
+        filtered = entity.filterSet
+        titleLabel.text = entity.title
         
-        if let entity = model.entity as? LTCommitteeModel {
-            if entity.expired {
+        if let committee = entity as? LTCommitteeModel {
+            if committee.expired {
                 userInteractionEnabled = false
                 titleLabel.textColor = UIColor.darkGrayColor()
             }

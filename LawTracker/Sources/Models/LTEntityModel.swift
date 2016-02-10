@@ -32,6 +32,8 @@ class LTEntityModel: NSManagedObject {
     @NSManaged var id    : String
     @NSManaged var title : String
     
+    @NSManaged var filterSet : Bool
+    
     var entityName: String!
     
     class func modelWithID(id: String, entityName: String) -> LTEntityModel? {
@@ -44,6 +46,32 @@ class LTEntityModel: NSManagedObject {
             } else {
                 return nil
             }
+        } else {
+            return nil
+        }
+    }
+    
+    class func filteredEntities(key: LTType)  -> [LTEntityModel]? {
+        let predicate = NSPredicate(format:"filterSet == %@", true)
+        var entityName = String()
+        switch key {
+        case .byLaws:
+            entityName = "LTLawModel"
+            break
+            
+        case .byInitiators:
+            entityName = "LTInitiatorModel"
+            break
+            
+        case .byCommittees:
+            entityName = "LTCommitteeModel"
+            break
+        }
+        
+        let fetchRequest = NSFetchRequest(entityName: entityName)
+        fetchRequest.predicate = predicate
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTEntityModel] {
+            return models
         } else {
             return nil
         }

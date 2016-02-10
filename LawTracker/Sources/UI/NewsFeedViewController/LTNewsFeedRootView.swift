@@ -24,7 +24,6 @@ class LTNewsFeedRootView: OTMView {
     @IBOutlet var byBillsButton                 : LTSwitchButton!
     @IBOutlet var dismissChildControllersButton : UIButton!
     @IBOutlet var menuContainerView             : UIView!
-    @IBOutlet var helpContainerView             : UIView!
     
     var menuShown       : Bool = false
     var datePickerShown : Bool = false
@@ -49,20 +48,6 @@ class LTNewsFeedRootView: OTMView {
         if let label = searchDateButton.titleLabel {
             label.font = label.font.screenProportionalFont()
         }
-    }
-    
-    func showHelpView() {
-        UIView.animateWithDuration(0.4, animations: {
-            self.dismissChildControllersButton.alpha = 0.8
-            self.helpContainerView.alpha = 1.0
-            }, completion: nil)
-    }
-    
-    func hideHelpView() {
-        UIView.animateWithDuration(0.4, animations: {
-            self.dismissChildControllersButton.alpha = 0.0
-            self.helpContainerView.alpha = 0.0
-            }, completion: nil)
     }
     
     func showMenu() {

@@ -131,14 +131,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         
         //add menuViewController as a childViewController to menuContainerView
         addChildViewController(menuViewController, view: rootView.menuContainerView)
-        
-        //add helpViewController as a childViewController to menuContainerView
-        addChildViewController(helpViewController, view: rootView.helpContainerView)
-        
-        //check, if it is a first launch -> show helpViewController, create dictionary filters in SettingsModel
-        if settingsModel.firstLaunch != true {
-            //rootView.showHelpView()
-        }
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
@@ -168,9 +160,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     @IBAction func onDismissFilterViewButton(sender: UIButton) {
         dispatch_async(dispatch_get_main_queue()) {
-            let view = self.rootView
-            view.hideMenu() {finished in}
-            view.hideHelpView()
+            self.rootView.hideMenu() {finished in}
         }
     }
     
@@ -181,31 +171,29 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func onFilterButton(sender: UIButton) {
-        if isLoading {
-            return
-        }
-
         dispatch_async(dispatch_get_main_queue()) {
             let filterController = self.storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
             filterController.delegate = self
             
-            var entityName = String()
-            switch self.filterType {
-            case .byCommittees:
-                entityName = "LTCommitteeModel"
-                break
+            if !self.isLoading {
+                var entityName = String()
+                switch self.filterType {
+                case .byCommittees:
+                    entityName = "LTCommitteeModel"
+                    break
+                    
+                case .byInitiators:
+                    entityName = "LTInitiatorModel"
+                    break
+                    
+                case .byLaws:
+                    entityName = "LTLawModel"
+                    break
+                }
                 
-            case .byInitiators:
-                entityName = "LTInitiatorModel"
-                break
-                
-            case .byLaws:
-                entityName = "LTLawModel"
-                break
+                let filters = LTArrayModel(entityName: entityName, predicate: NSPredicate(value: true), date: NSDate())
+                filterController.filters = filters.filters(self.filterType)
             }
-            
-            let filters = LTArrayModel(entityName: entityName, predicate: NSPredicate(value: true), date: NSDate())
-            filterController.filters = filters.filters(self.filterType)
             
             self.presentViewController(filterController, animated: true, completion: nil)
         }
@@ -486,21 +474,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     private func setChangesModel(date: NSDate) {
         changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date.dateWithoutTime()), date: date.dateWithoutTime())
         
-//        if changesModel.count() == 0 {
-//            var loadingDate = date
-//            if shownDate.dateWithoutTime().compare(date.dateWithoutTime()) == .OrderedAscending {
-//                //if NSDate().dateWithoutTime().compare(date.dateWithoutTime()) == .OrderedAscending {
-//                    loadingDate = date.nextDay()
-//                //}
-//            } else {
-//                loadingDate = date.previousDay()
-//            }
-//            
-//            downloadChanges(loadingDate)
-//            
-//            return
-//        }
-        
         if (loadedAtFirst) && (changesModel.count() == 0) && (loadingCount < kLTMaxLoadingCount) {
             loadingCount += 1
             downloadChanges(date.previousDay())
@@ -509,10 +482,13 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
         
         loadedAtFirst = false
-        
-        byCommitteesArray = changesModel.changesByKey(.byCommittees)
-        byInitiatorsArray = changesModel.changesByKey(.byInitiators)
-        byLawsArray = changesModel.changesByKey(.byLaws)
+        changesModel.changes { (bills, committees, initiators, finish) -> Void in
+            if finish {
+                self.byLawsArray = bills
+                self.byInitiatorsArray = initiators
+                self.byCommitteesArray = committees
+            }
+        }
         
         switch filterType {
         case .byCommittees:

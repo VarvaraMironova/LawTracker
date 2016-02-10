@@ -17,40 +17,8 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     
     weak var delegate: LTNewsFeedViewController!
     
-    var settingsModel = VTSettingModel()
+    var filters      : [LTSectionModel]?
     var filteredArray = [LTSectionModel]()
-    
-    var filters          : [LTSectionModel]?
-    
-    var selectedFilters  : [String]? {
-        set {
-            switch delegate.filterType {
-            case .byCommittees:
-                settingsModel.filters![VTSettingModel.Keys.Committees] = newValue
-                
-            case .byInitiators:
-                settingsModel.filters![VTSettingModel.Keys.Initiators] = newValue
-                
-            case .byLaws:
-                settingsModel.filters![VTSettingModel.Keys.Laws] = newValue
-            }
-            
-            delegate.filtersDidApplied()
-        }
-        
-        get {
-            switch delegate.filterType {
-            case .byCommittees:
-                return settingsModel.filters![VTSettingModel.Keys.Committees]
-                
-            case .byInitiators:
-                return settingsModel.filters![VTSettingModel.Keys.Initiators]
-                
-            case .byLaws:
-                return settingsModel.filters![VTSettingModel.Keys.Laws]
-            }
-        }
-    }
     
     var placeholderString: String {
         get {
@@ -95,28 +63,24 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         
     //MARK: - Interface Handling
     @IBAction func onOkButton(sender: AnyObject) {
-        //save filteredArray
-        if let filters = filters as [LTSectionModel]! {
-            var selectedArray = [LTFilterModel]()
-            for sectionModel in filters {
-                selectedArray.appendContentsOf(sectionModel.filters.filter() { $0.selected == true })
-            }
-            
-            var filteredIds = [String]()
-            
-            for filterModel in selectedArray {
-                filteredIds.append(filterModel.entity.id)
-            }
-            
-            selectedFilters = filteredIds
-        }
+        CoreDataStackManager.sharedInstance().saveContext()
+        
+        delegate.filtersDidApplied()
         
         dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func onCancelButton(sender: AnyObject) {
         //clear filters in Settings
-        selectedFilters = []
+        for sectionModel in filteredArray {
+            for filter in sectionModel.filters {
+                filter.entity.filterSet = false
+            }
+        }
+        
+        CoreDataStackManager.sharedInstance().saveContext()
+        
+        delegate.filtersDidApplied()
         
         dismissViewControllerAnimated(true, completion: nil)
     }
@@ -132,12 +96,12 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                 for filterModel in sectionModel.filters {
                     if let committeeModel = filterModel.entity as? LTCommitteeModel {
                         if committeeModel.expired {
-                            filterModel.selected = false
+                            committeeModel.filterSet = false
                         } else {
-                            filterModel.selected = !select
+                            committeeModel.filterSet = !select
                         }
                     } else {
-                        filterModel.selected = !select
+                        filterModel.entity.filterSet = !select
                     }
                 }
             }
@@ -156,7 +120,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                 let deputiesArray = filters.filter(){ $0.title == "Народні депутати України" }.first
                 if let deputies = deputiesArray as LTSectionModel! {
                     for model in deputies.filters {
-                        model.selected = !model.selected
+                        model.entity.filterSet = !model.entity.filterSet
                     }
                 }
                 
@@ -237,7 +201,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
             let array = rootView.searchBarActive ? filteredArray[indexPath.section].filters : filters[indexPath.section].filters
             let cell = tableView.cellForRowAtIndexPath(indexPath) as! LTFilterTableViewCell
             let selectedModel = array[indexPath.row]
-            selectedModel.selected = !cell.filtered
+            selectedModel.entity.filterSet = !cell.filtered
             
             filterContentForSearchText(searchBar.text!, scope: rootView.searchBar.selectedScopeButtonIndex)
         }
@@ -265,7 +229,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         if let filters = filters as [LTSectionModel]! {
             filteredArray = [LTSectionModel]()
             for sectionModel in filters {
-                let filters = sectionModel.filters.filter({( filter : LTFilterModel) -> Bool in
+                let filters = sectionModel.filters.filter({( filter : LTFilterCellModel) -> Bool in
                     let category = filter.selected == true ? 1 : 2
                     let categoryMatch = (scope == 0) || (category == scope)
                     if searchText != "" {
@@ -283,7 +247,8 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                 })
                 
                 if filters.count > 0 {
-                    let filteredSection = LTSectionModel(title: sectionModel.title)
+                    let filteredSection = LTSectionModel()
+                    filteredSection.title = sectionModel.title
                     filteredSection.filters = filters
                     
                     filteredArray.append(filteredSection)

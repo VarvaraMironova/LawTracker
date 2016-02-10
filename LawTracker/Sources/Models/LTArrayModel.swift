@@ -50,29 +50,29 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     //MARK: - Public
     func filters(key: LTType) -> [LTSectionModel] {
         var filters = [LTSectionModel]()
-        var filteredIds = [String]()
-        let settings = VTSettingModel()
         
         switch key {
         case .byCommittees:
-            filters.append(LTSectionModel(title: ""))
-            filteredIds = settings.committees
+            filters.append(LTSectionModel())
+            
             break
             
         case .byInitiators:
-            filters.append(LTSectionModel(title: ""))
-            filters.append(LTSectionModel(title: "Народні депутати України"))
-            filteredIds = settings.initiators
+            filters.append(LTSectionModel())
+            let sectionModel = LTSectionModel()
+            sectionModel.title = "Народні депутати України"
+            filters.append(sectionModel)
+            
             break
             
         case .byLaws:
-            filters.append(LTSectionModel(title: ""))
-            filteredIds = settings.laws
+            filters.append(LTSectionModel())
+            
             break
         }
         
         for model in models {
-            let filterModel = LTFilterModel(entity: model, selected:filteredIds.contains(model.id))
+            let filterModel = LTFilterCellModel(entity: model)
             
             switch key {
             case .byInitiators:
@@ -98,107 +98,107 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         return filters
     }
     
-    func changesByKey(key: LTType) -> LTChangesModel {
+    func changes(completionHandler:(bills: LTChangesModel, committees:  LTChangesModel, initiators:  LTChangesModel, finish: Bool) -> Void) {
         //check are there saved filters. If true -> apply filters
-        var changesByKey = [LTSectionModel]()
-        var filteredIds = [String]()
-        
-        switch key {
-        case .byLaws:
-            filteredIds = settings.laws
-            
-        case .byInitiators:
-            filteredIds = settings.initiators.sort() { $0 > $1 }
-            
-        case .byCommittees:
-            filteredIds = settings.committees
-        }
-        
-        let changes = models.map(
-            {(element: LTEntityModel) -> LTChangeModel in
-                return element as! LTChangeModel
-        })
-        
-        for var index = 0; index < changes.count; ++index {
-            let changeModel = changes[index]
-            var ids = [String]()
-            var title = String()
-            let law = changeModel.law
-            
-            switch key {
-            case .byLaws:
-                ids = [law.id]
-                title = law.number
-            case .byInitiators:
-                let initiators = law.initiators.allObjects as! [LTInitiatorModel]
-                //changeModel has more than 2 initiators
-                if initiators.count > 2 {
-                    var titles = [String]()
-                    for initiator in initiators {
-                        ids.append(initiator.id)
-                        titles.append(initiator.title)
-                    }
-                    
-                    title = titles.joinWithSeparator("\n")
-                } else {
-                    if let initiator = initiators.first {
-                        ids = [initiator.id]
-                        title = initiator.title
-                    }
-                }
-                
-            case .byCommittees:
-                ids = [law.committee.id]
-                title = law.committee.title
-            }
-            
-            if filteredIds.count > 0 {
-                //filters applied -> for every id from ids check, if filteredIds contains it. If true -> create LTSectionModel
-                var contains = false
-                for id in ids {
-                    if filteredIds.contains(id) {
-                        contains = true
-                    }
-                }
-                
-                if contains {
-                    //check if changesByKey array contains sectionModel with title. If true -> add changeModel to sectionModel.changes, else -> append sectionModel to changesByKey
-                    var sectionModel = changesByKey.filter(){ $0.title == title }.first
-                    
-                    if nil == sectionModel {
-                        sectionModel = LTSectionModel(title: title)
-                        sectionModel!.changes.append(changeModel)
-                        changesByKey.append(sectionModel!)
-                    } else {
-                        sectionModel!.changes.append(changeModel)
-                    }
-                }
-            } else {
-                var sectionModel = changesByKey.filter(){ $0.title == title }.first
-                
-                if nil == sectionModel {
-                    sectionModel = LTSectionModel(title: title)
-                    sectionModel!.changes.append(changeModel)
-                    
-                    changesByKey.append(sectionModel!)
-                } else {
-                    sectionModel!.changes.append(changeModel)
-                }
-            }
-        }
+        let billsList = sectionModelsByKey(.byLaws)
+        let committeesList = sectionModelsByKey(.byCommittees)
+        let initiatorsList = sectionModelsByKey(.byInitiators)
 
-        let changesModel = LTChangesModel(changes: changesByKey, filtersIsApplied:filteredIds.count > 0, date:downloadDate)
+        let byBillsChanges = applyFilters(billsList, key: .byLaws)
+        let billsFilterApplied = nil != byBillsChanges
+        let byInitiatorsChanges = applyFilters(initiatorsList, key: .byInitiators)
+        let initiatorsFilterApplied = nil != byInitiatorsChanges
+        let byCommitteesChanges = applyFilters(committeesList, key: .byCommittees)
+        let committeesFilterApplied = nil != byCommitteesChanges
         
-        return changesModel
+        let chagesByBill = LTChangesModel(changes: nil == byBillsChanges ? billsList : byBillsChanges, filtersIsApplied: billsFilterApplied, date: downloadDate)
+        let chagesByCommittee = LTChangesModel(changes: nil == byCommitteesChanges ? committeesList : byCommitteesChanges, filtersIsApplied: committeesFilterApplied, date: downloadDate)
+        let chagesByInitiator = LTChangesModel(changes: nil == byInitiatorsChanges ? initiatorsList : byInitiatorsChanges, filtersIsApplied: initiatorsFilterApplied, date: downloadDate)
+        
+        completionHandler(bills: chagesByBill, committees:  chagesByCommittee, initiators:  chagesByInitiator, finish: true)
     }
     
     func count() -> Int {
         return models.count
     }
     
-    func synchronized(lock: AnyObject, closure:() -> ()) {
-        objc_sync_enter(lock)
-        closure()
-        objc_sync_exit(lock)
+    //MARK: - Private
+    private func sectionModelsByKey(key: LTType) -> [LTSectionModel]! {
+        var result = [LTSectionModel]()
+        let changes = models.map(
+            {(element: LTEntityModel) -> LTChangeModel in
+                return element as! LTChangeModel
+        })
+        
+        for changeModel in changes {
+            let bill = changeModel.law
+            
+            switch key {
+            case .byLaws:
+                let bills = [bill]
+                
+                var sectionBillModel = result.filter(){ $0.entities == bills }.first
+                if nil == sectionBillModel {
+                    sectionBillModel = LTSectionModel(entities: bills)
+                    sectionBillModel!.changes.append(changeModel)
+                    result.append(sectionBillModel!)
+                } else {
+                    sectionBillModel!.changes.append(changeModel)
+                }
+                
+                break
+                
+            case .byInitiators:
+                var initiators = [LTEntityModel]()
+                if let initiatorsArray = bill.initiators.allObjects as? [LTInitiatorModel] {
+                    initiators = initiatorsArray
+                }
+                
+                var sectionInitiatorModel = result.filter(){ $0.entities == initiators }.first
+                if nil == sectionInitiatorModel {
+                    sectionInitiatorModel = LTSectionModel(entities: initiators)
+                    sectionInitiatorModel!.changes.append(changeModel)
+                    result.append(sectionInitiatorModel!)
+                } else {
+                    sectionInitiatorModel!.changes.append(changeModel)
+                }
+                
+                break
+                
+            case .byCommittees:
+                let committees = [bill.committee]
+                var sectionCommitteeModel = result.filter(){ $0.entities == committees }.first
+                if nil == sectionCommitteeModel {
+                    sectionCommitteeModel = LTSectionModel(entities: committees)
+                    sectionCommitteeModel!.changes.append(changeModel)
+                    result.append(sectionCommitteeModel!)
+                } else {
+                    sectionCommitteeModel!.changes.append(changeModel)
+                }
+                
+                break
+            }
+        }
+        
+        return result
+    }
+    
+    private func applyFilters(array: [LTSectionModel], key: LTType) -> [LTSectionModel]? {
+        if let initiatorsFilters = LTEntityModel.filteredEntities(key) as [LTEntityModel]! {
+            if initiatorsFilters.count > 0 {
+                var filteredArray = [LTSectionModel]()
+                for sectionModel in array {
+                    for entity in sectionModel.entities {
+                        if initiatorsFilters.contains(entity) {
+                            filteredArray.append(sectionModel)
+                        }
+                    }
+                }
+                
+                return filteredArray
+            }
+        }
+        
+        return nil
     }
 }

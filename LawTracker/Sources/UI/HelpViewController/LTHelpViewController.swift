@@ -36,8 +36,8 @@ class LTHelpViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override func prefersStatusBarHidden() -> Bool {
+        return true
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator)
@@ -52,7 +52,12 @@ class LTHelpViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
 
     @IBAction func onCloseButton(sender: UIButton) {
-        delegate.onDismissFilterViewButton(sender)
+        if let navigationController = navigationController as UINavigationController! {
+            let newsFeedController = self.storyboard!.instantiateViewControllerWithIdentifier("LTNewsFeedViewController") as! LTNewsFeedViewController
+            navigationController.viewControllers = [newsFeedController]
+        } else {
+            dismissViewControllerAnimated(true, completion: nil)
+        }
     }
     
     //MARK: - UICollectionViewDataSource
