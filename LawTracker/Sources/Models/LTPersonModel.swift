@@ -71,15 +71,15 @@ struct LTPersonModel {
                         }
                     }
                 }
-                
-                //create initiatorModel
-                if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName:"LTInitiatorModel") as? LTInitiatorModel {
-                    initiator = initiatorModel
-                } else {
-                    if let fullName = fullName as String! {
-                        let dictionary = ["id":id, "title":fullName, "isDeputy":"true", "convocations":convocations]
-                        initiator = LTInitiatorModel(dictionary: dictionary, context: context, entityName: "LTInitiatorModel")
-                    }
+            }
+            
+            //create initiatorModel
+            if let initiatorModel = LTInitiatorModel.modelWithID(id, entityName:"LTInitiatorModel") as? LTInitiatorModel {
+                initiator = initiatorModel
+            } else {
+                if let fullName = fullName as String! {
+                    let dictionary = ["id":id, "title":fullName, "isDeputy":"true", "convocations":convocations]
+                    initiator = LTInitiatorModel(dictionary: dictionary, context: context, entityName: "LTInitiatorModel")
                 }
             }
         }

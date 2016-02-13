@@ -39,42 +39,45 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         
     //MARK: - gestureRecognizers
     @IBAction func onLongTapGestureRecognizer(sender: UILongPressGestureRecognizer) {
-        //find indexPath for selected row
-        let tableView = rootView.contentTableView
-        let tapLocation = sender.locationInView(tableView)
-        if let indexPath = tableView.indexPathForRowAtPoint(tapLocation) as NSIndexPath! {
-            //model for selected row
-            if nil == arrayModel {
-                return
-            }
-            
-            let section = arrayModel!.changes[indexPath.section]
-            let model = section.changes[indexPath.row]
-            //complete sharing text
-            let law = model.law
-            var initiators = [String]()
-            for initiator in law.initiators {
-                initiators.append(initiator.title!!)
-            }
-            
-            let titles:[String] = [model.date.longString(), "Статус:", model.title, "Законопроект:", law.title, "Ініційовано:", initiators.joinWithSeparator(", "), "Головний комітет:", (law.committee.title)]
-            let text = titles.joinWithSeparator("\n")
-            let url = model.law.url
-            
-            let shareItems = [text, url]
-            
-            let activityViewController = UIActivityViewController(activityItems: shareItems, applicationActivities: nil)
-            if presentedViewController != nil {
-                return
-            }
-            
-            presentViewController(activityViewController, animated: true, completion: nil)
-            
-            if UI_USER_INTERFACE_IDIOM() == .Pad {
-                if let popoverViewController = activityViewController.popoverPresentationController {
-                    popoverViewController.permittedArrowDirections = .Any
-                    popoverViewController.sourceRect = CGRectMake(UIScreen.mainScreen().bounds.width / 2, UIScreen.mainScreen().bounds.height / 4, 0, 0)
-                    popoverViewController.sourceView = rootView
+        let view = self.rootView
+        dispatch_async(dispatch_get_main_queue()) {
+            //find indexPath for selected row
+            let tableView = view.contentTableView
+            let tapLocation = sender.locationInView(tableView)
+            if let indexPath = tableView.indexPathForRowAtPoint(tapLocation) as NSIndexPath! {
+                //model for selected row
+                if nil == self.arrayModel {
+                    return
+                }
+                
+                let section = self.arrayModel!.changes[indexPath.section]
+                let model = section.changes[indexPath.row]
+                //complete sharing text
+                let law = model.law
+                var initiators = [String]()
+                for initiator in law.initiators {
+                    initiators.append(initiator.title!!)
+                }
+                
+                let titles:[String] = [model.date.longString(), "Статус:", model.title, "Законопроект:", law.title, "Ініційовано:", initiators.joinWithSeparator(", "), "Головний комітет:", (law.committee.title)]
+                let text = titles.joinWithSeparator("\n")
+                let url = model.law.url
+                
+                let shareItems = [text, url]
+                
+                let activityViewController = UIActivityViewController(activityItems: shareItems, applicationActivities: nil)
+                if self.presentedViewController != nil {
+                    return
+                }
+                
+                self.presentViewController(activityViewController, animated: true, completion: nil)
+                
+                if UI_USER_INTERFACE_IDIOM() == .Pad {
+                    if let popoverViewController = activityViewController.popoverPresentationController {
+                        popoverViewController.permittedArrowDirections = .Any
+                        popoverViewController.sourceRect = CGRectMake(UIScreen.mainScreen().bounds.width / 2, UIScreen.mainScreen().bounds.height / 4, 0, 0)
+                        popoverViewController.sourceView = view
+                    }
                 }
             }
         }
@@ -106,7 +109,9 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         
         if let arrayModel = arrayModel as LTChangesModel! {
             let model = arrayModel.changes[indexPath.section]
-            cell.fillWithModel(model.changes[indexPath.row])
+            dispatch_async(dispatch_get_main_queue()) {
+                cell.fillWithModel(model.changes[indexPath.row])
+            }
         }
         
         return cell
@@ -123,7 +128,10 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if let arrayModel = arrayModel as LTChangesModel! {
             let headerView = LTCellHeaderView.headerView() as LTCellHeaderView
-            headerView.fillWithString(arrayModel.changes[section].title)
+            dispatch_async(dispatch_get_main_queue()) {
+                headerView.fillWithString(arrayModel.changes[section].title)
+            }
+            
             
             return headerView
         }

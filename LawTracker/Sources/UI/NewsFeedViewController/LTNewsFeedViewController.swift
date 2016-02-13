@@ -7,7 +7,7 @@
 //
 
 import UIKit
-let kLTMaxLoadingCount = 60
+let kLTMaxLoadingCount = 30
 
 class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     @IBOutlet var navigationGesture: LTPanGestureRacognizer!
@@ -44,10 +44,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var selectedArray     : LTChangesModel! {
         set {
             currentController.arrayModel = newValue
-            
-//            if let newValue = newValue as LTChangesModel! {
-//                shownDate = newValue.date
-//            }
         }
 
         get {
@@ -100,7 +96,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-    var rootView     : LTNewsFeedRootView! {
+    var rootView : LTNewsFeedRootView! {
         get {
             if isViewLoaded() && view.isKindOfClass(LTNewsFeedRootView) {
                 return view as! LTNewsFeedRootView
@@ -362,7 +358,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             let velocity = recognizer.velocityInView(recognizerView)
             if (velocity.y > 0 && .Down == direction) || (velocity.y < 0 && .Up == direction) {
                 scrollToTop()
-                
                 animator?.finishInteractiveTransition()
             } else {
                 animator?.cancelInteractiveTransition()
@@ -448,14 +443,14 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         let view = self.rootView
         
         view.fillSearchButton(date)
-        
-        if let _ = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
-            setChangesModel(date, choosenInPicker: choosenInPicker)
             
+        if let _ = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
+            self.setChangesModel(date, choosenInPicker: choosenInPicker)
+                
             return
         }
         
-        view.showLoadingViewInViewWithMessage(rootView.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
+        view.showLoadingViewInViewWithMessage(view.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
         LTClient.sharedInstance().downloadChanges(date) { (success, error) -> Void in
             view.hideLoadingView()
             if success {
@@ -474,44 +469,46 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date.dateWithoutTime()), date: date.dateWithoutTime())
         
         changesModel.changes { (bills, committees, initiators, finish) -> Void in
-            if finish {
-                self.byLawsArray = bills
-                self.byInitiatorsArray = initiators
-                self.byCommitteesArray = committees
+            dispatch_async(dispatch_get_main_queue()) {
+                if finish {
+                    self.byLawsArray = bills
+                    self.byInitiatorsArray = initiators
+                    self.byCommitteesArray = committees
+                }
+                
+                switch self.filterType {
+                case .byCommittees:
+                    self.selectedArray = committees
+                    
+                case .byInitiators:
+                    self.selectedArray = initiators
+                    
+                case .byLaws:
+                    self.selectedArray = bills
+                }
+                
+                if !choosenInPicker && (self.selectedArray.count() == 0) && (date.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (self.loadingCount < kLTMaxLoadingCount) {
+                    self.loadingCount += 1
+                    var newDate = date
+                    if self.shownDate.dateWithoutTime().compare(date.dateWithoutTime()) == .OrderedAscending {
+                        newDate = date.nextDay()
+                    } else {
+                        newDate = date.previousDay()
+                    }
+                    
+                    self.downloadChanges(newDate, choosenInPicker: false)
+                    
+                    return
+                }
+                
+                if self.loadingCount == kLTMaxLoadingCount {
+                    self.currentController.rootView.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом \(kLTMaxLoadingCount) днів з \(self.shownDate.longString())"
+                }
+                
+                self.shownDate = date
+                self.loadingCount = 0
             }
         }
-        
-        switch filterType {
-        case .byCommittees:
-            selectedArray = byCommitteesArray
-            
-        case .byInitiators:
-            selectedArray = byInitiatorsArray
-            
-        case .byLaws:
-            selectedArray = byLawsArray
-        }
-        
-        if !choosenInPicker && (selectedArray.count() == 0) && (date.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (loadingCount < kLTMaxLoadingCount) {
-            loadingCount += 1
-            var newDate = date
-            if shownDate.dateWithoutTime().compare(date.dateWithoutTime()) == .OrderedAscending {
-                newDate = date.nextDay()
-            } else {
-                newDate = date.previousDay()
-            }
-            
-            downloadChanges(newDate, choosenInPicker: false)
-            
-            return
-        }
-        
-        if loadingCount == kLTMaxLoadingCount {
-            currentController.rootView.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом \(kLTMaxLoadingCount) днів з \(shownDate.longString())"
-        }
-        
-        shownDate = date
-        loadingCount = 0
     }
     
     private func loadData() {
@@ -519,7 +516,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів...")
         
         let client = LTClient.sharedInstance()
-        
         client.downloadConvocations({ (success, error) -> Void in
             if success {
                 client.downloadCommittees({ (success, error) -> Void in
@@ -530,14 +526,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                     if success {
                                         client.downloadLaws({ (success, error) -> Void in
                                             if success {
-                                                let settings = VTSettingModel()
-                                                if settings.firstLaunch != true {
-                                                    settings.setup()
-                                                }
-                                                
                                                 self.rootView.hideLoadingView()
                                                 self.isLoading = false
                                                 self.downloadChanges(NSDate().previousDay(), choosenInPicker: false)
+                                                VTSettingModel().firstLaunch = true
                                             } else {
                                                 self.processError(error!)
                                             }
@@ -560,6 +552,50 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         })
     }
     
+    private func clearData(completionHandler:(success: Bool, error: NSError?) -> Void) {
+        rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка.\nТриває очищення данних...")
+        let manager = CoreDataStackManager.sharedInstance()
+        manager.clearEntity("LTChangeModel") { (success, error) -> Void in
+            if success {
+                manager.clearEntity("LTLawModel", completionHandler: { (success, error) -> Void in
+                    if success {
+                        manager.clearEntity("LTInitiatorModel", completionHandler: { (success, error) -> Void in
+                            if success {
+                                manager.clearEntity("LTInitiatorTypeModel", completionHandler: { (success, error) -> Void in
+                                    if success {
+                                        manager.clearEntity("LTCommitteeModel", completionHandler: { (success, error) -> Void in
+                                            if success {
+                                                self.rootView.hideLoadingView()
+                                                print("coreData is clean!")
+                                                completionHandler(success: true, error: nil)
+                                            } else {
+                                                completionHandler(success: false, error: error)
+                                                self.processError(error!)
+                                            }
+                                        })
+                                        
+                                    } else {
+                                        completionHandler(success: false, error: error)
+                                        self.processError(error!)
+                                    }
+                                })
+                            } else {
+                                completionHandler(success: false, error: error)
+                                self.processError(error!)
+                            }
+                        })
+                    } else {
+                        completionHandler(success: false, error: error)
+                        self.processError(error!)
+                    }
+                })
+            } else {
+                completionHandler(success: false, error: error)
+                self.processError(error!)
+            }
+        }
+    }
+    
     private func processError(error:NSError) {
         rootView.hideLoadingView()
         isLoading = false
@@ -573,6 +609,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     //MARK: - LTFilterDelegate methods
     func filtersDidApplied() {
+        if isLoading {
+            return
+        }
+        
         setChangesModel(rootView.datePicker.date, choosenInPicker: false)
     }
     

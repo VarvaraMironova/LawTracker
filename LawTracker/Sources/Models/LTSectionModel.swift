@@ -27,7 +27,11 @@ class LTSectionModel: NSObject {
         self.entities = entities
         var titles = [String]()
         for entity in entities {
-            titles.append(entity.title)
+            if let billModel = entity as? LTLawModel {
+                titles.append(billModel.number)
+            } else {
+                titles.append(entity.title)
+            }
         }
         
         self.title = titles.joinWithSeparator("\n")

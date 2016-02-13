@@ -11,6 +11,7 @@ import CoreData
 
 private let kVTSQLFileName  = "LawTracker.sqlite"
 private let kVTMomdFileName = "LawTracker"
+private let kLTQueueName    = "CoreDataQueue"
 
 class CoreDataStackManager {
     
@@ -21,6 +22,19 @@ class CoreDataStackManager {
         }
         
         return Static.instance
+    }
+    
+    class func coreDataQueue() -> dispatch_queue_t {
+        struct Static {
+            static var onceToken: dispatch_once_t = 0
+            static var instance: dispatch_queue_t? = nil
+        }
+        
+        dispatch_once(&Static.onceToken) {
+            Static.instance = dispatch_queue_create(kLTQueueName, DISPATCH_QUEUE_SERIAL)
+        }
+        
+        return Static.instance!
     }
     
     // MARK: - The Core Data stack. The code has been moved, unaltered, from the AppDelegate.
@@ -62,7 +76,7 @@ class CoreDataStackManager {
     
     lazy var managedObjectContext: NSManagedObjectContext = {
         let coordinator = self.persistentStoreCoordinator
-        var managedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
+        var managedObjectContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
         
         return managedObjectContext
@@ -86,7 +100,8 @@ class CoreDataStackManager {
     }
     
     func storeConvocations(convocations: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
-        dispatch_async(dispatch_get_main_queue()) {
+        let queue = CoreDataStackManager.coreDataQueue()
+        dispatch_async(queue) {
             for convocationArray in convocations {
                 _ = LTConvocationModel(dictionary: convocationArray as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTConvocationModel")
             }
@@ -98,7 +113,8 @@ class CoreDataStackManager {
     }
     
     func storeLaws(laws: [NSDictionary], convocation: String, completionHandler: (finished: Bool) -> Void) {
-        dispatch_async(dispatch_get_main_queue()) {
+        let queue = CoreDataStackManager.coreDataQueue()
+        dispatch_async(queue) {
             for lawArray in laws {
                 var lawId = String()
                 if let id = lawArray["id"] as? String {
@@ -122,7 +138,8 @@ class CoreDataStackManager {
     }
     
     func storeCommittees(committees: [NSDictionary], convocation: String, completionHandler: (finished: Bool) -> Void) {
-        dispatch_async(dispatch_get_main_queue()) {
+        let queue = CoreDataStackManager.coreDataQueue()
+        dispatch_async(queue) {
             for committeeArray in committees {
                 var committeeId = String()
                 if let id = committeeArray["id"] as? String {
@@ -146,7 +163,8 @@ class CoreDataStackManager {
     }
     
     func storeInitiatorTypes(types: [String : AnyObject], completionHandler: (finished: Bool) -> Void) {
-        dispatch_async(dispatch_get_main_queue()) {
+        let queue = CoreDataStackManager.coreDataQueue()
+        dispatch_async(queue) {
             for (key, value) in types {
                 if nil == LTInitiatorTypeModel.modelWithID(key, entityName: "LTInitiatorTypeModel") {
                     let type = ["id": key, "title": value]
@@ -161,7 +179,8 @@ class CoreDataStackManager {
     }
     
     func storePersons(persons: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
-        dispatch_async(dispatch_get_main_queue()) {
+        let queue = CoreDataStackManager.coreDataQueue()
+        dispatch_async(queue) {
             for person in persons {
             _ = LTPersonModel(dictionary: person as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTPersonModel")
             }
@@ -173,8 +192,8 @@ class CoreDataStackManager {
     }
     
     func storeChanges(date: NSDate, changes: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
-        dispatch_async(dispatch_get_main_queue()) {
-            
+        let queue = CoreDataStackManager.coreDataQueue()
+        dispatch_async(queue) {
             let dateString = date.string("yyyy-MM-dd")
             for changeArray in changes {
                 var changeId = dateString
@@ -184,12 +203,10 @@ class CoreDataStackManager {
                     changeId = "\(billID)"
                 }
                 
-                if nil == LTChangeModel.modelWithID(changeId, entityName: "LTChangeModel") {
-                    if var mutableChangeArray = changeArray as? [String : AnyObject] {
-                        mutableChangeArray["date"] = date
-                        mutableChangeArray["id"] = changeId
-                        _ = LTChangeModel(dictionary: mutableChangeArray, context: self.managedObjectContext)
-                    }
+                if var mutableChangeArray = changeArray as? [String : AnyObject] {
+                    mutableChangeArray["date"] = date
+                    mutableChangeArray["id"] = changeId
+                    _ = LTChangeModel(dictionary: mutableChangeArray, context: self.managedObjectContext)
                 }
             }
             
@@ -200,22 +217,17 @@ class CoreDataStackManager {
     }
     
     func clearEntity(entityName: String, completionHandler:(success: Bool, error: NSError?) -> Void) {
-        dispatch_async(dispatch_get_main_queue()) {
+        let queue = CoreDataStackManager.coreDataQueue()
+        dispatch_async(queue) {
             let fetchRequest = NSFetchRequest(entityName: entityName)
-            fetchRequest.includesPropertyValues = false
-            
+            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
             do {
-                if let results = try self.managedObjectContext.executeFetchRequest(fetchRequest) as? [NSManagedObject] {
-                    for result in results {
-                        self.managedObjectContext.deleteObject(result)
-                    }
+                if let persistentStoreCoordinator = self.persistentStoreCoordinator  as NSPersistentStoreCoordinator! {
+                    try persistentStoreCoordinator.executeRequest(deleteRequest, withContext: self.managedObjectContext)
+                    completionHandler(success: true, error: nil)
                 }
-                
-                self.saveContext()
-                
-                completionHandler(success: true, error: nil)
             } catch let error as NSError {
-                completionHandler(success: false, error: error)
+                completionHandler(success: true, error: error)
             }
         }
     }

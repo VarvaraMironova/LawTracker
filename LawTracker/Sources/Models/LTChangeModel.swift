@@ -41,15 +41,16 @@ class LTChangeModel: LTEntityModel  {
         }
         
         if let lawNumber = dictionary[Keys.law] as? String {
-            if let lawModel = LTLawModel.lawWithNumber(lawNumber) as! LTLawModel! {
+            if let lawModel = LTLawModel.lawWithNumber(lawNumber) as LTLawModel! {
                 self.law = lawModel
             } else {
                 //there is no law with lawID so, make request to server
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
-                    LTClient.sharedInstance().getLawWithId(lawNumber) {law, success, error in
+                let queue = CoreDataStackManager.coreDataQueue()
+                dispatch_async(queue){
+                    LTClient.sharedInstance().getLawWithId(lawNumber) {success, error in
                         if success {
-                            dispatch_async(dispatch_get_main_queue()){
-                                if let law = law as LTLawModel! {
+                            dispatch_async(CoreDataStackManager.coreDataQueue()){
+                                if let law = LTLawModel.lawWithNumber(lawNumber) as LTLawModel! {
                                     self.law = law
                                 } else {
                                     print("Cannot find law with number \(lawNumber)")

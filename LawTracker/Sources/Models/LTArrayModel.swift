@@ -99,23 +99,26 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     }
     
     func changes(completionHandler:(bills: LTChangesModel, committees:  LTChangesModel, initiators:  LTChangesModel, finish: Bool) -> Void) {
-        //check are there saved filters. If true -> apply filters
-        let billsList = sectionModelsByKey(.byLaws)
-        let committeesList = sectionModelsByKey(.byCommittees)
-        let initiatorsList = sectionModelsByKey(.byInitiators)
-
-        let byBillsChanges = applyFilters(billsList, key: .byLaws)
-        let billsFilterApplied = nil != byBillsChanges
-        let byInitiatorsChanges = applyFilters(initiatorsList, key: .byInitiators)
-        let initiatorsFilterApplied = nil != byInitiatorsChanges
-        let byCommitteesChanges = applyFilters(committeesList, key: .byCommittees)
-        let committeesFilterApplied = nil != byCommitteesChanges
-        
-        let chagesByBill = LTChangesModel(changes: nil == byBillsChanges ? billsList : byBillsChanges, filtersIsApplied: billsFilterApplied, date: downloadDate)
-        let chagesByCommittee = LTChangesModel(changes: nil == byCommitteesChanges ? committeesList : byCommitteesChanges, filtersIsApplied: committeesFilterApplied, date: downloadDate)
-        let chagesByInitiator = LTChangesModel(changes: nil == byInitiatorsChanges ? initiatorsList : byInitiatorsChanges, filtersIsApplied: initiatorsFilterApplied, date: downloadDate)
-        
-        completionHandler(bills: chagesByBill, committees:  chagesByCommittee, initiators:  chagesByInitiator, finish: true)
+        let queue = CoreDataStackManager.coreDataQueue()
+        let date = downloadDate
+        dispatch_async(queue) {
+            let billsList = self.sectionModelsByKey(.byLaws)
+            let committeesList = self.sectionModelsByKey(.byCommittees)
+            let initiatorsList = self.sectionModelsByKey(.byInitiators)
+            
+            let byBillsChanges = self.applyFilters(billsList, key: .byLaws)
+            let billsFilterApplied = nil != byBillsChanges
+            let byInitiatorsChanges = self.applyFilters(initiatorsList, key: .byInitiators)
+            let initiatorsFilterApplied = nil != byInitiatorsChanges
+            let byCommitteesChanges = self.applyFilters(committeesList, key: .byCommittees)
+            let committeesFilterApplied = nil != byCommitteesChanges
+            
+            let chagesByBill = LTChangesModel(changes: nil == byBillsChanges ? billsList : byBillsChanges, filtersIsApplied: billsFilterApplied, date: date)
+            let chagesByCommittee = LTChangesModel(changes: nil == byCommitteesChanges ? committeesList : byCommitteesChanges, filtersIsApplied: committeesFilterApplied, date: date)
+            let chagesByInitiator = LTChangesModel(changes: nil == byInitiatorsChanges ? initiatorsList : byInitiatorsChanges, filtersIsApplied: initiatorsFilterApplied, date: date)
+            
+            completionHandler(bills: chagesByBill, committees:  chagesByCommittee, initiators:  chagesByInitiator, finish: true)
+        }
     }
     
     func count() -> Int {
@@ -201,4 +204,5 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         
         return nil
     }
+
 }

@@ -20,7 +20,7 @@ class LTFilterTableViewCell: UITableViewCell {
     
     func fillWithModel(model: LTFilterCellModel) {
         let entity = model.entity
-        filtered = entity.filterSet
+        filtered = model.selected
         titleLabel.text = entity.title
         
         if let committee = entity as? LTCommitteeModel {

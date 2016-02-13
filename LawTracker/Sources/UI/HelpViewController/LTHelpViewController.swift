@@ -45,9 +45,7 @@ class LTHelpViewController: UIViewController, UICollectionViewDataSource, UIColl
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         
         coordinator.animateAlongsideTransition({(UIViewControllerTransitionCoordinatorContext) -> Void in
-            self.rootView.helpCollectionView.performBatchUpdates({ () -> Void in
-                
-                }, completion: nil)
+            self.rootView.helpCollectionView.performBatchUpdates( { () -> Void in }, completion: nil)
             }, completion: {(UIViewControllerTransitionCoordinatorContext) -> Void in })
     }
 

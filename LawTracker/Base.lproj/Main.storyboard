@@ -351,6 +351,9 @@
                                                 <date key="date" timeIntervalSinceReferenceDate="475417008.29783702">
                                                     <!--2016-01-25 12:16:48 +0000-->
                                                 </date>
+                                                <date key="minimumDate" timeIntervalSinceReferenceDate="-31579200">
+                                                    <!--2000-01-01 12:00:00 +0000-->
+                                                </date>
                                                 <locale key="locale" localeIdentifier="uk_UA"/>
                                             </datePicker>
                                         </subviews>

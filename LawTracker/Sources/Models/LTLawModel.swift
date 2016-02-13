@@ -53,11 +53,12 @@ class LTLawModel: LTEntityModel {
                 if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
                     self.addValueForKey(initiatorModel, key: Keys.initiators)
                 } else {
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
-                        LTClient.sharedInstance().getInitiatorTypeWithId(typeID){initiatorModel, success, error in
+                    let queue = CoreDataStackManager.coreDataQueue()
+                    dispatch_async(queue){
+                        LTClient.sharedInstance().getInitiatorTypeWithId(typeID){success, error in
                             if success {
-                                dispatch_async(dispatch_get_main_queue()){
-                                    if let initiatorModel = initiatorModel as LTInitiatorModel! {
+                                dispatch_async(CoreDataStackManager.coreDataQueue()){
+                                    if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName: "LTInitiatorModel") as? LTInitiatorModel! {
                                         self.addValueForKey(initiatorModel, key: Keys.initiators)
                                     } else {
                                         print("Cannot get info about initiator type \(typeID)")
@@ -77,11 +78,12 @@ class LTLawModel: LTEntityModel {
             if let committeeModel = LTCommitteeModel.modelWithID(committeeIDString, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
                 self.committee = committeeModel
             } else {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
-                    LTClient.sharedInstance().getCommitteeWithId(committeeIDString){committee, success, error in
+                let queue = CoreDataStackManager.coreDataQueue()
+                dispatch_async(queue) {
+                    LTClient.sharedInstance().getCommitteeWithId(committeeIDString){success, error in
                         if success {
-                            dispatch_async(dispatch_get_main_queue()){
-                                if let committee = committee as LTCommitteeModel! {
+                            dispatch_async(CoreDataStackManager.coreDataQueue()){
+                                if let committee = LTCommitteeModel.modelWithID(committeeIDString, entityName: "LTCommitteeModel") as? LTCommitteeModel! {
                                     self.committee = committee
                                 } else {
                                     print("Cannot get info about committee with id \(committeeID)")
@@ -102,26 +104,28 @@ class LTLawModel: LTEntityModel {
             if let initiatorModel = LTInitiatorModel.modelWithID(idString, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
                 self.addValueForKey(initiatorModel, key: Keys.initiators)
             } else {
-//                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
-//                    LTClient.sharedInstance().getInitiatorWithId(idString){initiator, success, error in
-//                        if success {
-//                            dispatch_async(dispatch_get_main_queue()){
-//                                if let initiator = initiator as LTInitiatorModel! {
-//                                    self.addValueForKey(initiator, key: Keys.initiators)
-//                                } else {
-//                                    print("Cannot get info about deputy with id \(idString)")
-//                                }
-//                            }
-//                        } else {
-//                            print("Cannot get info about deputy with id \(idString)")
-//                        }
-//                    }
-//                }
+                let queue = CoreDataStackManager.coreDataQueue()
+                dispatch_async(queue) {
+                    LTClient.sharedInstance().getInitiatorWithId(idString){success, error in
+                        if success {
+                            let queue = CoreDataStackManager.coreDataQueue()
+                            dispatch_async(queue){
+                                if let initiator = LTInitiatorModel.modelWithID(idString, entityName: "LTInitiatorModel") as? LTInitiatorModel! {
+                                    self.addValueForKey(initiator, key: Keys.initiators)
+                                } else {
+                                    print("Cannot get info about deputy with id \(idString)")
+                                }
+                            }
+                        } else {
+                            print("Cannot get info about deputy with id \(idString)")
+                        }
+                    }
+                }
             }
         }
     }
     
-    class func lawWithNumber(number: String) -> LTEntityModel? {
+    class func lawWithNumber(number: String) -> LTLawModel? {
         let predicate = NSPredicate(format:"number == %@", number)
         let fetchRequest = NSFetchRequest(entityName: "LTLawModel")
         fetchRequest.predicate = predicate
