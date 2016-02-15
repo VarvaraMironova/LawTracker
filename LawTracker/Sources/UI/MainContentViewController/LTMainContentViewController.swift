@@ -59,9 +59,9 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
                     initiators.append(initiator.title!!)
                 }
                 
-                let titles:[String] = [model.date.longString(), "Статус:", model.title, "Законопроект:", law.title, "Ініційовано:", initiators.joinWithSeparator(", "), "Головний комітет:", (law.committee.title)]
-                let text = titles.joinWithSeparator("\n")
-                let url = model.law.url
+                let titles:[NSAttributedString] = [model.date.longString().attributedTitle()!, model.title.attributedTitle()!, "Законопроект #\(law.number)".attributedTitle()!, law.title.attributedText()!, "Ініціатор(и):".attributedTitle()!, initiators.joinWithSeparator(", ").attributedText()!, "Головний комітет:".attributedTitle()!, law.committee.title.attributedText()!]
+                let text = titles.joinWithSeparator("\n".attributedText()!)
+                let url = law.url.attributedLink()!
                 
                 let shareItems = [text, url]
                 

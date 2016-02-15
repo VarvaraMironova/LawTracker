@@ -457,6 +457,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                 dispatch_async(dispatch_get_main_queue()) {
                     self.setChangesModel(date, choosenInPicker: choosenInPicker)
                     let settingsModel = VTSettingModel()
+                    settingsModel.firstLaunch = true
                     settingsModel.lastDownloadDate = date
                 }
             } else {
@@ -529,7 +530,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                                 self.rootView.hideLoadingView()
                                                 self.isLoading = false
                                                 self.downloadChanges(NSDate().previousDay(), choosenInPicker: false)
-                                                VTSettingModel().firstLaunch = true
                                             } else {
                                                 self.processError(error!)
                                             }

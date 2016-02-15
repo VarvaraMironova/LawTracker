@@ -27,4 +27,34 @@ extension String {
         
         return nil
     }
+    
+    func attributedTitle() -> NSAttributedString? {
+        if let font = UIFont(name: "Arial-BoldMT", size: 14.0) as UIFont! {
+            let attributes = [NSFontAttributeName: font]
+            
+            return NSMutableAttributedString(string:self, attributes:attributes)
+        }
+        
+        return nil
+    }
+    
+    func attributedText() -> NSAttributedString? {
+        if let font = UIFont(name: "Arial", size: 12.0) as UIFont! {
+            let attributes = [NSFontAttributeName: font]
+            
+            return NSMutableAttributedString(string:self, attributes:attributes)
+        }
+        
+        return nil
+    }
+    
+    func attributedLink() -> NSAttributedString? {
+        if let font = UIFont(name: "Arial", size: 12.0) as UIFont! {
+            let attributes = [NSLinkAttributeName: self, NSFontAttributeName: font]
+            
+            return NSMutableAttributedString(string:self, attributes:attributes)
+        }
+        
+        return nil
+    }
 }

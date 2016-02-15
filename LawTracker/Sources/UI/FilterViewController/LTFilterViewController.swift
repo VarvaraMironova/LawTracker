@@ -95,8 +95,8 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         rootView.endEditing(true)
         
         if let filters = filters as [LTSectionModel]! {
-            let select = rootView.selectAllButton.on
-            rootView.selectAllButton.on = !select
+            let select = !rootView.selectAllButton.on
+            rootView.selectAllButton.on = select
             
             for sectionModel in filters {
                 for filterModel in sectionModel.filters {
@@ -104,10 +104,10 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                         if committeeModel.expired {
                             filterModel.selected = false
                         } else {
-                            filterModel.selected = !filterModel.selected
+                            filterModel.selected = select
                         }
                     } else {
-                        filterModel.selected = !filterModel.selected
+                        filterModel.selected = select
                     }
                 }
             }

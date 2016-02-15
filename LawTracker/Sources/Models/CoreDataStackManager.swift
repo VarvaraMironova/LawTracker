@@ -203,10 +203,12 @@ class CoreDataStackManager {
                     changeId = "\(billID)"
                 }
                 
-                if var mutableChangeArray = changeArray as? [String : AnyObject] {
-                    mutableChangeArray["date"] = date
-                    mutableChangeArray["id"] = changeId
-                    _ = LTChangeModel(dictionary: mutableChangeArray, context: self.managedObjectContext)
+                if nil == LTChangeModel.modelWithID(changeId, entityName: "LTChangeModel") {
+                    if var mutableChangeArray = changeArray as? [String : AnyObject] {
+                        mutableChangeArray["date"] = date
+                        mutableChangeArray["id"] = changeId
+                        _ = LTChangeModel(dictionary: mutableChangeArray, context: self.managedObjectContext)
+                    }
                 }
             }
             

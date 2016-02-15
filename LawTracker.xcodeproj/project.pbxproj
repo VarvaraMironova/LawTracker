@@ -21,6 +21,7 @@
 		C71A07AA1C23F9F600235D78 /* OTMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A71C23F9F600235D78 /* OTMView.swift */; };
 		C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F81C1194010090C2B8 /* LTChangeModel.swift */; };
 		C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73520D91C1EC62500993AEB /* LTLawModel.swift */; };
+		C75D9BBA1C706FAC0057136C /* LTAttributedStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75D9BB91C706FAC0057136C /* LTAttributedStringExtensions.swift */; };
 		C76174AE1C4D431900C344FA /* LTInitiatorTypeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76174AD1C4D431900C344FA /* LTInitiatorTypeModel.swift */; };
 		C76174B01C4D445700C344FA /* LTPersonModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76174AF1C4D445700C344FA /* LTPersonModel.swift */; };
 		C76174B21C5394B400C344FA /* LTConvocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76174B11C5394B400C344FA /* LTConvocationModel.swift */; };
@@ -93,6 +94,7 @@
 		C71A07A71C23F9F600235D78 /* OTMView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMView.swift; sourceTree = "<group>"; };
 		C72800F81C1194010090C2B8 /* LTChangeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChangeModel.swift; sourceTree = "<group>"; };
 		C73520D91C1EC62500993AEB /* LTLawModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTLawModel.swift; sourceTree = "<group>"; };
+		C75D9BB91C706FAC0057136C /* LTAttributedStringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTAttributedStringExtensions.swift; sourceTree = "<group>"; };
 		C76174AD1C4D431900C344FA /* LTInitiatorTypeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTInitiatorTypeModel.swift; sourceTree = "<group>"; };
 		C76174AF1C4D445700C344FA /* LTPersonModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTPersonModel.swift; sourceTree = "<group>"; };
 		C76174B11C5394B400C344FA /* LTConvocationModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTConvocationModel.swift; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 				C77397311C3A7AE60093CBCC /* LTUtility.swift */,
 				C773973E1C3AB1180093CBCC /* LTNSDateExtensions.swift */,
 				C707CF491C581D58004A8640 /* LTNSObject.swift */,
+				C75D9BB91C706FAC0057136C /* LTAttributedStringExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -489,6 +492,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C75D9BBA1C706FAC0057136C /* LTAttributedStringExtensions.swift in Sources */,
 				C77397341C3A7AE70093CBCC /* LTStringHeightExtensions.swift in Sources */,
 				C76174B01C4D445700C344FA /* LTPersonModel.swift in Sources */,
 				C77397451C3AB9450093CBCC /* LTClientExtensions.swift in Sources */,
