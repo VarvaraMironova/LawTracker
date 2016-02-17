@@ -17,7 +17,7 @@ class LTChangeModel: LTEntityModel  {
     }
     
     @NSManaged var date : NSDate
-    @NSManaged var law  : LTLawModel
+    @NSManaged dynamic var law  : LTLawModel
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)

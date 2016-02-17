@@ -62,19 +62,19 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     var byLawsArray       : LTChangesModel! {
         didSet {
-            rootView.byBillsButton.filtersSet = byLawsArray.filtersIsApplied
+            rootView.byBillsButton.filtersSet = byLawsArray.filtersApplied
         }
     }
     
     var byCommitteesArray : LTChangesModel! {
         didSet {
-            rootView.byCommitteesButton.filtersSet = byCommitteesArray.filtersIsApplied
+            rootView.byCommitteesButton.filtersSet = byCommitteesArray.filtersApplied
         }
     }
     
     var byInitiatorsArray : LTChangesModel! {
         didSet {
-            rootView.byInitiatorsButton.filtersSet = byInitiatorsArray.filtersIsApplied
+            rootView.byInitiatorsButton.filtersSet = byInitiatorsArray.filtersApplied
         }
     }
     
@@ -130,17 +130,32 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
-        
+        let view = rootView
         coordinator.animateAlongsideTransition({(UIViewControllerTransitionCoordinatorContext) -> Void in
-            if self.rootView.menuShown {
-                self.rootView.showMenu()
+            if view.menuShown {
+                view.showMenu()
             }}, completion: {(UIViewControllerTransitionCoordinatorContext) -> Void in })
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .LightContent
     }
-
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self,
+            selector: "changeModelDidChange:",
+            name: "changeModelNotification",
+            object: nil)
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "changeModelNotification", object: nil)
+    }
+    
     //MARK: - Interface Handling
     @IBAction func onGesture(sender: LTPanGestureRacognizer) {
         if isLoading {
@@ -444,10 +459,12 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         
         view.fillSearchButton(date)
             
-        if let _ = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
-            self.setChangesModel(date, choosenInPicker: choosenInPicker)
+        if let changes = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
+            if changes.count > 0 {
+                setChangesModel(date, choosenInPicker: choosenInPicker)
                 
-            return
+                return
+            }
         }
         
         view.showLoadingViewInViewWithMessage(view.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
@@ -469,7 +486,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     private func setChangesModel(date: NSDate, choosenInPicker: Bool) {
         changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date.dateWithoutTime()), date: date.dateWithoutTime())
         
-        changesModel.changes { (bills, committees, initiators, finish) -> Void in
+        changesModel.changes { (bills, initiators, committees, finish) -> Void in
             dispatch_async(dispatch_get_main_queue()) {
                 if finish {
                     self.byLawsArray = bills
@@ -600,7 +617,16 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         rootView.hideLoadingView()
         isLoading = false
         
-        self.displayError(error)
+        dispatch_async(dispatch_get_main_queue()) {
+            let alertViewController: UIAlertController = UIAlertController(title: error.localizedDescription, message: "Повторити спробу завантаження?", preferredStyle: .Alert)
+            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: {void in
+                self.loadData()
+            }))
+            
+            alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
+            
+            self.presentViewController(alertViewController, animated: true, completion: nil)
+        }
     }
     
     private func setCurrentController(controller: LTMainContentViewController) {
@@ -614,6 +640,29 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
         
         setChangesModel(rootView.datePicker.date, choosenInPicker: false)
+    }
+    
+    func changeModelDidChange(notification: NSNotification) {
+        currentController.arrayModel = selectedArray
+//        if let userInfo = notification.userInfo as NSDictionary! {
+//            currentController.arrayModel = selectedArray
+//            let tableView = currentController.rootView.contentTableView
+//            
+//            tableView.beginUpdates()
+//            if let section = userInfo["section"] as? Bool {
+//                if section {
+//                    if let sectionIndex = userInfo["sectionIndex"] as? Int {
+//                        tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Top)
+//                    }
+//                }
+//            }
+//            
+//            if let indexPath = userInfo["indexPath"] as? NSIndexPath {
+//                tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Right)
+//            }
+//            
+//            tableView.endUpdates()
+//        }
     }
     
 }

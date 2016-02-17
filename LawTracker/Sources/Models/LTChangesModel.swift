@@ -10,14 +10,22 @@ import Foundation
 
 class LTChangesModel: NSObject {
     var changes         : [LTSectionModel] = []
-    var filtersIsApplied: Bool!
+    var filtersApplied  : Bool!
     var date            : NSDate!
     
-    init(changes: [LTSectionModel], filtersIsApplied: Bool, date: NSDate) {
+    override init() {
+        super.init()
+        
+        self.changes = []
+        self.filtersApplied = false
+        self.date = NSDate()
+    }
+    
+    init(changes: [LTSectionModel], filtersApplied: Bool, date: NSDate) {
         super.init()
         
         self.changes = changes
-        self.filtersIsApplied = filtersIsApplied
+        self.filtersApplied = filtersApplied
         self.date = date
     }
     
@@ -28,4 +36,9 @@ class LTChangesModel: NSObject {
     func count() -> Int {
         return changes.count
     }
+    
+    func sectionWithEntities(entities:[LTEntityModel]) -> LTSectionModel? {
+        return changes.filter(){ $0.entities == entities }.first
+    }
+    
 }

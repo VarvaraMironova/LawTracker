@@ -14,6 +14,12 @@ enum LTType : Int {
     static let filterTypes = [byCommittees, byInitiators, byLaws]
 }
 
+enum LTState : Int {
+    case loaded = 0, loading = 1, failed = 2
+    
+    static let filterTypes = [loaded, loading, failed]
+}
+
 extension NSObject {
     
 }

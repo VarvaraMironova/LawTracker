@@ -11,9 +11,11 @@ import Foundation
 class LTSectionModel: NSObject {
     var entities  : [LTEntityModel]!
     
-    var changes = [LTChangeModel]()
+    var changes = [LTNewsModel]()
     var filters = [LTFilterCellModel]()
     var title   = String()
+    
+    var state     : LTState!
     
     override init() {
         super.init()
@@ -35,5 +37,9 @@ class LTSectionModel: NSObject {
         }
         
         self.title = titles.joinWithSeparator("\n")
+    }
+    
+    func newsModelWithEntity(entity: LTEntityModel) -> LTNewsModel? {
+        return self.changes.filter(){ $0.entity == entity }.first
     }
 }

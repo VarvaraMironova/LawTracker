@@ -46,6 +46,7 @@
 		C77397471C3AFE140093CBCC /* LTEntityModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77397461C3AFE140093CBCC /* LTEntityModel.swift */; };
 		C77397491C3D7DFA0093CBCC /* LTChangesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77397481C3D7DFA0093CBCC /* LTChangesModel.swift */; };
 		C773974B1C40095C0093CBCC /* LTSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773974A1C40095C0093CBCC /* LTSectionModel.swift */; };
+		C77FD4551C7221A10037716A /* LTNewsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77FD4541C7221A10037716A /* LTNewsModel.swift */; };
 		C78FA7561C6B2D95003D74E3 /* LTFilterCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C78FA7551C6B2D95003D74E3 /* LTFilterCellModel.swift */; };
 		C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */; };
 		C7A29E4F1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E4D1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld */; };
@@ -119,6 +120,7 @@
 		C77397461C3AFE140093CBCC /* LTEntityModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTEntityModel.swift; sourceTree = "<group>"; };
 		C77397481C3D7DFA0093CBCC /* LTChangesModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChangesModel.swift; sourceTree = "<group>"; };
 		C773974A1C40095C0093CBCC /* LTSectionModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSectionModel.swift; sourceTree = "<group>"; };
+		C77FD4541C7221A10037716A /* LTNewsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsModel.swift; sourceTree = "<group>"; };
 		C78FA7551C6B2D95003D74E3 /* LTFilterCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterCellModel.swift; sourceTree = "<group>"; };
 		C7A29E481C0C9EAD001B0EF5 /* LawTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LawTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -309,6 +311,7 @@
 				C77397481C3D7DFA0093CBCC /* LTChangesModel.swift */,
 				C76174B11C5394B400C344FA /* LTConvocationModel.swift */,
 				C707CF4B1C581EB3004A8640 /* LTArrayModel.swift */,
+				C77FD4541C7221A10037716A /* LTNewsModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -492,6 +495,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C77FD4551C7221A10037716A /* LTNewsModel.swift in Sources */,
 				C75D9BBA1C706FAC0057136C /* LTAttributedStringExtensions.swift in Sources */,
 				C77397341C3A7AE70093CBCC /* LTStringHeightExtensions.swift in Sources */,
 				C76174B01C4D445700C344FA /* LTPersonModel.swift in Sources */,

@@ -51,7 +51,7 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
                 }
                 
                 let section = self.arrayModel!.changes[indexPath.section]
-                let model = section.changes[indexPath.row]
+                let model = section.changes[indexPath.row].entity
                 //complete sharing text
                 let law = model.law
                 var initiators = [String]()
@@ -143,7 +143,7 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if let arrayModel = arrayModel as LTChangesModel! {
             let sectionModel = arrayModel.changes[indexPath.section]
-            let changeModel = sectionModel.changes[indexPath.row]
+            let changeModel = sectionModel.changes[indexPath.row].entity
             if let url = NSURL(string: changeModel.law.url) as NSURL! {
                 let app = UIApplication.sharedApplication()
                 if app.canOpenURL(url) {
@@ -159,13 +159,13 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
             let changeModel = changes[indexPath.row]
             let width = CGRectGetWidth(tableView.frame) - 20.0
             let descriptionFont = UIFont(name: "Arial-BoldMT", size: 14.0)
-            let lawNameHeight = changeModel.law.title.getHeight(width, font: descriptionFont!)
-            let descriptionHeight = changeModel.title.getHeight(width, font: descriptionFont!)
+            let lawNameHeight = changeModel.billName.getHeight(width, font: descriptionFont!)
+            let descriptionHeight = changeModel.status.getHeight(width, font: descriptionFont!)
             
-            return lawNameHeight + descriptionHeight + 20.0
+            return lawNameHeight + descriptionHeight + 25.0
         }
         
         return 0.0
     }
-
+    
 }

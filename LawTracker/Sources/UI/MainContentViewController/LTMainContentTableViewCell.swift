@@ -11,21 +11,20 @@ import UIKit
 class LTMainContentTableViewCell: UITableViewCell {
     @IBOutlet var newsLabel: UILabel!
     @IBOutlet var lawNameLabel: UILabel!
-    @IBOutlet var shareButton: UIButton!
     
     var separatorView: UIView?
     
-    var model        : LTChangeModel!
+    var model        : LTNewsModel!
     
     override func setSelected(selected: Bool, animated: Bool) {
         
     }
     
-    func fillWithModel(model: LTChangeModel) {
+    func fillWithModel(model: LTNewsModel) {
         self.model = model
         
-        newsLabel.text = model.title
-        lawNameLabel.text = model.law.title
+        newsLabel.text = model.status
+        lawNameLabel.text = model.billName
         
         newsLabel.fit()
         lawNameLabel.fit()
