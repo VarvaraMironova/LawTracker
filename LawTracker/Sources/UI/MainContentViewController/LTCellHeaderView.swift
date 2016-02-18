@@ -16,6 +16,12 @@ class LTCellHeaderView: UIView {
         
         return headerView
     }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        titleLabel.text = ""
+    }
 
     func fillWithString(title: String) {
         titleLabel.text = title

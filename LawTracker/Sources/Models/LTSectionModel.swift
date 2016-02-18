@@ -15,8 +15,6 @@ class LTSectionModel: NSObject {
     var filters = [LTFilterCellModel]()
     var title   = String()
     
-    var state     : LTState!
-    
     override init() {
         super.init()
         

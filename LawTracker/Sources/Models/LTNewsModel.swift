@@ -13,10 +13,11 @@ class LTNewsModel: NSObject {
     var status : String!
     var entity : LTChangeModel!
     
-    var state  : LTState!
+    var state  : LTState = .notLoaded
     
     init(entity: LTChangeModel, type: LTType) {
         super.init()
+        
         self.entity = entity
         switch type {
         case .byLaws:

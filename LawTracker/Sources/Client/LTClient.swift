@@ -11,7 +11,6 @@ import UIKit
 class LTClient: NSObject {
     var session         : NSURLSession
     var downloadTask    : NSURLSessionDataTask?
-    var getImageDataTask: NSURLSessionTask?
     
     var methodArguments = [
         "api"           : String(),

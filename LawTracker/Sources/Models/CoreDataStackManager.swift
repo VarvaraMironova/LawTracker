@@ -103,7 +103,16 @@ class CoreDataStackManager {
         let queue = CoreDataStackManager.coreDataQueue()
         dispatch_async(queue) {
             for convocationArray in convocations {
-                _ = LTConvocationModel(dictionary: convocationArray as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTConvocationModel")
+                var convocationID = String()
+                if let id = convocationArray["id"] as? String {
+                    convocationID = id
+                } else if let id = convocationArray["id"] as? Int {
+                    convocationID = "\(id)"
+                }
+                
+                if nil == LTConvocationModel.modelWithID(convocationID, entityName: "LTConvocationModel") {
+                    _ = LTConvocationModel(dictionary: convocationArray as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTConvocationModel")
+                }
             }
             
             self.saveContext()
@@ -126,6 +135,32 @@ class CoreDataStackManager {
                 if nil == LTLawModel.modelWithID(lawId, entityName: "LTLawModel") {
                     if var mutableLawArray = lawArray as? [String : AnyObject] {
                         mutableLawArray["convocation"] = convocation
+                        
+                        //store initiators
+                        self.storeInitiators(mutableLawArray) { (result, finished) in
+                            if finished {
+                                mutableLawArray["initiatorModels"] = result
+                                
+                                //storeCommittees
+                                if let committeeID = mutableLawArray["committee"] as? Int {
+                                    let committeeIDString = "\(committeeID)"
+                                    if let committeeModel = LTCommitteeModel.modelWithID(committeeIDString, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
+                                        mutableLawArray["committeeModel"] = committeeModel
+                                    } else {
+                                        LTClient.sharedInstance().getCommitteeWithId(committeeIDString){success, error in
+                                            if success {
+                                                dispatch_async(CoreDataStackManager.coreDataQueue()){
+                                                    if let committee = LTCommitteeModel.modelWithID(committeeIDString, entityName: "LTCommitteeModel") as? LTCommitteeModel! {
+                                                        mutableLawArray["committeeModel"] = committee
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
                         _ = LTLawModel(dictionary: mutableLawArray, context: self.managedObjectContext, entityName:"LTLawModel")
                     }
                 }
@@ -207,13 +242,21 @@ class CoreDataStackManager {
                     if var mutableChangeArray = changeArray as? [String : AnyObject] {
                         mutableChangeArray["date"] = date
                         mutableChangeArray["id"] = changeId
-                        _ = LTChangeModel(dictionary: mutableChangeArray, context: self.managedObjectContext)
+                        
+                        //get lawModel
+                        if let lawNumber = mutableChangeArray["bill"] as? String {
+                            self.getLawWithNumber(lawNumber) { (result, finished) in
+                                mutableChangeArray["billModel"] = result
+                                dispatch_async(queue) {
+                                    _ = LTChangeModel(dictionary: mutableChangeArray, context: self.managedObjectContext)
+                                }
+                            }
+                        }
                     }
                 }
             }
             
             self.saveContext()
-            
             completionHandler(finished: true)
         }
     }
@@ -232,6 +275,66 @@ class CoreDataStackManager {
                 completionHandler(success: true, error: error)
             }
         }
+    }
+    
+    private func getLawWithNumber(lawNumber: String, completionHandler:(result: LTLawModel, finished: Bool) -> Void) {
+        if let lawModel = LTLawModel.lawWithNumber(lawNumber) as LTLawModel! {
+            completionHandler(result: lawModel, finished: true)
+        } else {
+            //there is no law with lawID so, make request to server
+            LTClient.sharedInstance().getLawWithId(lawNumber) {success, error in
+                if success {
+                    dispatch_async(CoreDataStackManager.coreDataQueue()){
+                        if let law = LTLawModel.lawWithNumber(lawNumber) as LTLawModel! {
+                            completionHandler(result: law, finished: true)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private func storeInitiators(array: [String : AnyObject], completionHandler:(result: [LTInitiatorModel], finished: Bool) -> Void) {
+        var initiatorModels = [LTInitiatorModel]()
+        let queue = CoreDataStackManager.coreDataQueue()
+        if let typeID = array["initiator_type"] as? String {
+            if typeID == "deputy" {
+                if let deputiesArray = array["initiators"] as? [Int] {
+                    for deputyId in deputiesArray {
+                        let idString : String = "\(deputyId)"
+                        if let initiatorModel = LTInitiatorModel.modelWithID(idString, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
+                            initiatorModels.append(initiatorModel)
+                        } else {
+                            LTClient.sharedInstance().getInitiatorWithId(idString){success, error in
+                                if success {
+                                    dispatch_async(queue){
+                                        if let initiator = LTInitiatorModel.modelWithID(idString, entityName: "LTInitiatorModel") as? LTInitiatorModel! {
+                                            initiatorModels.append(initiator)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
+                    initiatorModels.append(initiatorModel)
+                } else {
+                    LTClient.sharedInstance().getInitiatorTypeWithId(typeID){success, error in
+                        if success {
+                            dispatch_async(queue){
+                                if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName: "LTInitiatorModel") as? LTInitiatorModel! {
+                                    initiatorModels.append(initiatorModel)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        completionHandler(result: initiatorModels, finished: true)
     }
 
 }

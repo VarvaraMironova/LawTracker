@@ -468,7 +468,8 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
         
         view.showLoadingViewInViewWithMessage(view.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
-        LTClient.sharedInstance().downloadChanges(date) { (success, error) -> Void in
+        let client = LTClient.sharedInstance()
+        client.downloadChanges(date) { (success, error) -> Void in
             view.hideLoadingView()
             if success {
                 dispatch_async(dispatch_get_main_queue()) {
@@ -478,7 +479,9 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     settingsModel.lastDownloadDate = date
                 }
             } else {
-                self.processError(error!)
+                self.processError(error!){void in
+                    self.downloadChanges(date, choosenInPicker: choosenInPicker)
+                }
             }
         }
     }
@@ -548,23 +551,33 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                                 self.isLoading = false
                                                 self.downloadChanges(NSDate().previousDay(), choosenInPicker: false)
                                             } else {
-                                                self.processError(error!)
+                                                self.processError(error!){void in
+                                                    self.loadData()
+                                                }
                                             }
                                         })
                                     } else {
-                                        self.processError(error!)
+                                        self.processError(error!){void in
+                                            self.loadData()
+                                        }
                                     }
                                 })
                             } else {
-                                self.processError(error!)
+                                self.processError(error!){void in
+                                    self.loadData()
+                                }
                             }
                         })
                     } else {
-                        self.processError(error!)
+                        self.processError(error!){void in
+                            self.loadData()
+                        }
                     }
                 })
             } else {
-                self.processError(error!)
+                self.processError(error!){void in
+                    self.loadData()
+                }
             }
         })
     }
@@ -587,41 +600,49 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                                 completionHandler(success: true, error: nil)
                                             } else {
                                                 completionHandler(success: false, error: error)
-                                                self.processError(error!)
+                                                self.processError(error!){void in
+                                                    self.loadData()
+                                                }
                                             }
                                         })
                                         
                                     } else {
                                         completionHandler(success: false, error: error)
-                                        self.processError(error!)
+                                        self.processError(error!){void in
+                                            self.loadData()
+                                        }
                                     }
                                 })
                             } else {
                                 completionHandler(success: false, error: error)
-                                self.processError(error!)
+                                self.processError(error!){void in
+                                    self.loadData()
+                                }
                             }
                         })
                     } else {
                         completionHandler(success: false, error: error)
-                        self.processError(error!)
+                        self.processError(error!){void in
+                            self.loadData()
+                        }
                     }
                 })
             } else {
                 completionHandler(success: false, error: error)
-                self.processError(error!)
+                self.processError(error!){void in
+                        self.loadData()
+                }
             }
         }
     }
     
-    private func processError(error:NSError) {
+    private func processError(error:NSError, completionHandler:(UIAlertAction) -> Void) {
         rootView.hideLoadingView()
         isLoading = false
         
         dispatch_async(dispatch_get_main_queue()) {
             let alertViewController: UIAlertController = UIAlertController(title: error.localizedDescription, message: "Повторити спробу завантаження?", preferredStyle: .Alert)
-            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: {void in
-                self.loadData()
-            }))
+            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: completionHandler))
             
             alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
             
@@ -641,28 +662,4 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         
         setChangesModel(rootView.datePicker.date, choosenInPicker: false)
     }
-    
-    func changeModelDidChange(notification: NSNotification) {
-        currentController.arrayModel = selectedArray
-//        if let userInfo = notification.userInfo as NSDictionary! {
-//            currentController.arrayModel = selectedArray
-//            let tableView = currentController.rootView.contentTableView
-//            
-//            tableView.beginUpdates()
-//            if let section = userInfo["section"] as? Bool {
-//                if section {
-//                    if let sectionIndex = userInfo["sectionIndex"] as? Int {
-//                        tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Top)
-//                    }
-//                }
-//            }
-//            
-//            if let indexPath = userInfo["indexPath"] as? NSIndexPath {
-//                tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Right)
-//            }
-//            
-//            tableView.endUpdates()
-//        }
-    }
-    
 }

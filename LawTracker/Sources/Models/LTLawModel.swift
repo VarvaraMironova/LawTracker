@@ -44,83 +44,13 @@ class LTLawModel: LTEntityModel {
             self.number = number
         }
         
-        if let typeID = dictionary[Keys.type] as? String {
-            if typeID == "deputy" {
-                if let deputiesArray = dictionary[Keys.initiators] as? [Int] {
-                    storeDeputies(deputiesArray)
-                }
-            } else {
-                if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
-                    self.addValueForKey(initiatorModel, key: Keys.initiators)
-                } else {
-                    let queue = CoreDataStackManager.coreDataQueue()
-                    dispatch_async(queue){
-                        LTClient.sharedInstance().getInitiatorTypeWithId(typeID){success, error in
-                            if success {
-                                dispatch_async(CoreDataStackManager.coreDataQueue()){
-                                    if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName: "LTInitiatorModel") as? LTInitiatorModel! {
-                                        self.addValueForKey(initiatorModel, key: Keys.initiators)
-                                    } else {
-                                        print("Cannot get info about initiator type \(typeID)")
-                                    }
-                                }
-                            } else {
-                                print("Cannot get info about initiator type \(typeID)")
-                            }
-                        }
-                    }
-                }
-            }
+        if let committeeModel = dictionary["committeeModel"] as? LTCommitteeModel {
+            self.committee = committeeModel
         }
         
-        if let committeeID = dictionary[Keys.committee] as? Int {
-            let committeeIDString = "\(committeeID)"
-            if let committeeModel = LTCommitteeModel.modelWithID(committeeIDString, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
-                self.committee = committeeModel
-            } else {
-                let queue = CoreDataStackManager.coreDataQueue()
-                dispatch_async(queue) {
-                    LTClient.sharedInstance().getCommitteeWithId(committeeIDString){success, error in
-                        if success {
-                            dispatch_async(CoreDataStackManager.coreDataQueue()){
-                                if let committee = LTCommitteeModel.modelWithID(committeeIDString, entityName: "LTCommitteeModel") as? LTCommitteeModel! {
-                                    self.committee = committee
-                                } else {
-                                    print("Cannot get info about committee with id \(committeeID)")
-                                }
-                            }
-                        } else {
-                            print("Cannot get info about committee with id \(committeeID)")
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    func storeDeputies(deputies: [Int]) {
-        for deputyId in deputies {
-            let idString : String = "\(deputyId)"
-            if let initiatorModel = LTInitiatorModel.modelWithID(idString, entityName:"LTInitiatorModel") as! LTInitiatorModel! {
-                self.addValueForKey(initiatorModel, key: Keys.initiators)
-            } else {
-                let queue = CoreDataStackManager.coreDataQueue()
-                dispatch_async(queue) {
-                    LTClient.sharedInstance().getInitiatorWithId(idString){success, error in
-                        if success {
-                            let queue = CoreDataStackManager.coreDataQueue()
-                            dispatch_async(queue){
-                                if let initiator = LTInitiatorModel.modelWithID(idString, entityName: "LTInitiatorModel") as? LTInitiatorModel! {
-                                    self.addValueForKey(initiator, key: Keys.initiators)
-                                } else {
-                                    print("Cannot get info about deputy with id \(idString)")
-                                }
-                            }
-                        } else {
-                            print("Cannot get info about deputy with id \(idString)")
-                        }
-                    }
-                }
+        if let initiatorsModel = dictionary["initiatorModels"] as? [LTInitiatorModel] {
+            for initiator in initiatorsModel {
+                addValueForKey(initiator, key: Keys.initiators)
             }
         }
     }

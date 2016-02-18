@@ -14,6 +14,7 @@ class LTChangeModel: LTEntityModel  {
         static let status       = "status"
         static let law          = "bill"
         static let changeDate   = "date"
+        static let billModel    = "billModel"
     }
     
     @NSManaged var date : NSDate
@@ -40,28 +41,8 @@ class LTChangeModel: LTEntityModel  {
             self.id = id
         }
         
-        if let lawNumber = dictionary[Keys.law] as? String {
-            if let lawModel = LTLawModel.lawWithNumber(lawNumber) as LTLawModel! {
-                self.law = lawModel
-            } else {
-                //there is no law with lawID so, make request to server
-                let queue = CoreDataStackManager.coreDataQueue()
-                dispatch_async(queue){
-                    LTClient.sharedInstance().getLawWithId(lawNumber) {success, error in
-                        if success {
-                            dispatch_async(CoreDataStackManager.coreDataQueue()){
-                                if let law = LTLawModel.lawWithNumber(lawNumber) as LTLawModel! {
-                                    self.law = law
-                                } else {
-                                    print("Cannot find law with number \(lawNumber)")
-                                }
-                            }
-                        } else {
-                            print("Cannot find law with number \(lawNumber)")
-                        }
-                    }
-                }
-            }
+        if let billModel = dictionary[Keys.billModel] as? LTLawModel {
+            self.law = billModel
         }
     }
     

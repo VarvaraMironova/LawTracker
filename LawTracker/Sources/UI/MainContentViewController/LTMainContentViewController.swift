@@ -119,6 +119,14 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if let arrayModel = arrayModel as LTChangesModel! {
+            if let headerView = tableView.headerViewForSection(section) as UIView! {
+                if arrayModel.changes[section].title == "" {
+                    headerView.showLoadingView()
+                } else {
+                    headerView.hideLoadingView()
+                }
+            }
+            
             return arrayModel.changes[section].title
         }
         

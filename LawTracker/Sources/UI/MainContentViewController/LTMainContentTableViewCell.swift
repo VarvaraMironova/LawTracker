@@ -9,8 +9,9 @@
 import UIKit
 
 class LTMainContentTableViewCell: UITableViewCell {
-    @IBOutlet var newsLabel: UILabel!
-    @IBOutlet var lawNameLabel: UILabel!
+    @IBOutlet var newsLabel         : UILabel!
+    @IBOutlet var lawNameLabel      : UILabel!
+    @IBOutlet var loadingContainer  : UIView!
     
     var separatorView: UIView?
     
@@ -20,8 +21,23 @@ class LTMainContentTableViewCell: UITableViewCell {
         
     }
     
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        newsLabel.text = ""
+        lawNameLabel.text = ""
+    }
+    
     func fillWithModel(model: LTNewsModel) {
         self.model = model
+        
+        if model.status == "" || model.billName == "" {
+            loadingContainer.hidden = false
+            loadingContainer.showLoadingView()
+        } else {
+            loadingContainer.hidden = true
+            loadingContainer.hideLoadingView()
+        }
         
         newsLabel.text = model.status
         lawNameLabel.text = model.billName

@@ -15,9 +15,9 @@ enum LTType : Int {
 }
 
 enum LTState : Int {
-    case loaded = 0, loading = 1, failed = 2
+    case loaded = 0, loading = 1, failed = 2, notLoaded = 3
     
-    static let filterTypes = [loaded, loading, failed]
+    static let filterTypes = [loaded, loading, failed, notLoaded]
 }
 
 extension NSObject {

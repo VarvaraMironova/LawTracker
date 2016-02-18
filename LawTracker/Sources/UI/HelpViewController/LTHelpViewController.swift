@@ -8,21 +8,33 @@
 
 import UIKit
 
-private let kHelpTopText1    = "In main screen header you can see date of news. To choose another date, tap on date and choose new date in date picker."
-private let kHelpBottomText1 = "To get more info about bill or its status, visit bill page on Verkhovna Rada web site by tapping at bill name."
-private let kHelpTopText2    = "To see news grouped by main committee tap at 'Комітети' button, by initiator - at 'Ініціатори' button and by bill numbers - at 'Законопроекти'."
-private let kHelpBottomText2 = "If You want to filter news by one of these three groups - choose appropriate tab and tap at filter button."
-private let kHelpTopText3    = "Use search field to find filters. In 'Всі' You can see full list of filters, in 'Обрані' - only choosen filters, in 'Необрані' - not choosen ones."
-private let kHelpBottomText3 = "To set filter, choose one or more filters in filter list and tap at 'Зберегти' button. To clear filters tap at 'Скинути' button."
-private let kHelpTopText4    = "If filters are set, filter icon appears on corresponding tab. You can reload committees, initiators and bills by pulling down main screen."
-private let kHelpBottomText4 = "To get more info about 'Zakonoproekt' app, to review this manual or to visit Chesno web site, tap at menu button."
+private let kPortrait1 = "screenshot1_portrait"
+private let kPortrait2 = "screenshot2_portrait"
+private let kPortrait3 = "screenshot3_portrait"
+private let kPortrait4 = "screenshot4_portrait"
+private let kPortrait5 = "screenshot5_portrait"
+private let kPortrait6 = "screenshot6_portrait"
+private let kPortrait7 = "screenshot7_portrait"
+private let kPortrait8 = "screenshot8_portrait"
+private let kPortrait9 = "screenshot9_portrait"
+private let kPortrait10 = "screenshot10_portrait"
+private let kLandscape1 = "screenshot1_landscape"
+private let kLandscape2 = "screenshot2_landscape"
+private let kLandscape3 = "screenshot3_landscape"
+private let kLandscape4 = "screenshot4_landscape"
+private let kLandscape5 = "screenshot5_landscape"
+private let kLandscape6 = "screenshot6_landscape"
+private let kLandscape7 = "screenshot7_landscape"
+private let kLandscape8 = "screenshot8_landscape"
+private let kLandscape9 = "screenshot9_landscape"
+private let kLandscape10 = "screenshot10_landscape"
 
 class LTHelpViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     weak var delegate: LTNewsFeedViewController!
     
     var helpModel: [[String]]! {
         get {
-            return [[kHelpTopText1, "screenshot1", kHelpBottomText1, "screenshot2"], [kHelpTopText2, "screenshot3", kHelpBottomText2, "screenshot4"], [kHelpTopText3, "screenshot5", kHelpBottomText3, "screenshot6"], [kHelpTopText4, "screenshot7", kHelpBottomText4, "screenshot8"]]
+            return [[kPortrait1, kLandscape1], [kPortrait2, kLandscape2], [kPortrait3, kLandscape3], [kPortrait4, kLandscape4], [kPortrait5, kLandscape5], [kPortrait6, kLandscape6], [kPortrait7, kLandscape7], [kPortrait8, kLandscape8], [kPortrait9, kLandscape9], [kPortrait10, kLandscape10]]
         }
     }
     
@@ -66,7 +78,7 @@ class LTHelpViewController: UIViewController, UICollectionViewDataSource, UIColl
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("LTHelpViewCell", forIndexPath: indexPath) as! LTHelpViewCell
         let model = helpModel[indexPath.row]
-        cell.fill(model[0], topImage: model[1], bottomText: model[2], bottomImage: model[3], index: indexPath.row)
+        cell.fillWithModel(model)
         
         return cell
     }

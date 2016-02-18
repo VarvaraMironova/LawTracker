@@ -18,7 +18,6 @@
 		C707CF6C1C5FD810004A8640 /* LTSelectAllButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF6B1C5FD810004A8640 /* LTSelectAllButton.swift */; };
 		C71A07A81C23F9F600235D78 /* OTMLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */; };
 		C71A07A91C23F9F600235D78 /* OTMLoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C71A07A61C23F9F600235D78 /* OTMLoadingView.xib */; };
-		C71A07AA1C23F9F600235D78 /* OTMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71A07A71C23F9F600235D78 /* OTMView.swift */; };
 		C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F81C1194010090C2B8 /* LTChangeModel.swift */; };
 		C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73520D91C1EC62500993AEB /* LTLawModel.swift */; };
 		C75D9BBA1C706FAC0057136C /* LTAttributedStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75D9BB91C706FAC0057136C /* LTAttributedStringExtensions.swift */; };
@@ -47,6 +46,7 @@
 		C77397491C3D7DFA0093CBCC /* LTChangesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77397481C3D7DFA0093CBCC /* LTChangesModel.swift */; };
 		C773974B1C40095C0093CBCC /* LTSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773974A1C40095C0093CBCC /* LTSectionModel.swift */; };
 		C77FD4551C7221A10037716A /* LTNewsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77FD4541C7221A10037716A /* LTNewsModel.swift */; };
+		C77FD4631C7625680037716A /* LTLoadingViewCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77FD4621C7625680037716A /* LTLoadingViewCategory.swift */; };
 		C78FA7561C6B2D95003D74E3 /* LTFilterCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C78FA7551C6B2D95003D74E3 /* LTFilterCellModel.swift */; };
 		C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */; };
 		C7A29E4F1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E4D1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld */; };
@@ -92,7 +92,6 @@
 		C707CF6B1C5FD810004A8640 /* LTSelectAllButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSelectAllButton.swift; sourceTree = "<group>"; };
 		C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMLoadingView.swift; sourceTree = "<group>"; };
 		C71A07A61C23F9F600235D78 /* OTMLoadingView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OTMLoadingView.xib; sourceTree = "<group>"; };
-		C71A07A71C23F9F600235D78 /* OTMView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMView.swift; sourceTree = "<group>"; };
 		C72800F81C1194010090C2B8 /* LTChangeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChangeModel.swift; sourceTree = "<group>"; };
 		C73520D91C1EC62500993AEB /* LTLawModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTLawModel.swift; sourceTree = "<group>"; };
 		C75D9BB91C706FAC0057136C /* LTAttributedStringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTAttributedStringExtensions.swift; sourceTree = "<group>"; };
@@ -121,6 +120,7 @@
 		C77397481C3D7DFA0093CBCC /* LTChangesModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChangesModel.swift; sourceTree = "<group>"; };
 		C773974A1C40095C0093CBCC /* LTSectionModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSectionModel.swift; sourceTree = "<group>"; };
 		C77FD4541C7221A10037716A /* LTNewsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTNewsModel.swift; sourceTree = "<group>"; };
+		C77FD4621C7625680037716A /* LTLoadingViewCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTLoadingViewCategory.swift; sourceTree = "<group>"; };
 		C78FA7551C6B2D95003D74E3 /* LTFilterCellModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterCellModel.swift; sourceTree = "<group>"; };
 		C7A29E481C0C9EAD001B0EF5 /* LawTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LawTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -200,7 +200,6 @@
 			children = (
 				C71A07A51C23F9F600235D78 /* OTMLoadingView.swift */,
 				C71A07A61C23F9F600235D78 /* OTMLoadingView.xib */,
-				C71A07A71C23F9F600235D78 /* OTMView.swift */,
 			);
 			path = OTMLoadingView;
 			sourceTree = "<group>";
@@ -237,6 +236,7 @@
 				C773973E1C3AB1180093CBCC /* LTNSDateExtensions.swift */,
 				C707CF491C581D58004A8640 /* LTNSObject.swift */,
 				C75D9BB91C706FAC0057136C /* LTAttributedStringExtensions.swift */,
+				C77FD4621C7625680037716A /* LTLoadingViewCategory.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -518,6 +518,7 @@
 				C76CE92D1C1B744F006262E8 /* LTMenuViewController.swift in Sources */,
 				C773973F1C3AB1180093CBCC /* LTNSDateExtensions.swift in Sources */,
 				C7CFB5B51C2004D100211C6B /* LTHelpViewController.swift in Sources */,
+				C77FD4631C7625680037716A /* LTLoadingViewCategory.swift in Sources */,
 				C7E61A801C632DE600F0B79E /* LTNewsFeedRootView.swift in Sources */,
 				C707CF4A1C581D58004A8640 /* LTNSObject.swift in Sources */,
 				C707CF651C5D0079004A8640 /* LTHelpViewCell.swift in Sources */,
@@ -533,7 +534,6 @@
 				C773974B1C40095C0093CBCC /* LTSectionModel.swift in Sources */,
 				C7E792B21C18672C0031C55A /* LTFilterViewController.swift in Sources */,
 				C7CFB5B01C1FFFDB00211C6B /* LTMainContentViewController.swift in Sources */,
-				C71A07AA1C23F9F600235D78 /* OTMView.swift in Sources */,
 				C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */,
 				C78FA7561C6B2D95003D74E3 /* LTFilterCellModel.swift in Sources */,
 				C77397321C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift in Sources */,

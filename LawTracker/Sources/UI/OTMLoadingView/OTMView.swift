@@ -13,13 +13,11 @@ class OTMView: UIView {
     var loadingView      : OTMLoadingView!
     
     func showLoadingView() {
-        dispatch_async(dispatch_get_main_queue()) {
-            self.showLoadingViewInView(self)
-        }
+        showLoadingViewInView(self)
     }
     
     func showLoadingViewWithMessage(message: String) {
-        self.showLoadingViewInViewWithMessage(self, message: message)
+       showLoadingViewInViewWithMessage(self, message: message)
     }
     
     func showLoadingViewInView(view: UIView) {
