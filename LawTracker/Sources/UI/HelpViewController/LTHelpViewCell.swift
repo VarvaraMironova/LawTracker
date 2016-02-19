@@ -9,9 +9,7 @@
 import UIKit
 
 class LTHelpViewCell: UICollectionViewCell {
-    @IBOutlet var backArrowImageView    : UIImageView!
-    @IBOutlet var forwardArrowImageView : UIImageView!
-    @IBOutlet var contentImageView      : UIImageView!
+    @IBOutlet var contentImageView: UIImageView!
     
     func fillWithModel(model: [String]) {
         if .Portrait == UIApplication.sharedApplication().statusBarOrientation {

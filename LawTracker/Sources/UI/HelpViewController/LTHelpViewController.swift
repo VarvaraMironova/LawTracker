@@ -88,5 +88,10 @@ class LTHelpViewController: UIViewController, UICollectionViewDataSource, UIColl
 
         return collectionView.frame.size
     }
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        let width = scrollView.contentSize.width
+        rootView.selectedIndex = width > 0 ? Int(scrollView.contentOffset.x * 10 / width) : 0
+    }
 
 }
