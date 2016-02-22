@@ -40,6 +40,8 @@ extension LTClient {
     struct KLTMessages {
         static let parseJSONError       = "Cannot parse JSON"
         static let noCurrentConvocation = "Try reload data"
+        static let nsURLError           = "Cannot get url from string"
+        static let nsRequestError       = "Cannot create request with url"
     }
     
 }

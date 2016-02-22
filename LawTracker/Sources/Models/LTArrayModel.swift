@@ -14,6 +14,12 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     var predicate   : NSPredicate!
     var downloadDate: NSDate!
     
+    var changesByBills     : LTChangesModel!
+    var changesByInitiators: LTChangesModel!
+    var changesByCommittees: LTChangesModel!
+    
+    var changesSet: Bool = false
+    
     lazy var models: [LTEntityModel]! = {
         return self.fetchedResultsController.fetchedObjects as? [LTEntityModel]
     }()
@@ -39,11 +45,10 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         self.entityName = entityName
         self.downloadDate = date
         
+        fetchedResultsController.delegate = self
         do {
             try fetchedResultsController.performFetch()
         } catch {}
-        
-        fetchedResultsController.delegate = self
     }
     
     //MARK: - Public
@@ -101,14 +106,14 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         return filters
     }
     
-    func changes(completionHandler:(bills: LTChangesModel, initiators: LTChangesModel, committees: LTChangesModel, finish: Bool) -> Void) {
-        let queue = CoreDataStackManager.coreDataQueue()
+    func changes(completionHandler:(finish: Bool) -> Void) {
         let date = downloadDate
         
         if nil == models {
             return
         }
         
+        let queue = CoreDataStackManager.coreDataQueue()
         dispatch_async(queue) {
             let billsList = self.sectionModelsByKey(.byLaws)
             let committeesList = self.sectionModelsByKey(.byCommittees)
@@ -121,11 +126,13 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             let byCommitteesChanges = self.applyFilters(committeesList, key: .byCommittees)
             let committeesFilterApplied = nil != byCommitteesChanges
             
-            let chagesByBill = LTChangesModel(changes: nil == byBillsChanges ? billsList : byBillsChanges, filtersApplied: billsFilterApplied, date: date)
-            let chagesByCommittee = LTChangesModel(changes: nil == byCommitteesChanges ? committeesList : byCommitteesChanges, filtersApplied: committeesFilterApplied, date: date)
-            let chagesByInitiator = LTChangesModel(changes: nil == byInitiatorsChanges ? initiatorsList : byInitiatorsChanges, filtersApplied: initiatorsFilterApplied, date: date)
+            self.changesByBills = LTChangesModel(changes: nil == byBillsChanges ? billsList : byBillsChanges, filtersApplied: billsFilterApplied, date: date)
+            self.changesByCommittees = LTChangesModel(changes: nil == byCommitteesChanges ? committeesList : byCommitteesChanges, filtersApplied: committeesFilterApplied, date: date)
+            self.changesByInitiators = LTChangesModel(changes: nil == byInitiatorsChanges ? initiatorsList : byInitiatorsChanges, filtersApplied: initiatorsFilterApplied, date: date)
             
-            completionHandler(bills: chagesByBill, initiators: chagesByInitiator, committees: chagesByCommittee, finish: true)
+            completionHandler(finish: true)
+            
+            self.changesSet = true
         }
     }
     
@@ -142,54 +149,17 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         })
         
         for changeModel in changes {
-            let bill = changeModel.law
-            let newsModel = LTNewsModel(entity: changeModel, type: key)
-            
-            switch key {
-            case .byLaws:
-                let bills = [bill]
-                newsModel.state = bill.title == "" ? .loading : .loaded
-                
-                var sectionBillModel = result.filter(){ $0.entities == bills }.first
-                if nil == sectionBillModel {
-                    sectionBillModel = LTSectionModel(entities: bills)
-                    sectionBillModel!.changes.append(newsModel)
-                    result.append(sectionBillModel!)
-                } else {
-                    sectionBillModel!.changes.append(newsModel)
+            createSectionByKey(changeModel, key: key) { (newsModel, sectionModel, finish) in
+                if let newsModel = newsModel as LTNewsModel! {
+                    if let sectionModel = sectionModel as LTSectionModel! {
+                        let existedSectionModel = result.filter() { $0.entities == sectionModel.entities }.first
+                        if nil == existedSectionModel {
+                            result.append(sectionModel)
+                        } else {
+                            existedSectionModel!.addModel(newsModel)
+                        }
+                    }
                 }
-                
-                break
-                
-            case .byInitiators:
-                var initiators = [LTInitiatorModel]()
-                if let initiatorsArray = bill.initiators.allObjects as? [LTInitiatorModel] {
-                    initiators = initiatorsArray
-                }
-                
-                var sectionInitiatorModel = result.filter(){ $0.entities == initiators }.first
-                if nil == sectionInitiatorModel {
-                    sectionInitiatorModel = LTSectionModel(entities: initiators)
-                    sectionInitiatorModel!.changes.append(newsModel)
-                    result.append(sectionInitiatorModel!)
-                } else {
-                    sectionInitiatorModel!.changes.append(newsModel)
-                }
-                
-                break
-                
-            case .byCommittees:
-                let committees = [bill.committee]
-                var sectionCommitteeModel = result.filter(){ $0.entities == committees }.first
-                if nil == sectionCommitteeModel {
-                    sectionCommitteeModel = LTSectionModel(entities: committees)
-                    sectionCommitteeModel!.changes.append(newsModel)
-                    result.append(sectionCommitteeModel!)
-                } else {
-                    sectionCommitteeModel!.changes.append(newsModel)
-                }
-                
-                break
             }
         }
         
@@ -214,4 +184,105 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         
         return nil
     }
+    
+    private func createSectionByKey(changeModel: LTChangeModel, key: LTType, completionHandler:(newsModel: LTNewsModel?, sectionModel: LTSectionModel?, finish: Bool) -> Void) {
+        let bill = changeModel.law
+        if bill.title == "" {
+            completionHandler(newsModel: nil, sectionModel: nil, finish: true)
+            return
+        }
+        
+        let newsModel = LTNewsModel(entity: changeModel, type: key)
+        
+        synchronized(self, closure: {
+            switch key {
+            case .byLaws:
+                let bills = [bill]
+                let sectionBillModel = LTSectionModel(entities: bills)
+                sectionBillModel.addModel(newsModel)
+                completionHandler(newsModel: newsModel, sectionModel: sectionBillModel, finish: true)
+                
+                break
+                
+            case .byInitiators:
+                var initiators = [LTInitiatorModel]()
+                if let initiatorsArray = bill.initiators.allObjects as? [LTInitiatorModel] {
+                    initiators = initiatorsArray
+                }
+                
+                let sectionInitiatorModel = LTSectionModel(entities: initiators)
+                sectionInitiatorModel.addModel(newsModel)
+                completionHandler(newsModel: newsModel, sectionModel: sectionInitiatorModel, finish: true)
+                
+                break
+                
+            case .byCommittees:
+                let committees = [bill.committee]
+                let sectionCommitteeModel = LTSectionModel(entities: committees)
+                sectionCommitteeModel.addModel(newsModel)
+                completionHandler(newsModel: newsModel, sectionModel: sectionCommitteeModel, finish: true)
+                
+                break
+            }
+        })
+    }
+    
+    private func notifyObserversOfModelsDidInsert(changesModel: LTChangesModel, newsModel: LTNewsModel, sectionModel: LTSectionModel, key: LTType) {
+        let existedSectionModel = changesModel.sectionWithEntities(sectionModel.entities)
+        var row = 0
+        var section = 0
+        var userInfo : [NSObject: AnyObject]?
+        
+        if nil == existedSectionModel {
+            changesModel.addModel(sectionModel)
+            section = changesModel.count() - 1
+            userInfo = ["indexPath": NSIndexPath(forRow: row, inSection: section), "changesModel" : changesModel, "key": key.rawValue]
+        } else {
+            if nil == existedSectionModel!.newsModelWithEntity(newsModel.entity) {
+                existedSectionModel!.addModel(newsModel)
+                row = existedSectionModel!.count() - 1
+                section = changesModel.changes.indexOf(existedSectionModel!)!
+                userInfo = ["indexPath": NSIndexPath(forRow: row, inSection: section), "changesModel" : changesModel, "key": key.rawValue]
+            } else {
+                userInfo = nil
+            }
+        }
+        
+        NSNotificationCenter.defaultCenter().postNotificationName("contentDidChange", object: nil, userInfo: userInfo)
+    }
+    
+    //MARK: - NSFetchedResultsControllerDelegate
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        if let changeModel = anObject as? LTChangeModel {
+            if !changesSet {
+                return
+            }
+            
+            for key in LTType.filterTypes {
+                createSectionByKey(changeModel, key: key, completionHandler: { (newsModel, sectionModel, finish) -> Void in
+                    if let newsModel = newsModel as LTNewsModel! {
+                        if let sectionModel = sectionModel as LTSectionModel! {
+                            dispatch_async(dispatch_get_main_queue()) {
+                                switch key {
+                                case .byLaws:
+                                    self.notifyObserversOfModelsDidInsert(self.changesByBills, newsModel: newsModel, sectionModel: sectionModel, key: key)
+                                    break
+                                    
+                                case .byInitiators:
+                                    self.notifyObserversOfModelsDidInsert(self.changesByInitiators, newsModel: newsModel, sectionModel: sectionModel, key: key)
+                                    break
+                                    
+                                case .byCommittees:
+                                    self.notifyObserversOfModelsDidInsert(self.changesByCommittees, newsModel: newsModel, sectionModel: sectionModel, key: key)
+                                    break
+                                }
+                                
+                            }
+                        }
+                    }
+                })
+            }
+        }
+    }
+    
 }

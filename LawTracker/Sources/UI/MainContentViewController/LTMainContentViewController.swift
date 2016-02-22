@@ -36,7 +36,7 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
-        
+    
     //MARK: - gestureRecognizers
     @IBAction func onLongTapGestureRecognizer(sender: UILongPressGestureRecognizer) {
         let view = self.rootView
@@ -119,14 +119,6 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if let arrayModel = arrayModel as LTChangesModel! {
-            if let headerView = tableView.headerViewForSection(section) as UIView! {
-                if arrayModel.changes[section].title == "" {
-                    headerView.showLoadingView()
-                } else {
-                    headerView.hideLoadingView()
-                }
-            }
-            
             return arrayModel.changes[section].title
         }
         
@@ -175,5 +167,5 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         
         return 0.0
     }
-    
+        
 }

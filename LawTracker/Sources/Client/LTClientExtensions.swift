@@ -12,27 +12,27 @@ extension LTClient {
     func downloadConvocations(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/council/<Verkhovna Rada's id>/convocation/api/
         let urlVars = [kVTParameters.baseURL, kLTAPINames.council, kVTParameters.radaID, kLTMethodNames.convocation, kVTParameters.extras]
-        let urlString = urlVars.joinWithSeparator("/")
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        downloadTask = task(request){data, error in
-            if nil != error {
-                completionHandler(success: false, error: error)
-            } else {
-                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+        requestWithParameters(urlVars) { (result, error) -> Void in
+            if let request = result as NSURLRequest! {
+                self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        if let convocationsDictionary = result as? [[String: AnyObject]] {
-                            CoreDataStackManager.sharedInstance().storeConvocations(convocationsDictionary){finished in
-                                if finished {
-                                    completionHandler(success: true, error: nil)
+                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                            if nil != error {
+                                completionHandler(success: false, error: error)
+                            } else {
+                                if let convocationsDictionary = result as? [[String: AnyObject]] {
+                                    CoreDataStackManager.sharedInstance().storeConvocations(convocationsDictionary){finished in
+                                        if finished {
+                                            completionHandler(success: true, error: nil)
+                                        }
+                                    }
+                                } else {
+                                    let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                                    completionHandler(success: false, error: contentError)
                                 }
                             }
-                        } else {
-                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                            completionHandler(success: false, error: contentError)
                         }
                     }
                 }
@@ -42,39 +42,40 @@ extension LTClient {
     
     func downloadLaws(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/<convocation's id>/bill/api/
-        
         if nil == currentConvocation {
-            let contentError = LTClient.errorForMessage("Cannot download bills. " + LTClient.KLTMessages.noCurrentConvocation)
+            let contentError = LTClient.errorForMessage("Cannot download initiators. " + LTClient.KLTMessages.noCurrentConvocation)
             completionHandler(success: false, error: contentError)
             
             return
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, kVTParameters.extras]
-        let urlString = urlVars.joinWithSeparator("/")
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        downloadTask = task(request){data, error in
-            if nil != error {
-                completionHandler(success: false, error: error)
-            } else {
-                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+        requestWithParameters(urlVars) { (result, error) -> Void in
+            if let request = result as NSURLRequest! {
+                self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        if let lawsDictionary = result as? [[String: AnyObject]] {
-                            CoreDataStackManager.sharedInstance().storeLaws(lawsDictionary, convocation: self.currentConvocation!.id){finished in
-                                if finished {
-                                    completionHandler(success: true, error: nil)
+                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                            if nil != error {
+                                completionHandler(success: false, error: error)
+                            } else {
+                                if let lawsDictionary = result as? [[String: AnyObject]] {
+                                    CoreDataStackManager.sharedInstance().storeLaws(lawsDictionary, convocation: self.currentConvocation!.id){finished in
+                                        if finished {
+                                            completionHandler(success: true, error: nil)
+                                        }
+                                    }
+                                } else {
+                                    let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                                    completionHandler(success: false, error: contentError)
                                 }
                             }
-                        } else {
-                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                            completionHandler(success: false, error: contentError)
                         }
                     }
                 }
+            } else {
+                completionHandler(success: false, error: error)
             }
         }
     }
@@ -90,30 +91,32 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.committees, kVTParameters.extras]
-        let urlString = urlVars.joinWithSeparator("/")
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        downloadTask = task(request){data, error in
-            if nil != error {
-                completionHandler(success: false, error: error)
-            } else {
-                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+        requestWithParameters(urlVars) { (result, error) -> Void in
+            if let request = result as NSURLRequest! {
+                self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        if let committees = result as? [[String: AnyObject]] {
-                            CoreDataStackManager.sharedInstance().storeCommittees(committees, convocation: self.currentConvocation!.id){finished in
-                                if finished {
-                                    completionHandler(success: true, error: nil)
+                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                            if nil != error {
+                                completionHandler(success: false, error: error)
+                            } else {
+                                if let committees = result as? [[String: AnyObject]] {
+                                    CoreDataStackManager.sharedInstance().storeCommittees(committees, convocation: self.currentConvocation!.id){finished in
+                                        if finished {
+                                            completionHandler(success: true, error: nil)
+                                        }
+                                    }
+                                } else {
+                                    let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                                    completionHandler(success: false, error: contentError)
                                 }
                             }
-                        } else {
-                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                            completionHandler(success: false, error: contentError)
                         }
                     }
                 }
+            } else {
+                completionHandler(success: false, error: error)
             }
         }
     }
@@ -129,30 +132,32 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.persons, kVTParameters.format, kLTMethodNames.deputies, currentConvocation!.number]
-        let urlString = urlVars.joinWithSeparator("/")
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        downloadTask = task(request){data, error in
-            if nil != error {
-                completionHandler(success: false, error: error)
-            } else {
-                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+        requestWithParameters(urlVars) { (result, error) -> Void in
+            if let request = result as NSURLRequest! {
+                self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        if let persons = result as? [[String: AnyObject]] {
-                            CoreDataStackManager.sharedInstance().storePersons(persons){finished in
-                                if finished {
-                                    completionHandler(success: true, error: nil)
+                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                            if nil != error {
+                                completionHandler(success: false, error: error)
+                            } else {
+                                if let persons = result as? [[String: AnyObject]] {
+                                    CoreDataStackManager.sharedInstance().storePersons(persons){finished in
+                                        if finished {
+                                            completionHandler(success: true, error: nil)
+                                        }
+                                    }
+                                } else {
+                                    let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                                    completionHandler(success: false, error: contentError)
                                 }
                             }
-                        } else {
-                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                            completionHandler(success: false, error: contentError)
                         }
                     }
                 }
+            } else {
+                completionHandler(success: false, error: error)
             }
         }
     }
@@ -168,30 +173,32 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, kLTMethodNames.initiatorTypes, kVTParameters.extras]
-        let urlString = urlVars.joinWithSeparator("/")
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        downloadTask = task(request){data, error in
-            if nil != error {
-                completionHandler(success: false, error: error)
-            } else {
-                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+        requestWithParameters(urlVars) { (result, error) -> Void in
+            if let request = result as NSURLRequest! {
+                self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        if let types = result as? [String: AnyObject] {
-                            CoreDataStackManager.sharedInstance().storeInitiatorTypes(types){finished in
-                                if finished {
-                                    completionHandler(success: true, error: nil)
+                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                            if nil != error {
+                                completionHandler(success: false, error: error)
+                            } else {
+                                if let types = result as? [String: AnyObject] {
+                                    CoreDataStackManager.sharedInstance().storeInitiatorTypes(types){finished in
+                                        if finished {
+                                            completionHandler(success: true, error: nil)
+                                        }
+                                    }
+                                } else {
+                                    let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                                    completionHandler(success: false, error: contentError)
                                 }
                             }
-                        } else {
-                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                            completionHandler(success: false, error: contentError)
                         }
                     }
                 }
+            } else {
+                completionHandler(success: false, error: error)
             }
         }
     }
@@ -208,30 +215,32 @@ extension LTClient {
         
         let dateString = date.string("yyyy-MM-dd")
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.billStatuses, dateString, kVTParameters.extras]
-        let urlString = urlVars.joinWithSeparator("/")
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        downloadTask = task(request){data, error in
-            if nil != error {
-                completionHandler(success: false, error: error)
-            } else {
-                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+        requestWithParameters(urlVars) { (result, error) -> Void in
+            if let request = result as NSURLRequest! {
+                self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        if let changes = result as? [[String: AnyObject]] {
-                            CoreDataStackManager.sharedInstance().storeChanges(date, changes: changes){finished in
-                                if finished {
-                                    completionHandler(success: true, error: nil)
+                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                            if nil != error {
+                                completionHandler(success: false, error: error)
+                            } else {
+                                if let changes = result as? [[String: AnyObject]] {
+                                    CoreDataStackManager.sharedInstance().storeChanges(date, changes: changes){finished in
+                                        if finished {
+                                            completionHandler(success: true, error: nil)
+                                        }
+                                    }
+                                } else {
+                                    let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                                    completionHandler(success: false, error: contentError)
                                 }
                             }
-                        } else {
-                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                            completionHandler(success: false, error: contentError)
                         }
                     }
                 }
+            } else {
+                completionHandler(success: false, error: error)
             }
         }
     }
@@ -246,34 +255,36 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, id, kVTParameters.extras]
-        let urlString = urlVars.joinWithSeparator("/")
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        downloadTask = task(request){data, error in
-            if nil != error {
-                completionHandler(success: false, error: error)
-            } else {
-                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+        requestWithParameters(urlVars) { (result, error) -> Void in
+            if let request = result as NSURLRequest! {
+                self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        if var lawDictionary = result as? [String: AnyObject] {
-                            lawDictionary["number"] = id
-                            var lawArray = [NSDictionary]()
-                            lawArray.append(lawDictionary)
-                            
-                            CoreDataStackManager.sharedInstance().storeLaws(lawArray, convocation: self.currentConvocation!.id){finished in
-                                if finished {
-                                    completionHandler(success: true, error: nil)
+                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                            if nil != error {
+                                completionHandler(success: false, error: error)
+                            } else {
+                                if var lawDictionary = result as? [String: AnyObject] {
+                                    lawDictionary["number"] = id
+                                    var lawArray = [NSDictionary]()
+                                    lawArray.append(lawDictionary)
+                                    
+                                    CoreDataStackManager.sharedInstance().storeLaws(lawArray, convocation: self.currentConvocation!.id){finished in
+                                        if finished {
+                                            completionHandler(success: true, error: nil)
+                                        }
+                                    }
+                                } else {
+                                    let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                                    completionHandler(success: false, error: contentError)
                                 }
                             }
-                        } else {
-                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                            completionHandler(success: false, error: contentError)
                         }
                     }
                 }
+            } else {
+                completionHandler(success: false, error: error)
             }
         }
     }
@@ -281,32 +292,34 @@ extension LTClient {
     func getInitiatorWithId(id: String, completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/initiators/<person_id>/api/
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, kLTMethodNames.initiators, id, kVTParameters.extras]
-        let urlString = urlVars.joinWithSeparator("/")
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
-        
-        downloadTask = task(request){data, error in
-            if nil != error {
-                completionHandler(success: false, error: error)
-            } else {
-                LTClient.parseJSONWithCompletionHandler(data) {result, error in
+        requestWithParameters(urlVars) { (result, error) -> Void in
+            if let request = result as NSURLRequest! {
+                self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        if let person = result as? [String: AnyObject] {
-                            var personArray = [NSDictionary]()
-                            personArray.append(person)
-                            CoreDataStackManager.sharedInstance().storePersons(personArray){finished in
-                                if finished {
-                                    completionHandler(success: true, error: nil)
+                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                            if nil != error {
+                                completionHandler(success: false, error: error)
+                            } else {
+                                if let person = result as? [String: AnyObject] {
+                                    var personArray = [NSDictionary]()
+                                    personArray.append(person)
+                                    CoreDataStackManager.sharedInstance().storePersons(personArray){finished in
+                                        if finished {
+                                            completionHandler(success: true, error: nil)
+                                        }
+                                    }
+                                } else {
+                                    let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
+                                    completionHandler(success: false, error: contentError)
                                 }
                             }
-                        } else {
-                            let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                            completionHandler(success: false, error: contentError)
                         }
                     }
                 }
+            } else {
+                completionHandler(success: false, error: error)
             }
         }
     }

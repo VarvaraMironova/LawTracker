@@ -34,6 +34,13 @@ class LTHelpRootView: UIView {
         }
     }
     
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        let selectedItem = scrollBar.filter() { $0.tag == 0 }.first
+        selectedItem!.transform = CGAffineTransformMake(1.2, 0, 0, 1.2, 0, 0)
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         

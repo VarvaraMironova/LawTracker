@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LTNewsFeedRootView: UIView {
+class LTNewsFeedRootView: OTMView {
     @IBOutlet var contentView                   : UIView!
     @IBOutlet var headerView                    : UIView!
     @IBOutlet var filterButton                  : UIButton!

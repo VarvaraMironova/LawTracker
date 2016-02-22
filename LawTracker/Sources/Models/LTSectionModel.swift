@@ -40,4 +40,12 @@ class LTSectionModel: NSObject {
     func newsModelWithEntity(entity: LTEntityModel) -> LTNewsModel? {
         return self.changes.filter(){ $0.entity == entity }.first
     }
+    
+    func addModel(model: LTNewsModel) {
+        changes.append(model)
+    }
+    
+    func count() -> Int {
+        return changes.count
+    }
 }

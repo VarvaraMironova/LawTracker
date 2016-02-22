@@ -88,4 +88,24 @@ class LTClient: NSObject {
         
         return task
     }
+    
+    func requestWithParameters(params: [String], completionHandler: (result: NSURLRequest?, error: NSError?) -> Void) {
+        let urlString = params.joinWithSeparator("/")
+        if let unescapedURLString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
+            if let url = NSURL(string: unescapedURLString) as NSURL! {
+                if let request = NSURLRequest(URL: url) as NSURLRequest! {
+                    completionHandler(result: request, error: nil)
+                } else {
+                    let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsRequestError + "\( urlString)")
+                    completionHandler(result: nil, error: requestError)
+                }
+            } else {
+                let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsURLError + "\( urlString)")
+                completionHandler(result: nil, error: requestError)
+            }
+        } else {
+            let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsURLError + "\( urlString)")
+            completionHandler(result: nil, error: requestError)
+        }
+    }
 }

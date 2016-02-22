@@ -60,21 +60,39 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-    var byLawsArray       : LTChangesModel! {
+    var byLawsArray       = LTChangesModel() {
         didSet {
-            rootView.byBillsButton.filtersSet = byLawsArray.filtersApplied
+            if oldValue != byLawsArray {
+                if filterType == .byLaws {
+                    selectedArray = byLawsArray
+                }
+                
+                rootView.byBillsButton.filtersSet = byLawsArray.filtersApplied
+            }
         }
     }
     
-    var byCommitteesArray : LTChangesModel! {
+    var byCommitteesArray = LTChangesModel() {
         didSet {
-            rootView.byCommitteesButton.filtersSet = byCommitteesArray.filtersApplied
+            if oldValue != byCommitteesArray {
+                if filterType == .byCommittees {
+                    selectedArray = byCommitteesArray
+                }
+                
+                rootView.byCommitteesButton.filtersSet = byCommitteesArray.filtersApplied
+            }
         }
     }
     
-    var byInitiatorsArray : LTChangesModel! {
+    var byInitiatorsArray = LTChangesModel() {
         didSet {
-            rootView.byInitiatorsButton.filtersSet = byInitiatorsArray.filtersApplied
+            if oldValue != byInitiatorsArray {
+                if filterType == .byInitiators {
+                    selectedArray = byInitiatorsArray
+                }
+                
+                rootView.byInitiatorsButton.filtersSet = byInitiatorsArray.filtersApplied
+            }
         }
     }
     
@@ -105,7 +123,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             }
         }
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -145,15 +163,15 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         super.viewWillAppear(animated)
         
         NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "changeModelDidChange:",
-            name: "changeModelNotification",
+            selector: "contentDidChange:",
+            name: "contentDidChange",
             object: nil)
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "changeModelNotification", object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "contentDidChange", object: nil)
     }
     
     //MARK: - Interface Handling
@@ -345,8 +363,8 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         let state = recognizer.state
         
         if .Changed == state {
-            let dx = recognizer.startLocation.x - location.x;
-            let dy = recognizer.startLocation.y - location.y;
+            let dx = recognizer.startLocation.x - location.x
+            let dy = recognizer.startLocation.y - location.y
             
             let distance = sqrt(dx*dx + dy*dy)
             if distance >= 0.0 {
@@ -489,23 +507,12 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     private func setChangesModel(date: NSDate, choosenInPicker: Bool) {
         changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date.dateWithoutTime()), date: date.dateWithoutTime())
         
-        changesModel.changes { (bills, initiators, committees, finish) -> Void in
+        changesModel.changes { finish in
             dispatch_async(dispatch_get_main_queue()) {
                 if finish {
-                    self.byLawsArray = bills
-                    self.byInitiatorsArray = initiators
-                    self.byCommitteesArray = committees
-                }
-                
-                switch self.filterType {
-                case .byCommittees:
-                    self.selectedArray = committees
-                    
-                case .byInitiators:
-                    self.selectedArray = initiators
-                    
-                case .byLaws:
-                    self.selectedArray = bills
+                    self.byLawsArray = self.changesModel.changesByBills
+                    self.byInitiatorsArray = self.changesModel.changesByInitiators
+                    self.byCommitteesArray = self.changesModel.changesByCommittees
                 }
                 
                 if !choosenInPicker && (self.selectedArray.count() == 0) && (date.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (self.loadingCount < kLTMaxLoadingCount) {
@@ -639,7 +646,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     private func processError(error:NSError, completionHandler:(UIAlertAction) -> Void) {
         rootView.hideLoadingView()
         isLoading = false
-        
+        print(error.code)
         dispatch_async(dispatch_get_main_queue()) {
             let alertViewController: UIAlertController = UIAlertController(title: error.localizedDescription, message: "Повторити спробу завантаження?", preferredStyle: .Alert)
             alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: completionHandler))
@@ -662,4 +669,45 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         
         setChangesModel(rootView.datePicker.date, choosenInPicker: false)
     }
+    
+    //MARK: - NSNotificationCenter
+    func contentDidChange(notification: NSNotification) {
+        dispatch_async(dispatch_get_main_queue()) {
+            if let userInfo = notification.userInfo as [NSObject: AnyObject]! {
+                if let changesModel = userInfo["changesModel"] as? LTChangesModel {
+                    if let keyValue = userInfo["key"] as? Int {
+                        switch keyValue {
+                        case 0:
+                            self.byCommitteesArray = changesModel
+                            if self.filterType == .byCommittees {
+                                self.selectedArray = changesModel
+                            }
+                            
+                            break
+                            
+                        case 1:
+                            self.byInitiatorsArray = changesModel
+                            if self.filterType == .byInitiators {
+                                self.selectedArray = changesModel
+                            }
+                            
+                            break
+                            
+                        case 2:
+                            self.byLawsArray = changesModel
+                            if self.filterType == .byLaws {
+                                self.selectedArray = changesModel
+                            }
+                            
+                            break
+                            
+                        default:
+                            break
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 }

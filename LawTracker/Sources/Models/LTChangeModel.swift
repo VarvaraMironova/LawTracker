@@ -37,12 +37,12 @@ class LTChangeModel: LTEntityModel  {
             self.title = title
         }
         
-        if let id = dictionary[Keys.id] as? String {
-            self.id = id
-        }
-        
         if let billModel = dictionary[Keys.billModel] as? LTLawModel {
             self.law = billModel
+        }
+        
+        if let id = dictionary[Keys.id] as? String {
+            self.id = id
         }
     }
     
@@ -56,4 +56,5 @@ class LTChangeModel: LTEntityModel  {
             return nil
         }
     }
+    
 }
