@@ -119,10 +119,9 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func headerTapped() {
-        let view = rootView
-        dispatch_async(dispatch_get_main_queue()) {
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView] in
             if let filters = self.filters as [LTSectionModel]! {
-                view.endEditing(true)
+                rootView!.endEditing(true)
                 let deputiesArray = filters.filter(){ $0.title == "Народні депутати України" }.first
                 if let deputies = deputiesArray as LTSectionModel! {
                     for model in deputies.filters {
@@ -130,7 +129,8 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                     }
                 }
                 
-                self.filterContentForSearchText(view.searchBar.text!, scope: view.searchBar.selectedScopeButtonIndex)
+                let searchBar = rootView!.searchBar
+                self.filterContentForSearchText(searchBar.text!, scope: searchBar.selectedScopeButtonIndex)
             }
         }
     }
@@ -201,31 +201,30 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     
     //MARK: - UITableViewDelegate methods
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let view = rootView
-        dispatch_async(dispatch_get_main_queue()) {
-            view.endEditing(true)
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView] in
+            rootView!.endEditing(true)
             if let filters = self.filters as [LTSectionModel]! {
-                let searchBar = view.searchBar
-                let array = view.searchBarActive ? self.filteredArray[indexPath.section].filters : filters[indexPath.section].filters
+                let searchBar = rootView!.searchBar
+                let array = rootView!.searchBarActive ? self.filteredArray[indexPath.section].filters : filters[indexPath.section].filters
                 let cell = tableView.cellForRowAtIndexPath(indexPath) as! LTFilterTableViewCell
                 let selectedModel = array[indexPath.row]
                 selectedModel.selected = !cell.filtered
                 
-                self.filterContentForSearchText(searchBar.text!, scope: view.searchBar.selectedScopeButtonIndex)
+                self.filterContentForSearchText(searchBar.text!, scope: searchBar.selectedScopeButtonIndex)
             }
         }
     }
     
     //MARK: - UISearchBarDelegate
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        dispatch_async(dispatch_get_main_queue()) {
+        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
             self.filterContentForSearchText(searchText, scope: searchBar.selectedScopeButtonIndex)
         }
         
     }
     
     func searchBar(searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        dispatch_async(dispatch_get_main_queue()) {
+        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
             self.filterContentForSearchText(searchBar.text!, scope: selectedScope)
         }
         
@@ -276,8 +275,8 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
             }
             
-            dispatch_async(dispatch_get_main_queue()) {
-                self.rootView.tableView.reloadData()
+            dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
+                rootView!.tableView.reloadData()
             }
         }
     }

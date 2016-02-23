@@ -12,13 +12,13 @@ extension LTClient {
     func downloadConvocations(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/council/<Verkhovna Rada's id>/convocation/api/
         let urlVars = [kVTParameters.baseURL, kLTAPINames.council, kVTParameters.radaID, kLTMethodNames.convocation, kVTParameters.extras]
-        requestWithParameters(urlVars) { (result, error) -> Void in
+        requestWithParameters(urlVars) { [unowned self] (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                        LTClient.parseJSONWithCompletionHandler(data) {(result, error) in
                             if nil != error {
                                 completionHandler(success: false, error: error)
                             } else {
@@ -50,18 +50,18 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, kVTParameters.extras]
-        requestWithParameters(urlVars) { (result, error) -> Void in
+        requestWithParameters(urlVars) {[unowned self, weak currentConvocation = currentConvocation!] (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                        LTClient.parseJSONWithCompletionHandler(data) {(result, error) in
                             if nil != error {
                                 completionHandler(success: false, error: error)
                             } else {
                                 if let lawsDictionary = result as? [[String: AnyObject]] {
-                                    CoreDataStackManager.sharedInstance().storeLaws(lawsDictionary, convocation: self.currentConvocation!.id){finished in
+                                    CoreDataStackManager.sharedInstance().storeLaws(lawsDictionary, convocation: currentConvocation!.id){finished in
                                         if finished {
                                             completionHandler(success: true, error: nil)
                                         }
@@ -91,18 +91,18 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.committees, kVTParameters.extras]
-        requestWithParameters(urlVars) { (result, error) -> Void in
+        requestWithParameters(urlVars) {[unowned self, weak currentConvocation = currentConvocation!] (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){data, error in
                     if nil != error {
                         completionHandler(success: false, error: error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                        LTClient.parseJSONWithCompletionHandler(data) {(result, error) in
                             if nil != error {
                                 completionHandler(success: false, error: error)
                             } else {
                                 if let committees = result as? [[String: AnyObject]] {
-                                    CoreDataStackManager.sharedInstance().storeCommittees(committees, convocation: self.currentConvocation!.id){finished in
+                                    CoreDataStackManager.sharedInstance().storeCommittees(committees, convocation: currentConvocation!.id){finished in
                                         if finished {
                                             completionHandler(success: true, error: nil)
                                         }
@@ -132,7 +132,7 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.persons, kVTParameters.format, kLTMethodNames.deputies, currentConvocation!.number]
-        requestWithParameters(urlVars) { (result, error) -> Void in
+        requestWithParameters(urlVars) {[unowned self] (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){data, error in
                     if nil != error {
@@ -173,7 +173,7 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, kLTMethodNames.initiatorTypes, kVTParameters.extras]
-        requestWithParameters(urlVars) { (result, error) -> Void in
+        requestWithParameters(urlVars) {[unowned self] (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){data, error in
                     if nil != error {
@@ -215,7 +215,7 @@ extension LTClient {
         
         let dateString = date.string("yyyy-MM-dd")
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.billStatuses, dateString, kVTParameters.extras]
-        requestWithParameters(urlVars) { (result, error) -> Void in
+        requestWithParameters(urlVars) {[unowned self] (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){data, error in
                     if nil != error {
@@ -255,7 +255,7 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, id, kVTParameters.extras]
-        requestWithParameters(urlVars) { (result, error) -> Void in
+        requestWithParameters(urlVars) {[unowned self, weak currentConvocation = currentConvocation!] (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){data, error in
                     if nil != error {
@@ -270,7 +270,7 @@ extension LTClient {
                                     var lawArray = [NSDictionary]()
                                     lawArray.append(lawDictionary)
                                     
-                                    CoreDataStackManager.sharedInstance().storeLaws(lawArray, convocation: self.currentConvocation!.id){finished in
+                                    CoreDataStackManager.sharedInstance().storeLaws(lawArray, convocation: currentConvocation!.id){finished in
                                         if finished {
                                             completionHandler(success: true, error: nil)
                                         }
@@ -292,7 +292,7 @@ extension LTClient {
     func getInitiatorWithId(id: String, completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/initiators/<person_id>/api/
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, kLTMethodNames.initiators, id, kVTParameters.extras]
-        requestWithParameters(urlVars) { (result, error) -> Void in
+        requestWithParameters(urlVars) {[unowned self] (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){data, error in
                     if nil != error {

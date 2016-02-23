@@ -105,15 +105,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-    var helpViewController: LTHelpViewController {
-        get {
-            let helpViewController = self.storyboard!.instantiateViewControllerWithIdentifier("LTHelpViewController") as! LTHelpViewController
-            helpViewController.delegate = self
-            
-            return helpViewController
-        }
-    }
-    
     var rootView : LTNewsFeedRootView! {
         get {
             if isViewLoaded() && view.isKindOfClass(LTNewsFeedRootView) {
@@ -148,10 +139,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
-        let view = rootView
-        coordinator.animateAlongsideTransition({(UIViewControllerTransitionCoordinatorContext) -> Void in
-            if view.menuShown {
-                view.showMenu()
+        
+        coordinator.animateAlongsideTransition({[weak rootView = rootView] (UIViewControllerTransitionCoordinatorContext) -> Void in
+            if rootView!.menuShown {
+                rootView!.showMenu()
             }}, completion: {(UIViewControllerTransitionCoordinatorContext) -> Void in })
     }
     
@@ -187,20 +178,20 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func onDismissFilterViewButton(sender: UIButton) {
-        dispatch_async(dispatch_get_main_queue()) {
-            self.rootView.hideMenu() {finished in}
+        dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
+            rootView!.hideMenu() {finished in}
         }
     }
     
     @IBAction func onMenuButton(sender: AnyObject) {
-        dispatch_async(dispatch_get_main_queue()) {
-            self.rootView.showMenu()
+        dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
+            rootView!.showMenu()
         }
     }
     
     @IBAction func onFilterButton(sender: UIButton) {
-        dispatch_async(dispatch_get_main_queue()) {
-            let filterController = self.storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak storyboard = storyboard, weak rootView = rootView] in
+            let filterController = storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
             filterController.delegate = self
             
             if !self.isLoading {
@@ -219,75 +210,86 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     break
                 }
                 
-                let filters = LTArrayModel(entityName: entityName, predicate: NSPredicate(value: true), date: NSDate())
-                filterController.filters = filters.filters(self.filterType)
+                dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self] in
+                    let arrayModel = LTArrayModel(entityName: entityName, predicate: NSPredicate(value: true), date: NSDate())
+                    rootView!.showLoadingViewInViewWithMessage(rootView!.contentView, message: "Завантаження фільтрів...")
+                    arrayModel.filters(self.filterType, completionHandler: { (result, finish) -> Void in
+                        if finish {
+                            rootView!.hideLoadingView()
+                            dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+                                filterController.filters = result
+                                self.presentViewController(filterController, animated: true, completion: nil)
+                            }
+                        }
+                    })
+                }
+                
             }
-            
-            self.presentViewController(filterController, animated: true, completion: nil)
         }
     }
     
     @IBAction func onByCommitteesButton(sender: LTSwitchButton) {
-        dispatch_async(dispatch_get_main_queue()) {
-            if self.rootView.selectedButton != sender {
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView, weak byCommitteesArray = byCommitteesArray] in
+            if rootView!.selectedButton != sender {
                 self.scrollToTop()
-                self.rootView.selectedButton = sender
-                self.selectedArray = self.byCommitteesArray
+                rootView!.selectedButton = sender
+                self.selectedArray = byCommitteesArray!
             }
         }
     }
     
     @IBAction func onByInitializersButton(sender: LTSwitchButton) {
-        dispatch_async(dispatch_get_main_queue()) {
-            if self.rootView.selectedButton != sender {
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView, weak byInitiatorsArray = byInitiatorsArray] in
+            if rootView!.selectedButton != sender {
                 self.scrollToTop()
-                self.rootView.selectedButton = sender
-                self.selectedArray = self.byInitiatorsArray
+                rootView!.selectedButton = sender
+                self.selectedArray = byInitiatorsArray!
             }
         }
     }
     
     @IBAction func byLawsButton(sender: LTSwitchButton) {
-        dispatch_async(dispatch_get_main_queue()) {
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView, weak byLawsArray = byLawsArray] in
             self.scrollToTop()
-            if self.rootView.selectedButton != sender {
-                self.rootView.selectedButton = sender
-                self.selectedArray = self.byLawsArray
+            if rootView!.selectedButton != sender {
+                self.scrollToTop()
+                rootView!.selectedButton = sender
+                self.selectedArray = byLawsArray!
             }
         }
     }
     
     @IBAction func onSearchButton(sender: AnyObject) {
-        dispatch_async(dispatch_get_main_queue()) {
-            self.rootView.showDatePicker()
+        dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
+            rootView!.showDatePicker()
         }
     }
     
     @IBAction func onHidePickerButton(sender: AnyObject) {
-        dispatch_async(dispatch_get_main_queue()) {
-            self.rootView.hideDatePicker()
+        dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
+            rootView!.hideDatePicker()
         }
     }
     
     @IBAction func onDonePickerButton(sender: AnyObject) {
-        dispatch_async(dispatch_get_main_queue()) {
-            self.rootView.hideDatePicker()
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView] in
+            rootView!.hideDatePicker()
             
             if self.isLoading {
                 return
             }
             
             self.scrollToTop()
-            let date = self.rootView.datePicker.date
+            let date = rootView!.datePicker.date
             
             self.downloadChanges(date, choosenInPicker: true)
         }
     }
     
     func refreshData() {
-        dispatch_async(dispatch_get_main_queue()) {
+        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
             let alertViewController: UIAlertController = UIAlertController(title: "Оновити базу законопроектів, ініціаторів та комітетів?", message:"Це може зайняти кілька хвилин", preferredStyle: .Alert)
-            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: {void in
+            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: {[unowned self] (UIAlertAction) in
                 self.loadData()
             }))
             
@@ -436,7 +438,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         if let interactiveFeedScrollController = interactiveFeedScrollController as LTSliderAnimator! {
             interactiveFeedScrollController.operation = forward ? .Pop : .Push
             interactiveFeedScrollController.duration = 0.5
-            context.completionBlock = {complete in
+            context.completionBlock = {[unowned self] (complete) in
                 if true == complete {
                     self.commitFeedController(toViewController)
                 } else {
@@ -487,17 +489,17 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         
         view.showLoadingViewInViewWithMessage(view.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
         let client = LTClient.sharedInstance()
-        client.downloadChanges(date) { (success, error) -> Void in
+        client.downloadChanges(date) {[unowned self] (success, error) -> Void in
             view.hideLoadingView()
             if success {
-                dispatch_async(dispatch_get_main_queue()) {
+                dispatch_async(dispatch_get_main_queue()) {[unowned self] in
                     self.setChangesModel(date, choosenInPicker: choosenInPicker)
                     let settingsModel = VTSettingModel()
                     settingsModel.firstLaunch = true
                     settingsModel.lastDownloadDate = date
                 }
             } else {
-                self.processError(error!){void in
+                self.processError(error!){[unowned self] (void) in
                     self.downloadChanges(date, choosenInPicker: choosenInPicker)
                 }
             }
@@ -505,36 +507,41 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func setChangesModel(date: NSDate, choosenInPicker: Bool) {
-        changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date.dateWithoutTime()), date: date.dateWithoutTime())
-        
-        changesModel.changes { finish in
-            dispatch_async(dispatch_get_main_queue()) {
-                if finish {
-                    self.byLawsArray = self.changesModel.changesByBills
-                    self.byInitiatorsArray = self.changesModel.changesByInitiators
-                    self.byCommitteesArray = self.changesModel.changesByCommittees
-                }
-                
-                if !choosenInPicker && (self.selectedArray.count() == 0) && (date.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (self.loadingCount < kLTMaxLoadingCount) {
-                    self.loadingCount += 1
-                    var newDate = date
-                    if self.shownDate.dateWithoutTime().compare(date.dateWithoutTime()) == .OrderedAscending {
-                        newDate = date.nextDay()
-                    } else {
-                        newDate = date.previousDay()
+        dispatch_async(CoreDataStackManager.coreDataQueue()) { [weak shownDate = shownDate, weak currentController = currentController] in
+            let changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date.dateWithoutTime()), date: date.dateWithoutTime())
+            
+            changesModel.changes {(byBills, byInitiators, byCommittees, finish) in
+                dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+                    self.changesModel = changesModel
+                    if finish {
+                        self.byLawsArray = byBills
+                        self.byInitiatorsArray = byInitiators
+                        self.byCommitteesArray = byCommittees
                     }
                     
-                    self.downloadChanges(newDate, choosenInPicker: false)
+                    print(self.byLawsArray, byBills)
                     
-                    return
+                    if !choosenInPicker && (self.selectedArray.count() == 0) && (date.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (self.loadingCount < kLTMaxLoadingCount) {
+                        self.loadingCount += 1
+                        var newDate = date
+                        if shownDate!.dateWithoutTime().compare(date.dateWithoutTime()) == .OrderedAscending {
+                            newDate = date.nextDay()
+                        } else {
+                            newDate = date.previousDay()
+                        }
+                        
+                        self.downloadChanges(newDate, choosenInPicker: false)
+                        
+                        return
+                    }
+                    
+                    if self.loadingCount == kLTMaxLoadingCount {
+                        currentController!.rootView.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом \(kLTMaxLoadingCount) днів з \(shownDate!.longString())"
+                    }
+                    
+                    self.shownDate = date
+                    self.loadingCount = 0
                 }
-                
-                if self.loadingCount == kLTMaxLoadingCount {
-                    self.currentController.rootView.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом \(kLTMaxLoadingCount) днів з \(self.shownDate.longString())"
-                }
-                
-                self.shownDate = date
-                self.loadingCount = 0
             }
         }
     }
@@ -544,7 +551,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів...")
         
         let client = LTClient.sharedInstance()
-        client.downloadConvocations({ (success, error) -> Void in
+        client.downloadConvocations({[unowned self, weak rootView = rootView] (success, error) -> Void in
             if success {
                 client.downloadCommittees({ (success, error) -> Void in
                     if success {
@@ -554,35 +561,35 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                     if success {
                                         client.downloadLaws({ (success, error) -> Void in
                                             if success {
-                                                self.rootView.hideLoadingView()
+                                                rootView!.hideLoadingView()
                                                 self.isLoading = false
                                                 self.downloadChanges(NSDate().previousDay(), choosenInPicker: false)
                                             } else {
-                                                self.processError(error!){void in
+                                                self.processError(error!){[unowned self] void in
                                                     self.loadData()
                                                 }
                                             }
                                         })
                                     } else {
-                                        self.processError(error!){void in
+                                        self.processError(error!){[unowned self] void in
                                             self.loadData()
                                         }
                                     }
                                 })
                             } else {
-                                self.processError(error!){void in
+                                self.processError(error!){[unowned self] void in
                                     self.loadData()
                                 }
                             }
                         })
                     } else {
-                        self.processError(error!){void in
+                        self.processError(error!){[unowned self] void in
                             self.loadData()
                         }
                     }
                 })
             } else {
-                self.processError(error!){void in
+                self.processError(error!){[unowned self] void in
                     self.loadData()
                 }
             }
@@ -592,7 +599,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     private func clearData(completionHandler:(success: Bool, error: NSError?) -> Void) {
         rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка.\nТриває очищення данних...")
         let manager = CoreDataStackManager.sharedInstance()
-        manager.clearEntity("LTChangeModel") { (success, error) -> Void in
+        manager.clearEntity("LTChangeModel") {[unowned self, weak rootView = rootView] (success, error) -> Void in
             if success {
                 manager.clearEntity("LTLawModel", completionHandler: { (success, error) -> Void in
                     if success {
@@ -602,12 +609,12 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                     if success {
                                         manager.clearEntity("LTCommitteeModel", completionHandler: { (success, error) -> Void in
                                             if success {
-                                                self.rootView.hideLoadingView()
+                                                rootView!.hideLoadingView()
                                                 print("coreData is clean!")
                                                 completionHandler(success: true, error: nil)
                                             } else {
                                                 completionHandler(success: false, error: error)
-                                                self.processError(error!){void in
+                                                self.processError(error!){[unowned self] void in
                                                     self.loadData()
                                                 }
                                             }
@@ -615,28 +622,28 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                         
                                     } else {
                                         completionHandler(success: false, error: error)
-                                        self.processError(error!){void in
+                                        self.processError(error!){[unowned self] void in
                                             self.loadData()
                                         }
                                     }
                                 })
                             } else {
                                 completionHandler(success: false, error: error)
-                                self.processError(error!){void in
+                                self.processError(error!){[unowned self] void in
                                     self.loadData()
                                 }
                             }
                         })
                     } else {
                         completionHandler(success: false, error: error)
-                        self.processError(error!){void in
+                        self.processError(error!){[unowned self] void in
                             self.loadData()
                         }
                     }
                 })
             } else {
                 completionHandler(success: false, error: error)
-                self.processError(error!){void in
+                self.processError(error!){[unowned self] void in
                         self.loadData()
                 }
             }
@@ -646,9 +653,52 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     private func processError(error:NSError, completionHandler:(UIAlertAction) -> Void) {
         rootView.hideLoadingView()
         isLoading = false
-        print(error.code)
-        dispatch_async(dispatch_get_main_queue()) {
-            let alertViewController: UIAlertController = UIAlertController(title: error.localizedDescription, message: "Повторити спробу завантаження?", preferredStyle: .Alert)
+        var title = String()
+
+        switch error.code {
+        case -998:
+            title = "Щось негаразд."
+            break
+            
+        case -1000:
+            title = "Не вдалося згенерувати URL."
+            break
+            
+        case -1001:
+            title = "Перевищено час очікування відповіді серверу."
+            break
+            
+        case -1003, -1004:
+            title = "Не вдалось зв’язатися з сервером."
+            break
+            
+        case -1005:
+            title = "Інтернет-зв’язок перервався."
+            break
+            
+        case -1009:
+            title = "Немає доступу до Інтернету."
+            break
+            
+        case -1011:
+            title = "Некоректна відповідь сервера."
+            break
+            
+        case -1015, -1016:
+            title = "Не вдалося декодувати дані."
+            break
+            
+        case -1017:
+            title = "Некоректна структура відповіді сервера."
+            break
+            
+        default:
+            title = error.localizedDescription
+            break
+        }
+        
+        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+            let alertViewController: UIAlertController = UIAlertController(title: title, message: "Повторити спробу завантаження?", preferredStyle: .Alert)
             alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: completionHandler))
             
             alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
@@ -672,7 +722,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     //MARK: - NSNotificationCenter
     func contentDidChange(notification: NSNotification) {
-        dispatch_async(dispatch_get_main_queue()) {
+        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
             if let userInfo = notification.userInfo as [NSObject: AnyObject]! {
                 if let changesModel = userInfo["changesModel"] as? LTChangesModel {
                     if let keyValue = userInfo["key"] as? Int {

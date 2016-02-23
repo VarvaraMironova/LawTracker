@@ -52,9 +52,10 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     }
     
     //MARK: - Public
-    func filters(key: LTType) -> [LTSectionModel] {
+    func filters(key: LTType, completionHandler:(result: [LTSectionModel], finish: Bool) -> Void) {
         if nil == models {
-            return [LTSectionModel]()
+            completionHandler(result: [LTSectionModel](), finish: true)
+            return
         }
         
         var filters = [LTSectionModel]()
@@ -103,10 +104,10 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             }
         }
         
-        return filters
+        completionHandler(result: filters, finish: true)
     }
     
-    func changes(completionHandler:(finish: Bool) -> Void) {
+    func changes(completionHandler:(byBills: LTChangesModel, byInitiators: LTChangesModel, byCommittees: LTChangesModel, finish: Bool) -> Void) {
         let date = downloadDate
         
         if nil == models {
@@ -114,7 +115,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         }
         
         let queue = CoreDataStackManager.coreDataQueue()
-        dispatch_async(queue) {
+        dispatch_async(queue) {[unowned self] in
             let billsList = self.sectionModelsByKey(.byLaws)
             let committeesList = self.sectionModelsByKey(.byCommittees)
             let initiatorsList = self.sectionModelsByKey(.byInitiators)
@@ -126,11 +127,17 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             let byCommitteesChanges = self.applyFilters(committeesList, key: .byCommittees)
             let committeesFilterApplied = nil != byCommitteesChanges
             
-            self.changesByBills = LTChangesModel(changes: nil == byBillsChanges ? billsList : byBillsChanges, filtersApplied: billsFilterApplied, date: date)
-            self.changesByCommittees = LTChangesModel(changes: nil == byCommitteesChanges ? committeesList : byCommitteesChanges, filtersApplied: committeesFilterApplied, date: date)
-            self.changesByInitiators = LTChangesModel(changes: nil == byInitiatorsChanges ? initiatorsList : byInitiatorsChanges, filtersApplied: initiatorsFilterApplied, date: date)
+            let changesByBills = LTChangesModel(changes: nil == byBillsChanges ? billsList : byBillsChanges, filtersApplied: billsFilterApplied, date: date)
+            let changesByCommittees = LTChangesModel(changes: nil == byCommitteesChanges ? committeesList : byCommitteesChanges, filtersApplied: committeesFilterApplied, date: date)
+            let changesByInitiators = LTChangesModel(changes: nil == byInitiatorsChanges ? initiatorsList : byInitiatorsChanges, filtersApplied: initiatorsFilterApplied, date: date)
             
-            completionHandler(finish: true)
+            self.changesByBills = changesByBills
+            self.changesByInitiators = changesByInitiators
+            self.changesByCommittees = changesByInitiators
+            
+            print(self.changesByBills, changesByBills)
+            
+            completionHandler(byBills: changesByBills, byInitiators: changesByInitiators, byCommittees: changesByCommittees, finish: true)
             
             self.changesSet = true
         }
@@ -262,7 +269,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
                 createSectionByKey(changeModel, key: key, completionHandler: { (newsModel, sectionModel, finish) -> Void in
                     if let newsModel = newsModel as LTNewsModel! {
                         if let sectionModel = sectionModel as LTSectionModel! {
-                            dispatch_async(dispatch_get_main_queue()) {
+                            dispatch_async(dispatch_get_main_queue()) {[unowned self] in
                                 switch key {
                                 case .byLaws:
                                     self.notifyObserversOfModelsDidInsert(self.changesByBills, newsModel: newsModel, sectionModel: sectionModel, key: key)
