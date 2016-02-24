@@ -12,7 +12,9 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     var shownDate  : NSDate!
     var arrayModel : LTChangesModel? {
         didSet {
-            rootView.contentTableView.reloadData()
+            if oldValue != arrayModel {
+                rootView.contentTableView.reloadData()
+            }
         }
     }
     
@@ -36,6 +38,23 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self,
+            selector: "contentDidChange:",
+            name: "contentDidChange",
+            object: nil)
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "contentDidChange", object: nil)
+    }
+    
+
     
     //MARK: - gestureRecognizers
     @IBAction func onLongTapGestureRecognizer(sender: UILongPressGestureRecognizer) {
@@ -166,6 +185,32 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         }
         
         return 0.0
+    }
+    
+    //MARK: - NSNotificationCenter
+    func contentDidChange(notification: NSNotification) {
+//        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak tableView = rootView.contentTableView] in
+//            if let userInfo = notification.userInfo as [NSObject: AnyObject]! {
+//                if let changesModel = userInfo["changesModel"] as? LTChangesModel {
+//                    if changesModel == self.arrayModel! {
+//                        if let indexPath = userInfo["indexPath"] as? NSIndexPath {
+//                            tableView!.beginUpdates()
+//                            if indexPath.row == 0 {
+//                                //insert new section
+//                                print(tableView!.numberOfSections, indexPath.section)
+//                                tableView!.insertSections(NSIndexSet(index: indexPath.row), withRowAnimation: .Fade)
+//                            }
+//                            
+//                            //insert row
+//                            print(tableView!.numberOfRowsInSection(indexPath.section), indexPath.row)
+//                            tableView!.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+//                            
+//                            tableView!.endUpdates()
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
         
 }

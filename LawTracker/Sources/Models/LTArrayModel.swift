@@ -135,8 +135,6 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             self.changesByInitiators = changesByInitiators
             self.changesByCommittees = changesByInitiators
             
-            print(self.changesByBills, changesByBills)
-            
             completionHandler(byBills: changesByBills, byInitiators: changesByInitiators, byCommittees: changesByCommittees, finish: true)
             
             self.changesSet = true
@@ -200,38 +198,35 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         }
         
         let newsModel = LTNewsModel(entity: changeModel, type: key)
-        
-        synchronized(self, closure: {
-            switch key {
-            case .byLaws:
-                let bills = [bill]
-                let sectionBillModel = LTSectionModel(entities: bills)
-                sectionBillModel.addModel(newsModel)
-                completionHandler(newsModel: newsModel, sectionModel: sectionBillModel, finish: true)
-                
-                break
-                
-            case .byInitiators:
-                var initiators = [LTInitiatorModel]()
-                if let initiatorsArray = bill.initiators.allObjects as? [LTInitiatorModel] {
-                    initiators = initiatorsArray
-                }
-                
-                let sectionInitiatorModel = LTSectionModel(entities: initiators)
-                sectionInitiatorModel.addModel(newsModel)
-                completionHandler(newsModel: newsModel, sectionModel: sectionInitiatorModel, finish: true)
-                
-                break
-                
-            case .byCommittees:
-                let committees = [bill.committee]
-                let sectionCommitteeModel = LTSectionModel(entities: committees)
-                sectionCommitteeModel.addModel(newsModel)
-                completionHandler(newsModel: newsModel, sectionModel: sectionCommitteeModel, finish: true)
-                
-                break
+        switch key {
+        case .byLaws:
+            let bills = [bill]
+            let sectionBillModel = LTSectionModel(entities: bills)
+            sectionBillModel.addModel(newsModel)
+            completionHandler(newsModel: newsModel, sectionModel: sectionBillModel, finish: true)
+            
+            break
+            
+        case .byInitiators:
+            var initiators = [LTInitiatorModel]()
+            if let initiatorsArray = bill.initiators.allObjects as? [LTInitiatorModel] {
+                initiators = initiatorsArray
             }
-        })
+            
+            let sectionInitiatorModel = LTSectionModel(entities: initiators)
+            sectionInitiatorModel.addModel(newsModel)
+            completionHandler(newsModel: newsModel, sectionModel: sectionInitiatorModel, finish: true)
+            
+            break
+            
+        case .byCommittees:
+            let committees = [bill.committee]
+            let sectionCommitteeModel = LTSectionModel(entities: committees)
+            sectionCommitteeModel.addModel(newsModel)
+            completionHandler(newsModel: newsModel, sectionModel: sectionCommitteeModel, finish: true)
+            
+            break
+        }
     }
     
     private func notifyObserversOfModelsDidInsert(changesModel: LTChangesModel, newsModel: LTNewsModel, sectionModel: LTSectionModel, key: LTType) {

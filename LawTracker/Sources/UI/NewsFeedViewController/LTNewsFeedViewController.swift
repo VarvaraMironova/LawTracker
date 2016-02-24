@@ -12,10 +12,11 @@ let kLTMaxLoadingCount = 30
 class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     @IBOutlet var navigationGesture: LTPanGestureRacognizer!
     
-    var currentController : LTMainContentViewController!
-    var newsFeedModel     : LTChangesModel!
-    var animator          : LTSliderAnimator?
-    var shownDate         : NSDate! = NSDate() {
+    var currentController     : LTMainContentViewController!
+    var destinationController : LTMainContentViewController?
+    var newsFeedModel         : LTChangesModel!
+    var animator              : LTSliderAnimator?
+    var shownDate             : NSDate! = NSDate() {
         didSet {
             rootView.fillSearchButton(shownDate)
         }
@@ -39,23 +40,17 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-    var changesModel      : LTArrayModel!
+    weak var changesModel : LTArrayModel!
     
     var selectedArray     : LTChangesModel! {
-        set {
-            currentController.arrayModel = newValue
-        }
-
-        get {
-            switch filterType {
-            case .byCommittees:
-                return byCommitteesArray
+        didSet {
+            if oldValue != selectedArray {
+                if nil == destinationController {
+                    currentController.arrayModel = selectedArray
+                } else {
+                    destinationController!.arrayModel = selectedArray
+                }
                 
-            case .byInitiators:
-                return byInitiatorsArray
-                
-            case .byLaws:
-                return byLawsArray
             }
         }
     }
@@ -148,21 +143,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return .LightContent
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "contentDidChange:",
-            name: "contentDidChange",
-            object: nil)
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "contentDidChange", object: nil)
     }
     
     //MARK: - Interface Handling
@@ -408,8 +388,8 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     func setCurrentController(controller: LTMainContentViewController, animated: Bool, forwardDirection: Bool) {
         if currentController != controller {
+            destinationController = controller
             transitionFromViewController(currentController, toViewController: controller, animated: animated, forward: forwardDirection)
-            currentController = controller
         }
     }
     
@@ -422,6 +402,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         
         toViewController.view.translatesAutoresizingMaskIntoConstraints = true
         toViewController.view.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        //toViewController.arrayModel = selectedArray
         
         addChildViewController(toViewController, view:containerView)
         
@@ -448,6 +429,8 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     if let arrayModel = fromViewController!.arrayModel as LTChangesModel! {
                         self.shownDate = arrayModel.date
                     }
+                    
+                    self.destinationController = nil
                 }
                 
                 interactiveFeedScrollController.animationEnded(complete)
@@ -467,9 +450,11 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     func commitFeedController(feedController: LTMainContentViewController) {
+        //remove rootView of previous currentController from superview
         if currentController != feedController {
             removeChildViewController(currentController)
             currentController = feedController
+            destinationController = nil
             feedController.didMoveToParentViewController(self)
         }
     }
@@ -507,7 +492,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func setChangesModel(date: NSDate, choosenInPicker: Bool) {
-        dispatch_async(CoreDataStackManager.coreDataQueue()) { [weak shownDate = shownDate, weak currentController = currentController] in
+        dispatch_async(CoreDataStackManager.coreDataQueue()) {[weak shownDate = shownDate, weak currentController = currentController] in
             let changesModel = LTArrayModel(entityName: "LTChangeModel", predicate: NSPredicate(format: "date = %@", date.dateWithoutTime()), date: date.dateWithoutTime())
             
             changesModel.changes {(byBills, byInitiators, byCommittees, finish) in
@@ -518,8 +503,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                         self.byInitiatorsArray = byInitiators
                         self.byCommitteesArray = byCommittees
                     }
-                    
-                    print(self.byLawsArray, byBills)
                     
                     if !choosenInPicker && (self.selectedArray.count() == 0) && (date.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (self.loadingCount < kLTMaxLoadingCount) {
                         self.loadingCount += 1
@@ -718,46 +701,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
         
         setChangesModel(rootView.datePicker.date, choosenInPicker: false)
-    }
-    
-    //MARK: - NSNotificationCenter
-    func contentDidChange(notification: NSNotification) {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
-            if let userInfo = notification.userInfo as [NSObject: AnyObject]! {
-                if let changesModel = userInfo["changesModel"] as? LTChangesModel {
-                    if let keyValue = userInfo["key"] as? Int {
-                        switch keyValue {
-                        case 0:
-                            self.byCommitteesArray = changesModel
-                            if self.filterType == .byCommittees {
-                                self.selectedArray = changesModel
-                            }
-                            
-                            break
-                            
-                        case 1:
-                            self.byInitiatorsArray = changesModel
-                            if self.filterType == .byInitiators {
-                                self.selectedArray = changesModel
-                            }
-                            
-                            break
-                            
-                        case 2:
-                            self.byLawsArray = changesModel
-                            if self.filterType == .byLaws {
-                                self.selectedArray = changesModel
-                            }
-                            
-                            break
-                            
-                        default:
-                            break
-                        }
-                    }
-                }
-            }
-        }
     }
     
 }
