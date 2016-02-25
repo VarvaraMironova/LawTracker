@@ -12,6 +12,7 @@ class LTChangesModel: NSObject {
     var changes         : [LTSectionModel] = []
     var filtersApplied  : Bool!
     var date            : NSDate!
+    var type            : LTType!
     
     override init() {
         super.init()
@@ -21,12 +22,13 @@ class LTChangesModel: NSObject {
         self.date = NSDate()
     }
     
-    init(changes: [LTSectionModel], filtersApplied: Bool, date: NSDate) {
+    init(changes: [LTSectionModel], type: LTType, filtersApplied: Bool, date: NSDate) {
         super.init()
         
         self.changes = changes
         self.filtersApplied = filtersApplied
         self.date = date
+        self.type = type
     }
     
     func addModel(model: LTSectionModel) {

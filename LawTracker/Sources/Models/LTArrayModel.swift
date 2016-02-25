@@ -127,9 +127,9 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             let byCommitteesChanges = self.applyFilters(committeesList, key: .byCommittees)
             let committeesFilterApplied = nil != byCommitteesChanges
             
-            let changesByBills = LTChangesModel(changes: nil == byBillsChanges ? billsList : byBillsChanges, filtersApplied: billsFilterApplied, date: date)
-            let changesByCommittees = LTChangesModel(changes: nil == byCommitteesChanges ? committeesList : byCommitteesChanges, filtersApplied: committeesFilterApplied, date: date)
-            let changesByInitiators = LTChangesModel(changes: nil == byInitiatorsChanges ? initiatorsList : byInitiatorsChanges, filtersApplied: initiatorsFilterApplied, date: date)
+            let changesByBills = LTChangesModel(changes: nil == byBillsChanges ? billsList : byBillsChanges, type: .byLaws, filtersApplied: billsFilterApplied, date: date)
+            let changesByCommittees = LTChangesModel(changes: nil == byCommitteesChanges ? committeesList : byCommitteesChanges, type: .byCommittees, filtersApplied: committeesFilterApplied, date: date)
+            let changesByInitiators = LTChangesModel(changes: nil == byInitiatorsChanges ? initiatorsList : byInitiatorsChanges, type: .byInitiators, filtersApplied: initiatorsFilterApplied, date: date)
             
             self.changesByBills = changesByBills
             self.changesByInitiators = changesByInitiators
@@ -238,13 +238,13 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         if nil == existedSectionModel {
             changesModel.addModel(sectionModel)
             section = changesModel.count() - 1
-            userInfo = ["indexPath": NSIndexPath(forRow: row, inSection: section), "changesModel" : changesModel, "key": key.rawValue]
+            userInfo = ["indexPath": NSIndexPath(forRow: row, inSection: section), "changesModel" : changesModel]
         } else {
             if nil == existedSectionModel!.newsModelWithEntity(newsModel.entity) {
                 existedSectionModel!.addModel(newsModel)
                 row = existedSectionModel!.count() - 1
                 section = changesModel.changes.indexOf(existedSectionModel!)!
-                userInfo = ["indexPath": NSIndexPath(forRow: row, inSection: section), "changesModel" : changesModel, "key": key.rawValue]
+                userInfo = ["indexPath": NSIndexPath(forRow: row, inSection: section), "changesModel" : changesModel]
             } else {
                 userInfo = nil
             }
