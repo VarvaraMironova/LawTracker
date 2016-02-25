@@ -755,13 +755,13 @@
                                                             </constraints>
                                                             <variation key="heightClass=regular-widthClass=compact">
                                                                 <mask key="subviews">
-                                                                    <exclude reference="gGC-GL-79c"/>
+                                                                    <include reference="gGC-GL-79c"/>
                                                                 </mask>
                                                                 <mask key="constraints">
-                                                                    <exclude reference="Bbf-JR-qUU"/>
-                                                                    <exclude reference="Ree-Oe-LSz"/>
-                                                                    <exclude reference="lRf-QI-rCx"/>
-                                                                    <exclude reference="nsy-WR-kub"/>
+                                                                    <include reference="Bbf-JR-qUU"/>
+                                                                    <include reference="Ree-Oe-LSz"/>
+                                                                    <include reference="lRf-QI-rCx"/>
+                                                                    <include reference="nsy-WR-kub"/>
                                                                 </mask>
                                                             </variation>
                                                         </view>

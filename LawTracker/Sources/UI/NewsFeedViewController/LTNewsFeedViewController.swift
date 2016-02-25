@@ -74,10 +74,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                             currentController!.shownDate = date
                             currentController!.type = self.filterType
                         }
-                        
-                        let settingsModel = VTSettingModel()
-                        settingsModel.firstLaunch = true
-                        settingsModel.lastDownloadDate = date
                     }
                 })
             })
@@ -92,10 +88,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                         currentController!.shownDate = date
                         currentController!.type = self.filterType
                     }
-                    
-                    let settingsModel = VTSettingModel()
-                    settingsModel.firstLaunch = true
-                    settingsModel.lastDownloadDate = date
                 }
             })
         }
@@ -255,10 +247,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                         currentController!.shownDate = date
                         currentController!.type = self.filterType
                     }
-                    
-                    let settingsModel = VTSettingModel()
-                    settingsModel.firstLaunch = true
-                    settingsModel.lastDownloadDate = date
                 }
             })
         }
@@ -377,10 +365,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                         currentController!.shownDate = date
                                         currentController!.type = self.filterType
                                     }
-                                    
-                                    let settingsModel = VTSettingModel()
-                                    settingsModel.firstLaunch = true
-                                    settingsModel.lastDownloadDate = date
                                 }
                             })
                         }
@@ -396,10 +380,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                     currentController!.shownDate = date
                                     currentController!.type = self.filterType
                                 }
-                                
-                                let settingsModel = VTSettingModel()
-                                settingsModel.firstLaunch = true
-                                settingsModel.lastDownloadDate = date
                             }
                         })
                     }
@@ -510,11 +490,12 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         let client = LTClient.sharedInstance()
         client.downloadChanges(date) {[unowned self] (success, error) -> Void in
             view.hideLoadingView()
+            self.isLoading = false
+            
             if success {
                 let settingsModel = VTSettingModel()
                 settingsModel.firstLaunch = true
                 settingsModel.lastDownloadDate = date
-                self.isLoading = false
                 
                 completionHandler(finish: true)
             } else {
@@ -545,41 +526,38 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                                 rootView!.hideLoadingView()
                                                 completionHandler(finish: true)
                                             } else {
+                                                completionHandler(finish: true)
                                                 self.processError(error!){[unowned self] void in
                                                     self.loadData(completionHandler)
                                                 }
                                             }
                                         })
                                     } else {
+                                        completionHandler(finish: true)
                                         self.processError(error!){[unowned self] void in
                                             self.loadData({ (finish) -> Void in })
                                         }
-                                        
-                                        completionHandler(finish: true)
-                                    }
+                                     }
                                 })
                             } else {
+                                completionHandler(finish: true)
                                 self.processError(error!){[unowned self] void in
                                     self.loadData({ (finish) -> Void in })
                                 }
-                                
-                                completionHandler(finish: true)
-                            }
+                             }
                         })
                     } else {
+                        completionHandler(finish: true)
                         self.processError(error!){[unowned self] void in
                             self.loadData({ (finish) -> Void in })
                         }
-                        
-                        completionHandler(finish: true)
                     }
                 })
             } else {
+                completionHandler(finish: true)
                 self.processError(error!){[unowned self] void in
                     self.loadData({ (finish) -> Void in })
                 }
-                
-                completionHandler(finish: true)
             }
         })
     }
