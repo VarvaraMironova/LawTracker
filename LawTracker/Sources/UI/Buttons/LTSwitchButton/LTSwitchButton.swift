@@ -38,4 +38,19 @@ class LTSwitchButton: UIButton {
         }
     }
     
+    //MARK:- Public
+    func setFilterImage(key: LTType) {
+        dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self] in
+            if let filteredEntities = LTEntityModel.filteredEntities(key) as [LTEntityModel]! {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.filtersSet = filteredEntities.count > 0
+                }
+            } else {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.filtersSet = false
+                }
+            }
+        }
+    }
+    
 }

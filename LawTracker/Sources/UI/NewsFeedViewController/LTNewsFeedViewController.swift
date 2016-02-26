@@ -15,11 +15,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var currentController     : LTMainContentViewController!
     var destinationController : LTMainContentViewController?
     var animator              : LTSliderAnimator?
-    var shownDate             : NSDate! = NSDate() {
-        didSet {
-            rootView.fillSearchButton(shownDate)
-        }
-    }
+    var shownDate             : NSDate!
     
     var dateIsChoosenFromPicker : Bool = false
     var isLoading               : Bool = false
@@ -59,28 +55,15 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         
         setupContent()
         
-        let settingsModel = VTSettingModel()
         let date = NSDate().previousDay()
+        rootView.fillSearchButton(date)
+        
+        let settingsModel = VTSettingModel()
         if true != settingsModel.firstLaunch {
             //download data from server
-            loadData({[unowned self, weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
+            loadData({[unowned self, weak rootView = rootView, weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
+                rootView!.setFilterImages()
                 self.downloadChanges(date, choosenInPicker: false, completionHandler: {(finish) -> Void in
-                    dispatch_async(dispatch_get_main_queue()) {[unowned self] in
-                        self.shownDate = date
-                        if let destinationController = destinationController as LTMainContentViewController! {
-                            destinationController.shownDate = date
-                            destinationController.type = self.filterType
-                        } else {
-                            currentController!.shownDate = date
-                            currentController!.type = self.filterType
-                        }
-                    }
-                })
-            })
-        } else {
-            self.downloadChanges(date, choosenInPicker: false, completionHandler: {[unowned self, weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.shownDate = date
                     if let destinationController = destinationController as LTMainContentViewController! {
                         destinationController.shownDate = date
                         destinationController.type = self.filterType
@@ -88,6 +71,17 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                         currentController!.shownDate = date
                         currentController!.type = self.filterType
                     }
+                })
+            })
+        } else {
+            rootView.setFilterImages()
+            self.downloadChanges(date, choosenInPicker: false, completionHandler: {[unowned self, weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
+                if let destinationController = destinationController as LTMainContentViewController! {
+                    destinationController.shownDate = date
+                    destinationController.type = self.filterType
+                } else {
+                    currentController!.shownDate = date
+                    currentController!.type = self.filterType
                 }
             })
         }
@@ -238,15 +232,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             let date = rootView!.datePicker.date
             
             self.downloadChanges(date, choosenInPicker: true, completionHandler: {(finish) -> Void in
-                dispatch_async(dispatch_get_main_queue()) {[unowned self] in
-                    self.shownDate = date
-                    if let destinationController = destinationController as LTMainContentViewController! {
-                        destinationController.shownDate = date
-                        destinationController.type = self.filterType
-                    } else {
-                        currentController!.shownDate = date
-                        currentController!.type = self.filterType
-                    }
+                if let destinationController = destinationController as LTMainContentViewController! {
+                    destinationController.shownDate = date
+                } else {
+                    currentController!.shownDate = date
                 }
             })
         }
@@ -298,11 +287,12 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             
             let tableView = currentController.rootView!.contentTableView
             let bounds = tableView.bounds
-            let shouldAnimateToTop = (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && shownDate.dateWithoutTime().compare(NSDate().dateWithoutTime()) == .OrderedAscending)
+            let dateInPicker = rootView.datePicker.date
+            let shouldAnimateToTop = (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && dateInPicker.dateWithoutTime().compare(NSDate().dateWithoutTime()) == .OrderedAscending)
             let shouldAnimateToBottom = ((CGRectGetMaxY(bounds) >= (tableView.contentSize.height - 1)) && .Up == navigationGesture.direction)
             let shouldBegin = shouldAnimateToTop || shouldAnimateToBottom
             
-            if !shouldBegin && (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && shownDate.dateWithoutTime().compare(NSDate().dateWithoutTime()) == .OrderedSame) {
+            if !shouldBegin && (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && dateInPicker.dateWithoutTime().compare(NSDate().dateWithoutTime()) == .OrderedSame) {
                 refreshData()
             }
             
@@ -352,27 +342,11 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     let nextController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
                     setCurrentController(nextController, animated: true, forwardDirection: .Up == direction)
                     
+                    let dateInPicker = rootView.datePicker.date
                     if .Down == direction && translation.y > 0 {
-                        if shownDate.compare(NSDate()) == .OrderedAscending {
-                            let date = shownDate.nextDay()
+                        if dateInPicker.compare(NSDate()) == .OrderedAscending {
+                            let date = dateInPicker.nextDay()
                             downloadChanges(date, choosenInPicker: false, completionHandler: {[unowned self, weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
-                                dispatch_async(dispatch_get_main_queue()) {
-                                    self.shownDate = date
-                                    if let destinationController = destinationController as LTMainContentViewController! {
-                                        destinationController.shownDate = date
-                                        destinationController.type = self.filterType
-                                    } else {
-                                        currentController!.shownDate = date
-                                        currentController!.type = self.filterType
-                                    }
-                                }
-                            })
-                        }
-                    } else if translation.y < 0 {
-                        let date = shownDate.previousDay()
-                        downloadChanges(date, choosenInPicker: false, completionHandler: {[unowned self, weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
-                            dispatch_async(dispatch_get_main_queue()) {
-                                self.shownDate = date
                                 if let destinationController = destinationController as LTMainContentViewController! {
                                     destinationController.shownDate = date
                                     destinationController.type = self.filterType
@@ -380,6 +354,17 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                                     currentController!.shownDate = date
                                     currentController!.type = self.filterType
                                 }
+                            })
+                        }
+                    } else if translation.y < 0 {
+                        let date = dateInPicker.previousDay()
+                        downloadChanges(date, choosenInPicker: false, completionHandler: {[unowned self, weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
+                            if let destinationController = destinationController as LTMainContentViewController! {
+                                destinationController.shownDate = date
+                                destinationController.type = self.filterType
+                            } else {
+                                currentController!.shownDate = date
+                                currentController!.type = self.filterType
                             }
                         })
                     }
@@ -441,10 +426,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     toViewController.view.removeFromSuperview()
                     fromViewController!.view.frame = containerView.bounds
                     self.currentController = fromViewController
-                    if let arrayModel = fromViewController!.arrayModel as LTChangesModel! {
-                        self.shownDate = arrayModel.date
-                    }
-                    
                     self.destinationController = nil
                 }
                 
@@ -475,35 +456,38 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func downloadChanges(date: NSDate, choosenInPicker: Bool, completionHandler:(finish: Bool) -> Void) {
-        let view = self.rootView
+        rootView.fillSearchButton(date)
+        dateIsChoosenFromPicker = choosenInPicker
         
-        if let changes = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
-            if changes.count > 0 {
-                isLoading = false
-                completionHandler(finish: true)
-                
-                return
-            }
-        }
-        
-        view.showLoadingViewInViewWithMessage(view.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
-        let client = LTClient.sharedInstance()
-        client.downloadChanges(date) {[unowned self] (success, error) -> Void in
-            view.hideLoadingView()
-            self.isLoading = false
-            
-            if success {
-                let settingsModel = VTSettingModel()
-                settingsModel.firstLaunch = true
-                settingsModel.lastDownloadDate = date
-                
-                completionHandler(finish: true)
-            } else {
-                self.processError(error!){[unowned self] (void) in
-                    self.downloadChanges(date, choosenInPicker: choosenInPicker, completionHandler: { (finish) -> Void in })
+        dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self, weak rootView = rootView] in
+            if let changes = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
+                if changes.count > 0 {
+                    self.isLoading = false
+                    completionHandler(finish: true)
+                    
+                    return
                 }
+            }
+            
+            rootView!.showLoadingViewInViewWithMessage(rootView!.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
+            let client = LTClient.sharedInstance()
+            client.downloadChanges(date) {[unowned self] (success, error) -> Void in
+                rootView!.hideLoadingView()
+                self.isLoading = false
                 
-                completionHandler(finish: true)
+                if success {
+                    let settingsModel = VTSettingModel()
+                    settingsModel.firstLaunch = true
+                    settingsModel.lastDownloadDate = date
+                    
+                    completionHandler(finish: true)
+                } else {
+                    self.processError(error!){[unowned self] (void) in
+                        self.downloadChanges(date, choosenInPicker: choosenInPicker, completionHandler: { (finish) -> Void in })
+                    }
+                    
+                    completionHandler(finish: true)
+                }
             }
         }
     }
@@ -610,7 +594,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             } else {
                 completionHandler(success: false, error: error)
                 self.processError(error!){[unowned self] void in
-                        self.loadData({ (finish) -> Void in })
+                    self.loadData({ (finish) -> Void in })
                 }
             }
         }
@@ -683,13 +667,47 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             return
         }
         
-        shownDate = rootView.datePicker.date
+        rootView.setFilterImages()
+        currentController.arrayModelFromChanges()
     }
     
     //MARK: - NSNotificationCenter
     func loadChangesForAnotherDate(notification: NSNotification) {
-        print("loadChangesForAnotherDate")
-        print(notification.userInfo!["needLoadChangesForAnotherDay"])
+        if let userInfo = notification.userInfo as NSDictionary! {
+            let dateInPicker = rootView.datePicker.date
+            
+            if let needLoadChangesForAnotherDate = userInfo["needLoadChangesForAnotherDay"] as? Bool {
+                if needLoadChangesForAnotherDate {
+                    if !dateIsChoosenFromPicker && (dateInPicker.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (loadingCount < kLTMaxLoadingCount) {
+                        loadingCount += 1
+                        var newDate = shownDate
+                        if shownDate!.dateWithoutTime().compare(dateInPicker.dateWithoutTime()) == .OrderedAscending {
+                            newDate = dateInPicker.nextDay()
+                        } else {
+                            newDate = dateInPicker.previousDay()
+                        }
+                        
+                        downloadChanges(newDate, choosenInPicker: false, completionHandler: {[weak currentController = currentController, weak destinationController = destinationController] (finish) -> Void in
+                            if let destinationController = destinationController as LTMainContentViewController! {
+                                destinationController.shownDate = newDate
+                            } else {
+                                currentController!.shownDate = newDate
+                            }
+                        })
+                        
+                        return
+                    }
+                    
+                    if loadingCount == kLTMaxLoadingCount {
+                        currentController.rootView!.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом \(kLTMaxLoadingCount) днів з \(shownDate!.longString())"
+                    }
+                } else {
+                    shownDate = rootView.datePicker.date
+                }
+                
+                loadingCount = 0
+            }
+        }
     }
     
 }

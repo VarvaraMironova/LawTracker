@@ -21,19 +21,23 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     var arrayModel : LTChangesModel? {
         didSet {
             if let rootView = rootView as LTMainContentRootView! {
-                rootView.contentTableView.reloadData()
+                dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
+                    rootView!.contentTableView.reloadData()
+                }
             }
             
             if let arrayModel = arrayModel as LTChangesModel! {
                 var userInfo = [String: AnyObject]()
                 userInfo["needLoadChangesForAnotherDay"] = 0 == arrayModel.count()
                 
-                NSNotificationCenter.defaultCenter().postNotificationName("loadChangesForAnotherDate", object: nil, userInfo: userInfo)
+                dispatch_async(dispatch_get_main_queue()) {
+                    NSNotificationCenter.defaultCenter().postNotificationName("loadChangesForAnotherDate", object: nil, userInfo: userInfo)
+                }
             }
         }
     }
     
-    var type       : LTType = .byCommittees {
+    var type : LTType = .byCommittees {
         didSet {
             if oldValue != type {
                 arrayModelFromChanges()
@@ -41,7 +45,7 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    var rootView   : LTMainContentRootView? {
+    var rootView : LTMainContentRootView? {
         get {
             if isViewLoaded() && view.isKindOfClass(LTMainContentRootView) {
                 return view as? LTMainContentRootView
@@ -57,14 +61,9 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    lazy var changes: [LTChangeModel]! = {[weak fetchedResultsController = self.fetchedResultsController] in
-        return fetchedResultsController!.fetchedObjects as? [LTChangeModel]
-    }()
-    
     // MARK: - NSFetchedResultsController
     lazy var fetchedResultsController: NSFetchedResultsController = {[unowned self] in
         let fetchRequest = NSFetchRequest(entityName: "LTChangeModel")
-        fetchRequest.predicate = NSPredicate(format: "date = %@", self.shownDate.dateWithoutTime())
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: false)]
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
@@ -239,32 +238,55 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    //MARK: - Private
-    private func arrayModelFromChanges() {
+    //MARK: - Public
+    func arrayModelFromChanges() {
         dispatch_async(dispatch_get_main_queue()) {[unowned self] in
             let changesList = self.sectionModelsByKey(self.type)
-            let filteredChangesList = self.applyFilters(changesList, key: self.type)
-            let filtersApplied = nil != filteredChangesList
+            let arrayModel = LTChangesModel(changes: changesList, type: self.type, filtersApplied: false, date: self.shownDate)
             
-            self.arrayModel = LTChangesModel(changes: nil == filteredChangesList ? changesList : filteredChangesList, type: self.type, filtersApplied: filtersApplied, date: self.shownDate)
+            self.applyFilters(arrayModel, completionHandler: { (result, finish) -> Void in
+                self.arrayModel = result
+            })
         }
     }
     
+    func applyFilters(arrayModel: LTChangesModel, completionHandler:(arrayModel: LTChangesModel, finish: Bool) -> Void) {
+        dispatch_async(CoreDataStackManager.coreDataQueue()) {
+            if let filters = LTEntityModel.filteredEntities(arrayModel.type) as [LTEntityModel]! {
+                if filters.count > 0 {
+                    var filteredSections = [LTSectionModel]()
+                    for sectionModel in arrayModel.changes {
+                        for entity in sectionModel.entities {
+                            if filters.contains(entity) {
+                                filteredSections.append(sectionModel)
+                            }
+                        }
+                    }
+                    
+                    completionHandler(arrayModel: LTChangesModel(changes: filteredSections, type: arrayModel.type, filtersApplied: true, date: arrayModel.date), finish: true)
+                    
+                    return
+                }
+            }
+            
+            completionHandler(arrayModel: arrayModel, finish: true)
+        }
+    }
+    
+    //MARK: - Private
     private func sectionModelsByKey(key: LTType) -> [LTSectionModel]! {
         var result = [LTSectionModel]()
-        if nil == changes {
-            return result
-        }
-        
-        for changeModel in changes {
-            createSectionByKey(changeModel, key: key) { (newsModel, sectionModel, finish) in
-                if let newsModel = newsModel as LTNewsModel! {
-                    if let sectionModel = sectionModel as LTSectionModel! {
-                        let existedSectionModel = result.filter() { $0.entities == sectionModel.entities }.first
-                        if nil == existedSectionModel {
-                            result.append(sectionModel)
-                        } else {
-                            existedSectionModel!.addModel(newsModel)
+        if let changes = fetchedResultsController.fetchedObjects as? [LTChangeModel] {
+            for changeModel in changes {
+                createSectionByKey(changeModel, key: key) { (newsModel, sectionModel, finish) in
+                    if let newsModel = newsModel as LTNewsModel! {
+                        if let sectionModel = sectionModel as LTSectionModel! {
+                            let existedSectionModel = result.filter() { $0.entities == sectionModel.entities }.first
+                            if nil == existedSectionModel {
+                                result.append(sectionModel)
+                            } else {
+                                existedSectionModel!.addModel(newsModel)
+                            }
                         }
                     }
                 }
@@ -272,25 +294,6 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         }
         
         return result
-    }
-    
-    private func applyFilters(array: [LTSectionModel], key: LTType) -> [LTSectionModel]? {
-        if let initiatorsFilters = LTEntityModel.filteredEntities(key) as [LTEntityModel]! {
-            if initiatorsFilters.count > 0 {
-                var filteredArray = [LTSectionModel]()
-                for sectionModel in array {
-                    for entity in sectionModel.entities {
-                        if initiatorsFilters.contains(entity) {
-                            filteredArray.append(sectionModel)
-                        }
-                    }
-                }
-                
-                return filteredArray
-            }
-        }
-        
-        return nil
     }
     
     private func createSectionByKey(changeModel: LTChangeModel, key: LTType, completionHandler:(newsModel: LTNewsModel?, sectionModel: LTSectionModel?, finish: Bool) -> Void) {
@@ -333,19 +336,41 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     private func setArrayModel() {
-        fetchChanges()
-        
-        arrayModelFromChanges()
+        fetchChanges {[unowned self] (finish) -> Void in
+            if finish {
+                self.arrayModelFromChanges()
+            }
+        }
     }
     
-    private func fetchChanges() {
-        dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self, weak fetchedResultsController = fetchedResultsController] in
+    private func fetchChanges(completionHandler:(finish: Bool) -> Void) {
+        dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self, weak fetchedResultsController = fetchedResultsController, weak shownDate = shownDate] in
+            fetchedResultsController!.fetchRequest.predicate = NSPredicate(format: "date = %@", shownDate!.dateWithoutTime())
             do {
                 try fetchedResultsController!.performFetch()
             } catch {}
             
             fetchedResultsController!.delegate = self
+            
+            completionHandler(finish: true)
         }
+    }
+    
+    //MARK: - NSFetchedResultsControllerDelegate
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        print("1")
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+        print("2")
+    }
+    
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        print("3")
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        print("4")
     }
     
 }

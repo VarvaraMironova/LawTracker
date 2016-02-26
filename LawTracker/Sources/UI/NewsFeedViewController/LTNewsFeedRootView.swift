@@ -105,5 +105,11 @@ class LTNewsFeedRootView: OTMView {
                 self.menuShown = !self.menuShown
         })
     }
+    
+    func setFilterImages() {
+        byBillsButton.setFilterImage(.byLaws)
+        byCommitteesButton.setFilterImage(.byCommittees)
+        byInitiatorsButton.setFilterImage(.byInitiators)
+    }
 
 }
