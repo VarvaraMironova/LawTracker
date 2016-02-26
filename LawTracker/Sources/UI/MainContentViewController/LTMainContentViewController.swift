@@ -357,20 +357,65 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     //MARK: - NSFetchedResultsControllerDelegate
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        print("1")
-    }
-    
-    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
-        print("2")
-    }
-    
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        print("3")
+        if nil == rootView {
+            return
+        }
+        
+        dispatch_async(dispatch_get_main_queue()) {[weak tableView = rootView!.contentTableView] in
+            tableView!.beginUpdates()
+        }
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        //create section and newsModel from changeModel
+        if let changeModel = anObject as? LTChangeModel {
+            createSectionByKey(changeModel, key: self.type, completionHandler: {[weak arrayModel = arrayModel, weak rootView = rootView] (newsModel, sectionModel, finish) -> Void in
+                if let newsModel = newsModel as LTNewsModel! {
+                    if let sectionModel = sectionModel as LTSectionModel! {
+                        //add newsModel and/or sectionModel to arrayModel
+                        let existedSectionModel = arrayModel!.sectionWithEntities(sectionModel.entities)
+                        var row = 0
+                        var section = 0
+                        
+                        if nil == existedSectionModel {
+                            //add sectionModel to arrayModel
+                            arrayModel!.addModel(sectionModel)
+                            section = arrayModel!.count() - 1
+                            
+                            //insert row and section to tableView
+                            
+                            dispatch_async(dispatch_get_main_queue()) {
+                                rootView!.contentTableView.insertSections(NSIndexSet(index: section), withRowAnimation: .Fade)
+                                rootView!.contentTableView.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
+                            }
+                        } else {
+                            //add newsModel to existedSectionModel
+                            if nil == existedSectionModel!.newsModelWithEntity(newsModel.entity) {
+                                existedSectionModel!.addModel(newsModel)
+                                row = existedSectionModel!.count() - 1
+                                section = arrayModel!.changes.indexOf(existedSectionModel!)!
+                                
+                                //insert row to tableView
+                                dispatch_async(dispatch_get_main_queue()) {
+                                    rootView!.contentTableView.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        }
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        print("4")
+        if nil == rootView {
+            return
+        }
+        
+        dispatch_async(dispatch_get_main_queue()) {[weak tableView = rootView!.contentTableView] in
+            tableView!.endUpdates()
+        }
     }
     
 }
