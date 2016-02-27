@@ -10,7 +10,7 @@ import CoreData
 import UIKit
 
 class LTMainContentViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate {
-    var shownDate  : NSDate! {
+    var shownDate  : NSDate? {
         didSet {
             if shownDate != oldValue {
                 setArrayModel()
@@ -240,13 +240,15 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     
     //MARK: - Public
     func arrayModelFromChanges() {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
-            let changesList = self.sectionModelsByKey(self.type)
-            let arrayModel = LTChangesModel(changes: changesList, type: self.type, filtersApplied: false, date: self.shownDate)
-            
-            self.applyFilters(arrayModel, completionHandler: { (result, finish) -> Void in
-                self.arrayModel = result
-            })
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak shownDate = shownDate] in
+            if let shownDate = shownDate as NSDate! {
+                let changesList = self.sectionModelsByKey(self.type)
+                let arrayModel = LTChangesModel(changes: changesList, type: self.type, filtersApplied: false, date: shownDate)
+                
+                self.applyFilters(arrayModel, completionHandler: { (result, finish) -> Void in
+                    self.arrayModel = result
+                })
+            }
         }
     }
     
@@ -270,6 +272,27 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
             }
             
             completionHandler(arrayModel: arrayModel, finish: true)
+        }
+    }
+    
+    func applyFiltersForSection(sectionModel: LTSectionModel, completionHandler:(result: LTSectionModel?, finish: Bool) -> Void) {
+        dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self] in
+            if let filters = LTEntityModel.filteredEntities(self.type) as [LTEntityModel]! {
+                if filters.count > 0 {
+                    var result = LTSectionModel()
+                    for entity in sectionModel.entities {
+                        if filters.contains(entity) {
+                            result = sectionModel
+                            break
+                        }
+                    }
+                    
+                    completionHandler(result: result, finish: true)
+                    return
+                }
+                
+                completionHandler(result: nil, finish: true)
+            }
         }
     }
     
@@ -370,38 +393,42 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         //create section and newsModel from changeModel
         if let changeModel = anObject as? LTChangeModel {
-            createSectionByKey(changeModel, key: self.type, completionHandler: {[weak arrayModel = arrayModel, weak rootView = rootView] (newsModel, sectionModel, finish) -> Void in
+            createSectionByKey(changeModel, key: self.type, completionHandler: {[unowned self, weak arrayModel = arrayModel, weak rootView = rootView] (newsModel, sectionModel, finish) -> Void in
                 if let newsModel = newsModel as LTNewsModel! {
                     if let sectionModel = sectionModel as LTSectionModel! {
-                        //add newsModel and/or sectionModel to arrayModel
-                        let existedSectionModel = arrayModel!.sectionWithEntities(sectionModel.entities)
-                        var row = 0
-                        var section = 0
-                        
-                        if nil == existedSectionModel {
-                            //add sectionModel to arrayModel
-                            arrayModel!.addModel(sectionModel)
-                            section = arrayModel!.count() - 1
-                            
-                            //insert row and section to tableView
-                            
-                            dispatch_async(dispatch_get_main_queue()) {
-                                rootView!.contentTableView.insertSections(NSIndexSet(index: section), withRowAnimation: .Fade)
-                                rootView!.contentTableView.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
-                            }
-                        } else {
-                            //add newsModel to existedSectionModel
-                            if nil == existedSectionModel!.newsModelWithEntity(newsModel.entity) {
-                                existedSectionModel!.addModel(newsModel)
-                                row = existedSectionModel!.count() - 1
-                                section = arrayModel!.changes.indexOf(existedSectionModel!)!
+                        //apply filters for section model if needed
+                        self.applyFiltersForSection(sectionModel, completionHandler: { (result, finish) -> Void in
+                            if let filteredSectionModel = result as LTSectionModel! {
+                                //add newsModel and/or sectionModel to arrayModel
+                                let existedSectionModel = arrayModel!.sectionWithEntities(filteredSectionModel.entities)
+                                var row = 0
+                                var section = 0
                                 
-                                //insert row to tableView
-                                dispatch_async(dispatch_get_main_queue()) {
-                                    rootView!.contentTableView.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
+                                if nil == existedSectionModel {
+                                    //add sectionModel to arrayModel
+                                    arrayModel!.addModel(filteredSectionModel)
+                                    section = arrayModel!.count() - 1
+                                    
+                                    //insert row and section to tableView
+                                    dispatch_async(dispatch_get_main_queue()) {
+                                        rootView!.contentTableView.insertSections(NSIndexSet(index: section), withRowAnimation: .Fade)
+                                        rootView!.contentTableView.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
+                                    }
+                                } else {
+                                    //add newsModel to existedSectionModel
+                                    if nil == existedSectionModel!.newsModelWithEntity(newsModel.entity) {
+                                        existedSectionModel!.addModel(newsModel)
+                                        row = existedSectionModel!.count() - 1
+                                        section = arrayModel!.changes.indexOf(existedSectionModel!)!
+                                        
+                                        //insert row to tableView
+                                        dispatch_async(dispatch_get_main_queue()) {
+                                            rootView!.contentTableView.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
+                                        }
+                                    }
                                 }
                             }
-                        }
+                        })
                     }
                 }
             })

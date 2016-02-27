@@ -47,7 +47,7 @@ class LTMenuViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        self.delegate.rootView.hideMenu(){finished in
+        self.delegate.rootView!.hideMenu(){finished in
             if finished {
                 switch indexPath.row {
                 case 0:

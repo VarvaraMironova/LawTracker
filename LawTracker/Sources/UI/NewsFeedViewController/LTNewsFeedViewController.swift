@@ -12,7 +12,7 @@ let kLTMaxLoadingCount = 30
 class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     @IBOutlet var navigationGesture: LTPanGestureRacognizer!
     
-    var currentController     : LTMainContentViewController!
+    var currentController     : LTMainContentViewController?
     var destinationController : LTMainContentViewController?
     var animator              : LTSliderAnimator?
     var shownDate             : NSDate!
@@ -23,8 +23,13 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     var filterType: LTType = .byCommittees {
         didSet {
-            if oldValue != filterType && !isLoading {
-                currentController.type = filterType
+            if oldValue != filterType {
+                if let currentController = currentController as LTMainContentViewController! {
+                    currentController.type = filterType
+                } else if let destinationController = destinationController as LTMainContentViewController! {
+                    destinationController.type = filterType
+                }
+                
             }
         }
     }
@@ -38,10 +43,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-    var rootView : LTNewsFeedRootView! {
+    var rootView : LTNewsFeedRootView? {
         get {
             if isViewLoaded() && view.isKindOfClass(LTNewsFeedRootView) {
-                return view as! LTNewsFeedRootView
+                return view as? LTNewsFeedRootView
             } else {
                 return nil
             }
@@ -51,12 +56,16 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if nil == rootView {
+            return
+        }
+        
         automaticallyAdjustsScrollViewInsets = false
         
         setupContent()
         
         let date = NSDate().previousDay()
-        rootView.fillSearchButton(date)
+        rootView!.fillSearchButton(date)
         
         let settingsModel = VTSettingModel()
         if true != settingsModel.firstLaunch {
@@ -66,28 +75,24 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                 self.downloadChanges(date, choosenInPicker: false, completionHandler: {(finish) -> Void in
                     if let destinationController = destinationController as LTMainContentViewController! {
                         destinationController.shownDate = date
-                        destinationController.type = self.filterType
                     } else {
                         currentController!.shownDate = date
-                        currentController!.type = self.filterType
                     }
                 })
             })
         } else {
-            rootView.setFilterImages()
-            self.downloadChanges(date, choosenInPicker: false, completionHandler: {[unowned self, weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
+            rootView!.setFilterImages()
+            self.downloadChanges(date, choosenInPicker: false, completionHandler: {[weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
                 if let destinationController = destinationController as LTMainContentViewController! {
                     destinationController.shownDate = date
-                    destinationController.type = self.filterType
                 } else {
                     currentController!.shownDate = date
-                    currentController!.type = self.filterType
                 }
             })
         }
         
         //add menuViewController as a childViewController to menuContainerView
-        addChildViewController(menuViewController, view: rootView.menuContainerView)
+        addChildViewController(menuViewController, view: rootView!.menuContainerView)
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
@@ -264,7 +269,15 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             return false
         }
         
-        if nil == currentController.rootView {
+        if nil == currentController {
+            return false
+        }
+        
+        if nil == currentController!.rootView {
+            return false
+        }
+        
+        if nil == rootView {
             return false
         }
         
@@ -285,9 +298,9 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                 return false
             }
             
-            let tableView = currentController.rootView!.contentTableView
+            let tableView = currentController!.rootView!.contentTableView
             let bounds = tableView.bounds
-            let dateInPicker = rootView.datePicker.date
+            let dateInPicker = rootView!.datePicker.date
             let shouldAnimateToTop = (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && dateInPicker.dateWithoutTime().compare(NSDate().dateWithoutTime()) == .OrderedAscending)
             let shouldAnimateToBottom = ((CGRectGetMaxY(bounds) >= (tableView.contentSize.height - 1)) && .Up == navigationGesture.direction)
             let shouldBegin = shouldAnimateToTop || shouldAnimateToBottom
@@ -304,22 +317,35 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     // MARK: - Public
     func setupContent() {
-        currentController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
-        let containerView = rootView.contentView
-        addChildViewController(currentController, view: containerView)
-        
-        setCurrentController(currentController)
-        scrollToTop()
+        if let rootView = rootView as LTNewsFeedRootView! {
+            currentController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as? LTMainContentViewController
+            let containerView = rootView.contentView
+            addChildViewController(currentController!, view: containerView)
+            
+            setCurrentController(currentController!)
+            scrollToTop()
+        }
     }
     
     // MARK: - Private
     private func scrollToTop() {
-        if let currentControllerView = currentController.rootView as LTMainContentRootView! {
-            currentControllerView.contentTableView.setContentOffset(CGPointZero, animated: false)
+        if let currentController = currentController as LTMainContentViewController! {
+            if let currentControllerView = currentController.rootView as LTMainContentRootView! {
+                currentControllerView.contentTableView.setContentOffset(CGPointZero, animated: false)
+            }
+        } else if let destinationController = destinationController as LTMainContentViewController! {
+            if let destinationControllerView = destinationController.rootView as LTMainContentRootView! {
+                destinationControllerView.contentTableView.setContentOffset(CGPointZero, animated: false)
+            }
         }
+        
     }
     
     private func handlePageSwitchingGesture(recognizer: LTPanGestureRacognizer) {
+        if nil == rootView {
+            return
+        }
+        
         let recognizerView = recognizer.view
         let location = recognizer.locationInView(recognizerView)
         let direction = recognizer.direction
@@ -342,29 +368,25 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     let nextController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
                     setCurrentController(nextController, animated: true, forwardDirection: .Up == direction)
                     
-                    let dateInPicker = rootView.datePicker.date
+                    let dateInPicker = rootView!.datePicker.date
                     if .Down == direction && translation.y > 0 {
                         if dateInPicker.compare(NSDate()) == .OrderedAscending {
                             let date = dateInPicker.nextDay()
-                            downloadChanges(date, choosenInPicker: false, completionHandler: {[unowned self, weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
+                            downloadChanges(date, choosenInPicker: false, completionHandler: {[weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
                                 if let destinationController = destinationController as LTMainContentViewController! {
                                     destinationController.shownDate = date
-                                    destinationController.type = self.filterType
                                 } else {
                                     currentController!.shownDate = date
-                                    currentController!.type = self.filterType
                                 }
                             })
                         }
                     } else if translation.y < 0 {
                         let date = dateInPicker.previousDay()
-                        downloadChanges(date, choosenInPicker: false, completionHandler: {[unowned self, weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
+                        downloadChanges(date, choosenInPicker: false, completionHandler: {[weak destinationController = destinationController, weak currentController = currentController] (finish) -> Void in
                             if let destinationController = destinationController as LTMainContentViewController! {
                                 destinationController.shownDate = date
-                                destinationController.type = self.filterType
                             } else {
                                 currentController!.shownDate = date
-                                currentController!.type = self.filterType
                             }
                         })
                     }
@@ -399,7 +421,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             return
         }
         
-        let containerView = rootView.contentView
+        let containerView = rootView!.contentView
         
         toViewController.view.translatesAutoresizingMaskIntoConstraints = true
         toViewController.view.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
@@ -448,7 +470,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     func commitFeedController(feedController: LTMainContentViewController) {
         //remove rootView of previous currentController from superview
         if currentController != feedController {
-            removeChildViewController(currentController)
+            if nil != currentController {
+                removeChildViewController(currentController!)
+            }
+            
             currentController = feedController
             destinationController = nil
             feedController.didMoveToParentViewController(self)
@@ -456,7 +481,11 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func downloadChanges(date: NSDate, choosenInPicker: Bool, completionHandler:(finish: Bool) -> Void) {
-        rootView.fillSearchButton(date)
+        if nil == rootView {
+            return
+        }
+        
+        rootView!.fillSearchButton(date)
         dateIsChoosenFromPicker = choosenInPicker
         
         dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self, weak rootView = rootView] in
@@ -493,8 +522,12 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
         
     private func loadData(completionHandler:(finish: Bool) -> Void) {
+        if nil == rootView {
+            return
+        }
+        
         isLoading = true
-        rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів...")
+        rootView!.showLoadingViewInViewWithMessage(rootView!.contentView, message: "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів...")
         
         let client = LTClient.sharedInstance()
         client.downloadConvocations({[unowned self, weak rootView = rootView] (success, error) -> Void in
@@ -547,7 +580,11 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func clearData(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Зачекайте, будь ласка.\nТриває очищення данних...")
+        if nil == rootView {
+            completionHandler(success: false, error: nil)
+        }
+        
+        rootView!.showLoadingViewInViewWithMessage(rootView!.contentView, message: "Зачекайте, будь ласка.\nТриває очищення данних...")
         let manager = CoreDataStackManager.sharedInstance()
         manager.clearEntity("LTChangeModel") {[unowned self, weak rootView = rootView] (success, error) -> Void in
             if success {
@@ -601,7 +638,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func processError(error:NSError, completionHandler:(UIAlertAction) -> Void) {
-        rootView.hideLoadingView()
+        rootView!.hideLoadingView()
         isLoading = false
         var title = String()
 
@@ -667,14 +704,24 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             return
         }
         
-        rootView.setFilterImages()
-        currentController.arrayModelFromChanges()
+        rootView!.setFilterImages()
+        if let currentController = currentController as LTMainContentViewController! {
+            currentController.arrayModelFromChanges()
+        }
     }
     
     //MARK: - NSNotificationCenter
     func loadChangesForAnotherDate(notification: NSNotification) {
+        if nil == shownDate {
+            return
+        }
+        
+        if nil == rootView {
+            return
+        }
+        
         if let userInfo = notification.userInfo as NSDictionary! {
-            let dateInPicker = rootView.datePicker.date
+            let dateInPicker = rootView!.datePicker.date
             
             if let needLoadChangesForAnotherDate = userInfo["needLoadChangesForAnotherDay"] as? Bool {
                 if needLoadChangesForAnotherDate {
@@ -699,10 +746,12 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     }
                     
                     if loadingCount == kLTMaxLoadingCount {
-                        currentController.rootView!.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом \(kLTMaxLoadingCount) днів з \(shownDate!.longString())"
+                        if let currentController = currentController as LTMainContentViewController! {
+                            currentController.rootView!.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом \(kLTMaxLoadingCount) днів з \(shownDate!.longString())"
+                        }
                     }
                 } else {
-                    shownDate = rootView.datePicker.date
+                    shownDate = rootView!.datePicker.date
                 }
                 
                 loadingCount = 0
