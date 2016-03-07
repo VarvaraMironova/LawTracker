@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let settings = VTSettingModel()
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let newsFeedController = storyboard.instantiateViewControllerWithIdentifier("LTNewsFeedViewController") as! LTNewsFeedViewController
-        let helpViewController = storyboard.instantiateViewControllerWithIdentifier("LTHelpViewController") as! LTHelpViewController
+        let helpViewController = storyboard.instantiateViewControllerWithIdentifier("LTHelpController") as! LTHelpController
         let rootController = settings.firstLaunch != true ? helpViewController : newsFeedController
         let navigationController = UINavigationController(rootViewController: rootController)
         navigationController.navigationBarHidden = true

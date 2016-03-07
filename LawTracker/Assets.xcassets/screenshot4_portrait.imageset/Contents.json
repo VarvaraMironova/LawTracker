@@ -7,6 +7,7 @@
     },
     {
       "idiom" : "iphone",
+      "filename" : "4-2.png",
       "scale" : "2x"
     },
     {
@@ -16,10 +17,12 @@
     },
     {
       "idiom" : "ipad",
+      "filename" : "4-1.jpg",
       "scale" : "1x"
     },
     {
       "idiom" : "ipad",
+      "filename" : "4.jpg",
       "scale" : "2x"
     }
   ],

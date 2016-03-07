@@ -10,9 +10,9 @@ import CoreData
 import UIKit
 
 class LTMainContentViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate {
-    var shownDate  : NSDate? {
+    var loadingDate  : NSDate? {
         didSet {
-            if shownDate != oldValue {
+            if loadingDate != oldValue {
                 setArrayModel()
             }
         }
@@ -20,13 +20,15 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     
     var arrayModel : LTChangesModel? {
         didSet {
-            if let rootView = rootView as LTMainContentRootView! {
-                dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
-                    rootView!.contentTableView.reloadData()
-                }
-            }
-            
             if let arrayModel = arrayModel as LTChangesModel! {
+                //reload data
+                if let rootView = rootView as LTMainContentRootView! {
+                    dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
+                        rootView!.contentTableView.reloadData()
+                    }
+                }
+                
+                //notify observers
                 var userInfo = [String: AnyObject]()
                 userInfo["needLoadChangesForAnotherDay"] = 0 == arrayModel.count()
                 
@@ -37,9 +39,10 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    var type : LTType = .byCommittees {
+    var type : LTType? {
         didSet {
-            if oldValue != type {
+            //get model only if tabButton tapped
+            if oldValue != type && oldValue != nil {
                 arrayModelFromChanges()
             }
         }
@@ -240,14 +243,16 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     
     //MARK: - Public
     func arrayModelFromChanges() {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak shownDate = shownDate] in
-            if let shownDate = shownDate as NSDate! {
-                let changesList = self.sectionModelsByKey(self.type)
-                let arrayModel = LTChangesModel(changes: changesList, type: self.type, filtersApplied: false, date: shownDate)
-                
-                self.applyFilters(arrayModel, completionHandler: { (result, finish) -> Void in
-                    self.arrayModel = result
-                })
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak loadingDate = loadingDate] in
+            if let loadingDate = loadingDate as NSDate! {
+                if let type = self.type as LTType! {
+                    let changesList = self.sectionModelsByKey(type)
+                    let arrayModel = LTChangesModel(changes: changesList, type: type, filtersApplied: false, date: loadingDate)
+                    
+                    self.applyFilters(arrayModel, completionHandler: { (result, finish) -> Void in
+                        self.arrayModel = result
+                    })
+                }
             }
         }
     }
@@ -277,21 +282,25 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     
     func applyFiltersForSection(sectionModel: LTSectionModel, completionHandler:(result: LTSectionModel?, finish: Bool) -> Void) {
         dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self] in
-            if let filters = LTEntityModel.filteredEntities(self.type) as [LTEntityModel]! {
-                if filters.count > 0 {
-                    var result = LTSectionModel()
-                    for entity in sectionModel.entities {
-                        if filters.contains(entity) {
-                            result = sectionModel
-                            break
+            if let type = self.type as LTType! {
+                if let filters = LTEntityModel.filteredEntities(type) as [LTEntityModel]! {
+                    if filters.count > 0 {
+                        var result = LTSectionModel()
+                        for entity in sectionModel.entities {
+                            if filters.contains(entity) {
+                                result = sectionModel
+                                break
+                            }
                         }
+                        
+                        completionHandler(result: result, finish: true)
+                        return
                     }
                     
-                    completionHandler(result: result, finish: true)
-                    return
+                    completionHandler(result: nil, finish: true)
                 }
-                
-                completionHandler(result: nil, finish: true)
+            } else {
+                completionHandler(result: sectionModel, finish: true)
             }
         }
     }
@@ -367,15 +376,17 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     private func fetchChanges(completionHandler:(finish: Bool) -> Void) {
-        dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self, weak fetchedResultsController = fetchedResultsController, weak shownDate = shownDate] in
-            fetchedResultsController!.fetchRequest.predicate = NSPredicate(format: "date = %@", shownDate!.dateWithoutTime())
-            do {
-                try fetchedResultsController!.performFetch()
-            } catch {}
-            
-            fetchedResultsController!.delegate = self
-            
-            completionHandler(finish: true)
+        dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self, weak fetchedResultsController = fetchedResultsController, weak loadingDate = loadingDate] in
+            if let loadingDate = loadingDate as NSDate! {
+                fetchedResultsController!.fetchRequest.predicate = NSPredicate(format: "date = %@", loadingDate.dateWithoutTime())
+                do {
+                    try fetchedResultsController!.performFetch()
+                } catch {}
+                
+                fetchedResultsController!.delegate = self
+                
+                completionHandler(finish: true)
+            }
         }
     }
     
@@ -391,9 +402,12 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        if nil == self.type {
+            return
+        }
         //create section and newsModel from changeModel
         if let changeModel = anObject as? LTChangeModel {
-            createSectionByKey(changeModel, key: self.type, completionHandler: {[unowned self, weak arrayModel = arrayModel, weak rootView = rootView] (newsModel, sectionModel, finish) -> Void in
+            createSectionByKey(changeModel, key: self.type!, completionHandler: {[unowned self, weak arrayModel = arrayModel, weak rootView = rootView] (newsModel, sectionModel, finish) -> Void in
                 if let newsModel = newsModel as LTNewsModel! {
                     if let sectionModel = sectionModel as LTSectionModel! {
                         //apply filters for section model if needed
@@ -411,8 +425,10 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
                                     
                                     //insert row and section to tableView
                                     dispatch_async(dispatch_get_main_queue()) {
-                                        rootView!.contentTableView.insertSections(NSIndexSet(index: section), withRowAnimation: .Fade)
-                                        rootView!.contentTableView.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
+                                        if arrayModel!.count() == section + 1 {
+                                            rootView!.contentTableView.insertSections(NSIndexSet(index: section), withRowAnimation: .Fade)
+                                            rootView!.contentTableView.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
+                                        }
                                     }
                                 } else {
                                     //add newsModel to existedSectionModel
@@ -423,7 +439,10 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
                                         
                                         //insert row to tableView
                                         dispatch_async(dispatch_get_main_queue()) {
-                                            rootView!.contentTableView.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
+                                            let indexPath = NSIndexPath(forRow: row, inSection: section)
+                                            if arrayModel!.changes[section].count() == row + 1 {
+                                                rootView!.contentTableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                                            }
                                         }
                                     }
                                 }

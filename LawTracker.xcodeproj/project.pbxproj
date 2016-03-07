@@ -12,7 +12,6 @@
 		C707CF5F1C5B663C004A8640 /* LTSwitchButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF5C1C5B663C004A8640 /* LTSwitchButton.swift */; };
 		C707CF601C5B663C004A8640 /* LTSwitchButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF5D1C5B663C004A8640 /* LTSwitchButtonView.swift */; };
 		C707CF611C5B663C004A8640 /* LTSwitchButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C707CF5E1C5B663C004A8640 /* LTSwitchButtonView.xib */; };
-		C707CF651C5D0079004A8640 /* LTHelpViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF641C5D0079004A8640 /* LTHelpViewCell.swift */; };
 		C707CF681C5FBEB6004A8640 /* LTSelectAllButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF671C5FBEB6004A8640 /* LTSelectAllButtonView.swift */; };
 		C707CF6A1C5FBECB004A8640 /* LTSelectAllButtonView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C707CF691C5FBECB004A8640 /* LTSelectAllButtonView.xib */; };
 		C707CF6C1C5FD810004A8640 /* LTSelectAllButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C707CF6B1C5FD810004A8640 /* LTSelectAllButton.swift */; };
@@ -29,12 +28,10 @@
 		C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76CE9301C1B7477006262E8 /* LTMenuTableViewCell.swift */; };
 		C76F84071C633F070085A12C /* LTSliderAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F84061C633F070085A12C /* LTSliderAnimator.swift */; };
 		C76F84091C6340D90085A12C /* LTTransitionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76F84081C6340D90085A12C /* LTTransitionContext.swift */; };
-		C77397321C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972C1C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift */; };
 		C77397331C3A7AE70093CBCC /* LTFontSizeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972D1C3A7AE60093CBCC /* LTFontSizeExtensions.swift */; };
 		C77397341C3A7AE70093CBCC /* LTStringHeightExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972E1C3A7AE60093CBCC /* LTStringHeightExtensions.swift */; };
 		C77397351C3A7AE70093CBCC /* LTTableViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773972F1C3A7AE60093CBCC /* LTTableViewExtensions.swift */; };
 		C77397361C3A7AE70093CBCC /* LTUILabelExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77397301C3A7AE60093CBCC /* LTUILabelExtensions.swift */; };
-		C77397371C3A7AE70093CBCC /* LTUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77397311C3A7AE60093CBCC /* LTUtility.swift */; };
 		C77397391C3A9C2C0093CBCC /* LTInitiatorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77397381C3A9C2C0093CBCC /* LTInitiatorModel.swift */; };
 		C773973B1C3AA74C0093CBCC /* LTCommitteeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773973A1C3AA74C0093CBCC /* LTCommitteeModel.swift */; };
 		C773973D1C3AAA660093CBCC /* CoreDataStackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773973C1C3AAA660093CBCC /* CoreDataStackManager.swift */; };
@@ -51,14 +48,11 @@
 		C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */; };
 		C7A29E4F1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E4D1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld */; };
 		C7A29E561C0C9EAD001B0EF5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E541C0C9EAD001B0EF5 /* Main.storyboard */; };
-		C7A29E581C0C9EAD001B0EF5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E571C0C9EAD001B0EF5 /* Assets.xcassets */; };
 		C7A29E5B1C0C9EAD001B0EF5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E591C0C9EAD001B0EF5 /* LaunchScreen.storyboard */; };
 		C7A29E661C0C9EAD001B0EF5 /* LawTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E651C0C9EAD001B0EF5 /* LawTrackerTests.swift */; };
 		C7CFB5AE1C1FFFDB00211C6B /* LTMainContentRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A61C1FFFDB00211C6B /* LTMainContentRootView.swift */; };
 		C7CFB5AF1C1FFFDB00211C6B /* LTMainContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A71C1FFFDB00211C6B /* LTMainContentTableViewCell.swift */; };
 		C7CFB5B01C1FFFDB00211C6B /* LTMainContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A81C1FFFDB00211C6B /* LTMainContentViewController.swift */; };
-		C7CFB5B51C2004D100211C6B /* LTHelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5B41C2004D100211C6B /* LTHelpViewController.swift */; };
-		C7CFB5B71C2004F700211C6B /* LTHelpRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5B61C2004F700211C6B /* LTHelpRootView.swift */; };
 		C7CFB5B91C2006F200211C6B /* VTSettingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5B81C2006F200211C6B /* VTSettingModel.swift */; };
 		C7CFB5BC1C2008D500211C6B /* LTCellHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5BA1C2008D400211C6B /* LTCellHeaderView.swift */; };
 		C7CFB5BD1C2008D500211C6B /* LTCellHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7CFB5BB1C2008D400211C6B /* LTCellHeaderView.xib */; };
@@ -68,6 +62,13 @@
 		C7E792B01C18672C0031C55A /* LTFilterRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A71C18672C0031C55A /* LTFilterRootView.swift */; };
 		C7E792B11C18672C0031C55A /* LTFilterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */; };
 		C7E792B21C18672C0031C55A /* LTFilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E792A91C18672C0031C55A /* LTFilterViewController.swift */; };
+		C7FABEF01C897A130011CE78 /* LTHelpContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FABEEB1C897A130011CE78 /* LTHelpContentController.swift */; };
+		C7FABEF11C897A130011CE78 /* LTHelpContentController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7FABEEC1C897A130011CE78 /* LTHelpContentController.xib */; };
+		C7FABEF21C897A130011CE78 /* LTHelpContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FABEED1C897A130011CE78 /* LTHelpContentView.swift */; };
+		C7FABEF31C897A130011CE78 /* LTHelpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FABEEE1C897A130011CE78 /* LTHelpController.swift */; };
+		C7FABEF41C897A130011CE78 /* LTHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FABEEF1C897A130011CE78 /* LTHelpView.swift */; };
+		C7FABF9F1C89A9310011CE78 /* LTUIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FABF9E1C89A9310011CE78 /* LTUIViewControllerExtensions.swift */; };
+		C7FABFA11C8DE8F50011CE78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7FABFA01C8DE8F50011CE78 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,7 +87,6 @@
 		C707CF5C1C5B663C004A8640 /* LTSwitchButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButton.swift; sourceTree = "<group>"; };
 		C707CF5D1C5B663C004A8640 /* LTSwitchButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSwitchButtonView.swift; sourceTree = "<group>"; };
 		C707CF5E1C5B663C004A8640 /* LTSwitchButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSwitchButtonView.xib; sourceTree = "<group>"; };
-		C707CF641C5D0079004A8640 /* LTHelpViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpViewCell.swift; sourceTree = "<group>"; };
 		C707CF671C5FBEB6004A8640 /* LTSelectAllButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSelectAllButtonView.swift; sourceTree = "<group>"; };
 		C707CF691C5FBECB004A8640 /* LTSelectAllButtonView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTSelectAllButtonView.xib; sourceTree = "<group>"; };
 		C707CF6B1C5FD810004A8640 /* LTSelectAllButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSelectAllButton.swift; sourceTree = "<group>"; };
@@ -103,12 +103,10 @@
 		C76CE9301C1B7477006262E8 /* LTMenuTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMenuTableViewCell.swift; sourceTree = "<group>"; };
 		C76F84061C633F070085A12C /* LTSliderAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTSliderAnimator.swift; sourceTree = "<group>"; };
 		C76F84081C6340D90085A12C /* LTTransitionContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTTransitionContext.swift; sourceTree = "<group>"; };
-		C773972C1C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		C773972D1C3A7AE60093CBCC /* LTFontSizeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFontSizeExtensions.swift; sourceTree = "<group>"; };
 		C773972E1C3A7AE60093CBCC /* LTStringHeightExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTStringHeightExtensions.swift; sourceTree = "<group>"; };
 		C773972F1C3A7AE60093CBCC /* LTTableViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTTableViewExtensions.swift; sourceTree = "<group>"; };
 		C77397301C3A7AE60093CBCC /* LTUILabelExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUILabelExtensions.swift; sourceTree = "<group>"; };
-		C77397311C3A7AE60093CBCC /* LTUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUtility.swift; sourceTree = "<group>"; };
 		C77397381C3A9C2C0093CBCC /* LTInitiatorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTInitiatorModel.swift; sourceTree = "<group>"; };
 		C773973A1C3AA74C0093CBCC /* LTCommitteeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTCommitteeModel.swift; sourceTree = "<group>"; };
 		C773973C1C3AAA660093CBCC /* CoreDataStackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStackManager.swift; sourceTree = "<group>"; };
@@ -126,7 +124,6 @@
 		C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C7A29E4E1C0C9EAD001B0EF5 /* LawTracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LawTracker.xcdatamodel; sourceTree = "<group>"; };
 		C7A29E551C0C9EAD001B0EF5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		C7A29E571C0C9EAD001B0EF5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C7A29E5A1C0C9EAD001B0EF5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C7A29E5C1C0C9EAD001B0EF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C7A29E611C0C9EAD001B0EF5 /* LawTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LawTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -135,8 +132,6 @@
 		C7CFB5A61C1FFFDB00211C6B /* LTMainContentRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentRootView.swift; sourceTree = "<group>"; };
 		C7CFB5A71C1FFFDB00211C6B /* LTMainContentTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentTableViewCell.swift; sourceTree = "<group>"; };
 		C7CFB5A81C1FFFDB00211C6B /* LTMainContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentViewController.swift; sourceTree = "<group>"; };
-		C7CFB5B41C2004D100211C6B /* LTHelpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpViewController.swift; sourceTree = "<group>"; };
-		C7CFB5B61C2004F700211C6B /* LTHelpRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpRootView.swift; sourceTree = "<group>"; };
 		C7CFB5B81C2006F200211C6B /* VTSettingModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VTSettingModel.swift; sourceTree = "<group>"; };
 		C7CFB5BA1C2008D400211C6B /* LTCellHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTCellHeaderView.swift; sourceTree = "<group>"; };
 		C7CFB5BB1C2008D400211C6B /* LTCellHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTCellHeaderView.xib; sourceTree = "<group>"; };
@@ -146,6 +141,13 @@
 		C7E792A71C18672C0031C55A /* LTFilterRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterRootView.swift; sourceTree = "<group>"; };
 		C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterTableViewCell.swift; sourceTree = "<group>"; };
 		C7E792A91C18672C0031C55A /* LTFilterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTFilterViewController.swift; sourceTree = "<group>"; };
+		C7FABEEB1C897A130011CE78 /* LTHelpContentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpContentController.swift; sourceTree = "<group>"; };
+		C7FABEEC1C897A130011CE78 /* LTHelpContentController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LTHelpContentController.xib; sourceTree = "<group>"; };
+		C7FABEED1C897A130011CE78 /* LTHelpContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpContentView.swift; sourceTree = "<group>"; };
+		C7FABEEE1C897A130011CE78 /* LTHelpController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpController.swift; sourceTree = "<group>"; };
+		C7FABEEF1C897A130011CE78 /* LTHelpView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpView.swift; sourceTree = "<group>"; };
+		C7FABF9E1C89A9310011CE78 /* LTUIViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUIViewControllerExtensions.swift; sourceTree = "<group>"; };
+		C7FABFA01C8DE8F50011CE78 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,12 +230,11 @@
 		C773972B1C3A7AE60093CBCC /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				C773972C1C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift */,
+				C7FABF9E1C89A9310011CE78 /* LTUIViewControllerExtensions.swift */,
 				C773972D1C3A7AE60093CBCC /* LTFontSizeExtensions.swift */,
 				C773972E1C3A7AE60093CBCC /* LTStringHeightExtensions.swift */,
 				C773972F1C3A7AE60093CBCC /* LTTableViewExtensions.swift */,
 				C77397301C3A7AE60093CBCC /* LTUILabelExtensions.swift */,
-				C77397311C3A7AE60093CBCC /* LTUtility.swift */,
 				C773973E1C3AB1180093CBCC /* LTNSDateExtensions.swift */,
 				C707CF491C581D58004A8640 /* LTNSObject.swift */,
 				C75D9BB91C706FAC0057136C /* LTAttributedStringExtensions.swift */,
@@ -262,9 +263,9 @@
 		C7A29E4A1C0C9EAD001B0EF5 /* LawTracker */ = {
 			isa = PBXGroup;
 			children = (
+				C7FABFA01C8DE8F50011CE78 /* Assets.xcassets */,
 				C7A29E4B1C0C9EAD001B0EF5 /* AppDelegate.swift */,
 				C7A29E541C0C9EAD001B0EF5 /* Main.storyboard */,
-				C7A29E571C0C9EAD001B0EF5 /* Assets.xcassets */,
 				C7A29E591C0C9EAD001B0EF5 /* LaunchScreen.storyboard */,
 				C7A29E5C1C0C9EAD001B0EF5 /* Info.plist */,
 				C7A29E4D1C0C9EAD001B0EF5 /* LawTracker.xcdatamodeld */,
@@ -319,11 +320,11 @@
 		C7A29E731C0C9F97001B0EF5 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				C7FABEEA1C897A130011CE78 /* LTHelpController */,
 				C7E61A811C63319A00F0B79E /* LTGestureRecognizer */,
 				C7E61A7C1C632DAA00F0B79E /* NewsFeedViewController */,
 				C71A07A41C23F9F600235D78 /* OTMLoadingView */,
 				C71A079E1C23380000235D78 /* Buttons */,
-				C7CFB5A21C1FFFDB00211C6B /* HelpViewController */,
 				C7CFB5A31C1FFFDB00211C6B /* MainContentViewController */,
 				C76CE92B1C1B742F006262E8 /* MenuViewController */,
 				C7E792A61C18672C0031C55A /* FilterViewController */,
@@ -336,16 +337,6 @@
 			children = (
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		C7CFB5A21C1FFFDB00211C6B /* HelpViewController */ = {
-			isa = PBXGroup;
-			children = (
-				C7CFB5B41C2004D100211C6B /* LTHelpViewController.swift */,
-				C7CFB5B61C2004F700211C6B /* LTHelpRootView.swift */,
-				C707CF641C5D0079004A8640 /* LTHelpViewCell.swift */,
-			);
-			path = HelpViewController;
 			sourceTree = "<group>";
 		};
 		C7CFB5A31C1FFFDB00211C6B /* MainContentViewController */ = {
@@ -387,6 +378,18 @@
 				C7E792A81C18672C0031C55A /* LTFilterTableViewCell.swift */,
 			);
 			path = FilterViewController;
+			sourceTree = "<group>";
+		};
+		C7FABEEA1C897A130011CE78 /* LTHelpController */ = {
+			isa = PBXGroup;
+			children = (
+				C7FABEEE1C897A130011CE78 /* LTHelpController.swift */,
+				C7FABEEF1C897A130011CE78 /* LTHelpView.swift */,
+				C7FABEEB1C897A130011CE78 /* LTHelpContentController.swift */,
+				C7FABEED1C897A130011CE78 /* LTHelpContentView.swift */,
+				C7FABEEC1C897A130011CE78 /* LTHelpContentController.xib */,
+			);
+			path = LTHelpController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -475,8 +478,9 @@
 				C7A29E5B1C0C9EAD001B0EF5 /* LaunchScreen.storyboard in Resources */,
 				C7CFB5BD1C2008D500211C6B /* LTCellHeaderView.xib in Resources */,
 				C707CF6A1C5FBECB004A8640 /* LTSelectAllButtonView.xib in Resources */,
-				C7A29E581C0C9EAD001B0EF5 /* Assets.xcassets in Resources */,
+				C7FABEF11C897A130011CE78 /* LTHelpContentController.xib in Resources */,
 				C71A07A91C23F9F600235D78 /* OTMLoadingView.xib in Resources */,
+				C7FABFA11C8DE8F50011CE78 /* Assets.xcassets in Resources */,
 				C7A29E561C0C9EAD001B0EF5 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -507,21 +511,22 @@
 				C77397361C3A7AE70093CBCC /* LTUILabelExtensions.swift in Sources */,
 				C7CFB5AF1C1FFFDB00211C6B /* LTMainContentTableViewCell.swift in Sources */,
 				C77397441C3AB9450093CBCC /* LTClientConstants.swift in Sources */,
-				C77397371C3A7AE70093CBCC /* LTUtility.swift in Sources */,
 				C77397351C3A7AE70093CBCC /* LTTableViewExtensions.swift in Sources */,
+				C7FABEF01C897A130011CE78 /* LTHelpContentController.swift in Sources */,
+				C7FABEF41C897A130011CE78 /* LTHelpView.swift in Sources */,
 				C77397391C3A9C2C0093CBCC /* LTInitiatorModel.swift in Sources */,
 				C7E61A831C6331DD00F0B79E /* LTPanGestureRacognizer.swift in Sources */,
+				C7FABEF21C897A130011CE78 /* LTHelpContentView.swift in Sources */,
 				C707CF601C5B663C004A8640 /* LTSwitchButtonView.swift in Sources */,
 				C7E61A7E1C632DCD00F0B79E /* LTNewsFeedViewController.swift in Sources */,
 				C7CFB5B91C2006F200211C6B /* VTSettingModel.swift in Sources */,
 				C71A07A81C23F9F600235D78 /* OTMLoadingView.swift in Sources */,
 				C77397471C3AFE140093CBCC /* LTEntityModel.swift in Sources */,
+				C7FABF9F1C89A9310011CE78 /* LTUIViewControllerExtensions.swift in Sources */,
 				C76CE92D1C1B744F006262E8 /* LTMenuViewController.swift in Sources */,
 				C773973F1C3AB1180093CBCC /* LTNSDateExtensions.swift in Sources */,
-				C7CFB5B51C2004D100211C6B /* LTHelpViewController.swift in Sources */,
 				C7E61A801C632DE600F0B79E /* LTNewsFeedRootView.swift in Sources */,
 				C707CF4A1C581D58004A8640 /* LTNSObject.swift in Sources */,
-				C707CF651C5D0079004A8640 /* LTHelpViewCell.swift in Sources */,
 				C707CF681C5FBEB6004A8640 /* LTSelectAllButtonView.swift in Sources */,
 				C7E792B01C18672C0031C55A /* LTFilterRootView.swift in Sources */,
 				C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */,
@@ -532,14 +537,13 @@
 				C76174B21C5394B400C344FA /* LTConvocationModel.swift in Sources */,
 				C7CFB5BC1C2008D500211C6B /* LTCellHeaderView.swift in Sources */,
 				C773974B1C40095C0093CBCC /* LTSectionModel.swift in Sources */,
+				C7FABEF31C897A130011CE78 /* LTHelpController.swift in Sources */,
 				C7E792B21C18672C0031C55A /* LTFilterViewController.swift in Sources */,
 				C7CFB5B01C1FFFDB00211C6B /* LTMainContentViewController.swift in Sources */,
 				C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */,
 				C78FA7561C6B2D95003D74E3 /* LTFilterCellModel.swift in Sources */,
-				C77397321C3A7AE60093CBCC /* LTUIViewControllerExtensions.swift in Sources */,
 				C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */,
 				C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */,
-				C7CFB5B71C2004F700211C6B /* LTHelpRootView.swift in Sources */,
 				C707CF4C1C581EB3004A8640 /* LTArrayModel.swift in Sources */,
 				C707CF5F1C5B663C004A8640 /* LTSwitchButton.swift in Sources */,
 				C77397431C3AB9450093CBCC /* LTClient.swift in Sources */,
@@ -625,7 +629,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -663,7 +667,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

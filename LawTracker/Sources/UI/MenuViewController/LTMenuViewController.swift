@@ -47,12 +47,15 @@ class LTMenuViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        self.delegate.rootView!.hideMenu(){finished in
+        self.delegate.rootView!.hideMenu(){[weak storyboard = self.storyboard, weak navigationController = navigationController] (finished) in
             if finished {
                 switch indexPath.row {
                 case 0:
-                    let helpViewController = self.storyboard!.instantiateViewControllerWithIdentifier("LTHelpViewController") as! LTHelpViewController
-                    self.navigationController?.presentViewController(helpViewController, animated: true, completion: nil)
+                    dispatch_async(dispatch_get_main_queue()) {
+                        let helpViewController = storyboard!.instantiateViewControllerWithIdentifier("LTHelpController") as! LTHelpController
+                        navigationController!.presentViewController(helpViewController, animated: true, completion: nil)
+                        //navigationController!.pushViewController(helpViewController, animated: true)
+                    }
                     
                     break
                     

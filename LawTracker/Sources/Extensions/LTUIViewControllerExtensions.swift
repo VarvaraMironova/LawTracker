@@ -11,14 +11,14 @@ import UIKit
 
 extension UIViewController {
     
-    func addChildViewController(childController: UIViewController, view: UIView) {
+    func addChildViewControllerInView(childController: UIViewController, view: UIView) {
         childController.view.frame = view.bounds
         view.addSubview(childController.view)
         addChildViewController(childController)
         childController.didMoveToParentViewController(self)
     }
     
-    func removeChildViewController(childController: UIViewController) {
+    func removeChildController(childController: UIViewController) {
         dispatch_async(dispatch_get_main_queue()) {
             childController.willMoveToParentViewController(nil)
             childController.view.removeFromSuperview()

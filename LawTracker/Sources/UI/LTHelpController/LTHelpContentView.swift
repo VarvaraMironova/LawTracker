@@ -1,17 +1,18 @@
 //
-//  LTHelpViewCell.swift
+//  LTHelpContentView.swift
 //  LawTracker
 //
-//  Created by Varvara Mironova on 1/30/16.
+//  Created by Varvara Mironova on 3/3/16.
 //  Copyright © 2016 VarvaraMironova. All rights reserved.
 //
 
 import UIKit
 
-class LTHelpViewCell: UICollectionViewCell {
+class LTHelpContentView: UIView {
+
     @IBOutlet var contentImageView: UIImageView!
     
-    func fillWithModel(model: [String]) {
+    func fill(model: [String]) {
         if .Portrait == UIApplication.sharedApplication().statusBarOrientation {
             contentImageView.image = UIImage(named: model.first!)
         } else {
