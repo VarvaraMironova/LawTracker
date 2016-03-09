@@ -20,6 +20,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var dateIsChoosenFromPicker : Bool = false
     var isLoading               : Bool = false
     var loadingCount            : Int = 0
+    var dateButtonTapped        : Bool = false
     
     var filterType: LTType = .byCommittees {
         didSet {
@@ -131,10 +132,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     //MARK: - Interface Handling
     @IBAction func onGesture(sender: LTPanGestureRacognizer) {
-        if isLoading {
-            return
-        }
-        
         let direction = sender.direction
         if direction != .Right {
             handlePageSwitchingGesture(sender)
@@ -223,18 +220,21 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func onSearchButton(sender: AnyObject) {
+        dateButtonTapped = true
         dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
             rootView!.showDatePicker()
         }
     }
     
     @IBAction func onHidePickerButton(sender: AnyObject) {
+        dateButtonTapped = false
         dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
             rootView!.hideDatePicker()
         }
     }
     
     @IBAction func onDonePickerButton(sender: AnyObject) {
+        dateButtonTapped = false
         dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView, weak destinationController = destinationController, weak currentController = currentController] in
             rootView!.hideDatePicker()
             
@@ -512,6 +512,11 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func downloadChanges(date: NSDate, choosenInPicker: Bool, completionHandler:(finish: Bool, success: Bool) -> Void) {
+        if dateButtonTapped {
+            return
+        }
+        
+        isLoading = true
         if let rootView = rootView as LTNewsFeedRootView! {
             rootView.fillSearchButton(date)
             dateIsChoosenFromPicker = choosenInPicker
@@ -520,7 +525,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                 if let changes = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
                     if changes.count > 0 {
                         completionHandler(finish: true, success: true)
-                        
+                        self.isLoading = false
                         return
                     }
                 }
@@ -544,6 +549,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                         }
                         
                         completionHandler(finish: true, success: success)
+                        self.isLoading = false
                     }
                 }
             }
@@ -617,63 +623,63 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         })
     }
     
-    private func clearData(completionHandler:(success: Bool, error: NSError?) -> Void) {
-        if nil == rootView {
-            completionHandler(success: false, error: nil)
-        }
-        
-        rootView!.showLoadingViewInViewWithMessage(rootView!.contentView, message: "Зачекайте, будь ласка.\nТриває очищення данних...")
-        let manager = CoreDataStackManager.sharedInstance()
-        manager.clearEntity("LTChangeModel") {[unowned self, weak rootView = rootView] (success, error) -> Void in
-            if success {
-                manager.clearEntity("LTLawModel", completionHandler: { (success, error) -> Void in
-                    if success {
-                        manager.clearEntity("LTInitiatorModel", completionHandler: { (success, error) -> Void in
-                            if success {
-                                manager.clearEntity("LTInitiatorTypeModel", completionHandler: { (success, error) -> Void in
-                                    if success {
-                                        manager.clearEntity("LTCommitteeModel", completionHandler: { (success, error) -> Void in
-                                            if success {
-                                                rootView!.hideLoadingView()
-                                                print("coreData is clean!")
-                                                completionHandler(success: true, error: nil)
-                                            } else {
-                                                completionHandler(success: false, error: error!)
-                                                self.processError(error!){[unowned self] void in
-                                                    self.clearData(completionHandler)
-                                                }
-                                            }
-                                        })
-                                        
-                                    } else {
-                                        completionHandler(success: false, error: error!)
-                                        self.processError(error!){[unowned self] void in
-                                            self.clearData(completionHandler)
-                                        }
-                                    }
-                                })
-                            } else {
-                                completionHandler(success: false, error: error!)
-                                self.processError(error!){[unowned self] void in
-                                    self.clearData(completionHandler)
-                                }
-                            }
-                        })
-                    } else {
-                        completionHandler(success: false, error: error!)
-                        self.processError(error!){[unowned self] void in
-                            self.clearData(completionHandler)
-                        }
-                    }
-                })
-            } else {
-                completionHandler(success: false, error: error!)
-                self.processError(error!){[unowned self] void in
-                    self.clearData(completionHandler)
-                }
-            }
-        }
-    }
+//    private func clearData(completionHandler:(success: Bool, error: NSError?) -> Void) {
+//        if nil == rootView {
+//            completionHandler(success: false, error: nil)
+//        }
+//        
+//        rootView!.showLoadingViewInViewWithMessage(rootView!.contentView, message: "Зачекайте, будь ласка.\nТриває очищення данних...")
+//        let manager = CoreDataStackManager.sharedInstance()
+//        manager.clearEntity("LTChangeModel") {[unowned self, weak rootView = rootView] (success, error) -> Void in
+//            if success {
+//                manager.clearEntity("LTLawModel", completionHandler: { (success, error) -> Void in
+//                    if success {
+//                        manager.clearEntity("LTInitiatorModel", completionHandler: { (success, error) -> Void in
+//                            if success {
+//                                manager.clearEntity("LTInitiatorTypeModel", completionHandler: { (success, error) -> Void in
+//                                    if success {
+//                                        manager.clearEntity("LTCommitteeModel", completionHandler: { (success, error) -> Void in
+//                                            if success {
+//                                                rootView!.hideLoadingView()
+//                                                print("coreData is clean!")
+//                                                completionHandler(success: true, error: nil)
+//                                            } else {
+//                                                completionHandler(success: false, error: error!)
+//                                                self.processError(error!){[unowned self] void in
+//                                                    self.clearData(completionHandler)
+//                                                }
+//                                            }
+//                                        })
+//                                        
+//                                    } else {
+//                                        completionHandler(success: false, error: error!)
+//                                        self.processError(error!){[unowned self] void in
+//                                            self.clearData(completionHandler)
+//                                        }
+//                                    }
+//                                })
+//                            } else {
+//                                completionHandler(success: false, error: error!)
+//                                self.processError(error!){[unowned self] void in
+//                                    self.clearData(completionHandler)
+//                                }
+//                            }
+//                        })
+//                    } else {
+//                        completionHandler(success: false, error: error!)
+//                        self.processError(error!){[unowned self] void in
+//                            self.clearData(completionHandler)
+//                        }
+//                    }
+//                })
+//            } else {
+//                completionHandler(success: false, error: error!)
+//                self.processError(error!){[unowned self] void in
+//                    self.clearData(completionHandler)
+//                }
+//            }
+//        }
+//    }
     
     private func processError(error:NSError, completionHandler:(UIAlertAction) -> Void) {
         rootView!.hideLoadingView()
@@ -754,6 +760,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             return
         }
         
+        isLoading = false
         let date = nil == shownDate ? NSDate().previousDay() : shownDate
         if let userInfo = notification.userInfo as NSDictionary! {
             let dateInPicker = rootView!.datePicker.date
