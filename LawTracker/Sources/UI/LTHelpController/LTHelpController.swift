@@ -34,6 +34,9 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
     var pageViewController : UIPageViewController!
     var pendingIndex       : Int! = 1
     
+    var upSwipeGestureRecognizer: UISwipeGestureRecognizer!
+    var downSwipeGestureRecognizer: UISwipeGestureRecognizer!
+    
     var rootView: LTHelpView? {
         get {
             if isViewLoaded() && view.isKindOfClass(LTHelpView) {
@@ -92,11 +95,44 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
         }
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        //add swipe gecture recognizers
+        let upGestureRecognizer = UISwipeGestureRecognizer(target: self, action: "onSwipe:")
+        upGestureRecognizer.direction = .Up
+        
+        pageViewController.view.addGestureRecognizer(upGestureRecognizer)
+        upSwipeGestureRecognizer = upGestureRecognizer
+        
+        let downGestureRecognizer = UISwipeGestureRecognizer(target: self, action: "onSwipe:")
+        downGestureRecognizer.direction = .Down
+        
+        pageViewController.view.addGestureRecognizer(downGestureRecognizer)
+        downSwipeGestureRecognizer = downGestureRecognizer
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        //remove swipe gecture recognizers
+        upSwipeGestureRecognizer.removeTarget(self, action: "onSwipe:")
+        downSwipeGestureRecognizer.removeTarget(self, action: "onSwipe:")
+        pageViewController.view.removeGestureRecognizer(upSwipeGestureRecognizer)
+        pageViewController.view.removeGestureRecognizer(downSwipeGestureRecognizer)
+    }
+    
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
     
     //MARK: - Interface Handling
+    @IBAction func onSwipe(sender: UISwipeGestureRecognizer) {
+        if .Up == sender.direction || .Down == sender.direction {
+            onCloseButton(sender)
+        }
+    }
+    
     @IBAction func onCloseButton(sender: AnyObject) {
         if let navigationController = navigationController as UINavigationController! {
             let newsFeedController = self.storyboard!.instantiateViewControllerWithIdentifier("LTNewsFeedViewController") as! LTNewsFeedViewController

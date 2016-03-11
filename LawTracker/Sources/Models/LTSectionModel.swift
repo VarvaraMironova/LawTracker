@@ -9,7 +9,17 @@
 import Foundation
 
 class LTSectionModel: NSObject {
-    var entities  : [LTEntityModel]!
+    var entities  = [LTEntityModel]()
+    lazy var filtersSet: Bool = {[unowned self] in
+        var filtersSet = false
+        for entity in self.entities {
+            if entity.filterSet {
+                filtersSet = true
+            }
+        }
+        
+        return filtersSet
+    }()
     
     var changes = [LTNewsModel]()
     var filters = [LTFilterCellModel]()

@@ -20,7 +20,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var dateIsChoosenFromPicker : Bool = false
     var isLoading               : Bool = false
     var loadingCount            : Int = 0
-    var dateButtonTapped        : Bool = false
     
     var filterType: LTType = .byCommittees {
         didSet {
@@ -32,6 +31,15 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                 }
                 
             }
+        }
+    }
+    
+    var minDate : NSDate {
+        get {
+            let dateFormatter = NSDateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            
+            return dateFormatter.dateFromString("2000-01-01")!
         }
     }
 
@@ -220,21 +228,25 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     @IBAction func onSearchButton(sender: AnyObject) {
-        dateButtonTapped = true
         dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
             rootView!.showDatePicker()
         }
     }
     
     @IBAction func onHidePickerButton(sender: AnyObject) {
-        dateButtonTapped = false
         dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
             rootView!.hideDatePicker()
         }
     }
     
     @IBAction func onDonePickerButton(sender: AnyObject) {
-        dateButtonTapped = false
+        let client = LTClient.sharedInstance()
+        if let task = client.downloadTask as NSURLSessionDataTask! {
+            task.cancel()
+        }
+        
+        isLoading = false
+        
         dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView, weak destinationController = destinationController, weak currentController = currentController] in
             rootView!.hideDatePicker()
             
@@ -332,6 +344,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                 refreshData()
             }
             
+            if (.Up == navigationGesture.direction && dateInPicker.dateWithoutTime().compare(minDate) == .OrderedSame) {
+                return false
+            }
+            
             return shouldBegin
         }
         
@@ -345,7 +361,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             let containerView = rootView.contentView
             addChildViewControllerInView(currentController!, view: containerView)
             
-            setCurrentController(currentController!)
+            setCurrentController(currentController!, animated: false, forwardDirection: false)
             scrollToTop()
         }
     }
@@ -512,9 +528,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     private func downloadChanges(date: NSDate, choosenInPicker: Bool, completionHandler:(finish: Bool, success: Bool) -> Void) {
-        if dateButtonTapped {
-            return
-        }
         
         isLoading = true
         if let rootView = rootView as LTNewsFeedRootView! {
@@ -530,13 +543,11 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     }
                 }
                 
-                //self.isLoading = true
                 rootView!.showLoadingViewInViewWithMessage(rootView!.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
                 let client = LTClient.sharedInstance()
                 client.downloadChanges(date) {[unowned self] (success, error) -> Void in
                     rootView!.hideLoadingView()
-                    //self.isLoading = false
-                    
+                    self.isLoading = false
                     if success {
                         let settingsModel = VTSettingModel()
                         settingsModel.firstLaunch = true
@@ -691,6 +702,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             title = "Щось негаразд."
             break
             
+        case -999:
+            title = "Скасовано."
+            break
+            
         case -1000:
             title = "Не вдалося згенерувати URL."
             break
@@ -738,9 +753,9 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-    private func setCurrentController(controller: LTMainContentViewController) {
-        setCurrentController(controller, animated: false, forwardDirection: false)
-    }
+//    private func setCurrentController(controller: LTMainContentViewController) {
+//        setCurrentController(controller, animated: false, forwardDirection: false)
+//    }
     
     //MARK: - LTFilterDelegate methods
     func filtersDidApplied() {
@@ -756,18 +771,18 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     //MARK: - NSNotificationCenter
     func loadChangesForAnotherDate(notification: NSNotification) {
+        isLoading = false
         if nil == rootView {
             return
         }
-        
-        isLoading = false
+    
         let date = nil == shownDate ? NSDate().previousDay() : shownDate
         if let userInfo = notification.userInfo as NSDictionary! {
             let dateInPicker = rootView!.datePicker.date
             
             if let needLoadChangesForAnotherDate = userInfo["needLoadChangesForAnotherDay"] as? Bool {
                 if needLoadChangesForAnotherDate {
-                    if !dateIsChoosenFromPicker && (dateInPicker.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (loadingCount < kLTMaxLoadingCount) {
+                    if !dateIsChoosenFromPicker && (dateInPicker.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (loadingCount < kLTMaxLoadingCount) && dateInPicker.compare(minDate) != .OrderedSame {
                         loadingCount += 1
                         var newDate = date
                         if date!.dateWithoutTime().compare(dateInPicker.dateWithoutTime()) == .OrderedAscending {
@@ -789,16 +804,15 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                         return
                     }
                     
-                    shownDate = dateInPicker
                     if loadingCount == kLTMaxLoadingCount {
                         if let currentController = currentController as LTMainContentViewController! {
-                            currentController.rootView!.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом \(kLTMaxLoadingCount) днів з \(shownDate!.longString())"
+                            currentController.rootView!.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом останніх \(kLTMaxLoadingCount) днів"
                         }
                     }
-                } else {
-                    shownDate = dateInPicker
+                    
                 }
                 
+                shownDate = dateInPicker
                 loadingCount = 0
             }
         }

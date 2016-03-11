@@ -9,7 +9,6 @@
 import UIKit
 
 class LTMenuRootView: UIView {
-    @IBOutlet var logoImageView: UIImageView!
     @IBOutlet var menuTableView: UITableView!
 
 }

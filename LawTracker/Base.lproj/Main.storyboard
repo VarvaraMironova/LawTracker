@@ -66,6 +66,7 @@
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="99S-Ms-7mX" secondAttribute="trailing" id="DEM-UV-oxg"/>
                             <constraint firstItem="xMM-NV-HuO" firstAttribute="top" secondItem="99S-Ms-7mX" secondAttribute="bottom" id="DI6-Lz-72u"/>

@@ -33,7 +33,7 @@ class LTClient: NSObject {
     
     override init() {
         session = NSURLSession.sharedSession()
-        downloadTask = NSURLSessionDataTask()
+        //downloadTask = NSURLSessionDataTask()
         
         super.init()
     }
@@ -89,16 +89,42 @@ class LTClient: NSObject {
         return task
     }
     
+    func taskWithURL(url: NSURL, completionHandler: (result: NSData!, error: NSError?) -> Void) -> NSURLSessionDataTask
+    {
+        let task = session.dataTaskWithURL(url) {data, response, downloadError in
+            if let error = downloadError {
+                completionHandler(result: nil, error: error)
+            } else {
+                completionHandler(result: data, error: nil)
+            }
+        }
+        
+        task.resume()
+        
+        return task
+    }
+    
     func requestWithParameters(params: [String], completionHandler: (result: NSURLRequest?, error: NSError?) -> Void) {
+        urlWithParameters(params) { (result, error) in
+            if let url = result as NSURL! {
+                if let request = NSMutableURLRequest(URL: url) as NSMutableURLRequest! {
+                    request.HTTPMethod = "POST"
+                    completionHandler(result: request, error: nil)
+                } else {
+                    let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsRequestError + "\(url.absoluteString)")
+                    completionHandler(result: nil, error: requestError)
+                }
+            } else if let error = error as NSError! {
+                completionHandler(result: nil, error: error)
+            }
+        }
+    }
+    
+    func urlWithParameters(params: [String], completionHandler: (result: NSURL?, error: NSError?) -> Void) {
         let urlString = params.joinWithSeparator("/")
         if let unescapedURLString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
             if let url = NSURL(string: unescapedURLString) as NSURL! {
-                if let request = NSURLRequest(URL: url) as NSURLRequest! {
-                    completionHandler(result: request, error: nil)
-                } else {
-                    let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsRequestError + "\( urlString)")
-                    completionHandler(result: nil, error: requestError)
-                }
+                completionHandler(result: url, error: nil)
             } else {
                 let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsURLError + "\( urlString)")
                 completionHandler(result: nil, error: requestError)

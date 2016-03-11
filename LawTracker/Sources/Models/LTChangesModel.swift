@@ -10,7 +10,7 @@ import Foundation
 
 class LTChangesModel: NSObject {
     var changes         : [LTSectionModel] = []
-    var filtersApplied  : Bool!
+    var filtersApplied  : Bool = false
     var date            : NSDate!
     var type            : LTType!
     
@@ -18,7 +18,6 @@ class LTChangesModel: NSObject {
         super.init()
         
         self.changes = []
-        self.filtersApplied = false
         self.date = NSDate()
     }
     
