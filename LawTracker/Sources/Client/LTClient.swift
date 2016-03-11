@@ -33,7 +33,6 @@ class LTClient: NSObject {
     
     override init() {
         session = NSURLSession.sharedSession()
-        //downloadTask = NSURLSessionDataTask()
         
         super.init()
     }
@@ -108,7 +107,7 @@ class LTClient: NSObject {
         urlWithParameters(params) { (result, error) in
             if let url = result as NSURL! {
                 if let request = NSMutableURLRequest(URL: url) as NSMutableURLRequest! {
-                    request.HTTPMethod = "POST"
+                    request.HTTPMethod = "GET"
                     completionHandler(result: request, error: nil)
                 } else {
                     let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsRequestError + "\(url.absoluteString)")
@@ -121,7 +120,7 @@ class LTClient: NSObject {
     }
     
     func urlWithParameters(params: [String], completionHandler: (result: NSURL?, error: NSError?) -> Void) {
-        let urlString = params.joinWithSeparator("/")
+        let urlString = params.joinWithSeparator("/") + "/"
         if let unescapedURLString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
             if let url = NSURL(string: unescapedURLString) as NSURL! {
                 completionHandler(result: url, error: nil)

@@ -69,6 +69,7 @@
 		C7FABEF41C897A130011CE78 /* LTHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FABEEF1C897A130011CE78 /* LTHelpView.swift */; };
 		C7FABF9F1C89A9310011CE78 /* LTUIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FABF9E1C89A9310011CE78 /* LTUIViewControllerExtensions.swift */; };
 		C7FABFA11C8DE8F50011CE78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C7FABFA01C8DE8F50011CE78 /* Assets.xcassets */; };
+		C7FABFA31C9319370011CE78 /* LTReach.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FABFA21C9319370011CE78 /* LTReach.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -148,6 +149,7 @@
 		C7FABEEF1C897A130011CE78 /* LTHelpView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTHelpView.swift; sourceTree = "<group>"; };
 		C7FABF9E1C89A9310011CE78 /* LTUIViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTUIViewControllerExtensions.swift; sourceTree = "<group>"; };
 		C7FABFA01C8DE8F50011CE78 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C7FABFA21C9319370011CE78 /* LTReach.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTReach.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,6 +225,7 @@
 				C77397401C3AB9450093CBCC /* LTClient.swift */,
 				C77397421C3AB9450093CBCC /* LTClientExtensions.swift */,
 				C77397411C3AB9450093CBCC /* LTClientConstants.swift */,
+				C7FABFA21C9319370011CE78 /* LTReach.swift */,
 			);
 			path = Client;
 			sourceTree = "<group>";
@@ -532,6 +535,7 @@
 				C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */,
 				C76CE92F1C1B7461006262E8 /* LTMenuRootView.swift in Sources */,
 				C773973B1C3AA74C0093CBCC /* LTCommitteeModel.swift in Sources */,
+				C7FABFA31C9319370011CE78 /* LTReach.swift in Sources */,
 				C707CF6C1C5FD810004A8640 /* LTSelectAllButton.swift in Sources */,
 				C76F84071C633F070085A12C /* LTSliderAnimator.swift in Sources */,
 				C76174B21C5394B400C344FA /* LTConvocationModel.swift in Sources */,

@@ -75,6 +75,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         let date = NSDate().previousDay()
         rootView!.fillSearchButton(date)
         
+        //observe internet connection
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("networkStatusChanged:"), name: ReachabilityStatusChangedNotification, object: nil)
+        Reach().monitorReachabilityChanges()
+        
         let settingsModel = VTSettingModel()
         if true != settingsModel.firstLaunch {
             //download data from server
@@ -136,6 +140,11 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         super.viewWillDisappear(animated)
         
         NSNotificationCenter.defaultCenter().removeObserver(self, name: "loadChangesForAnotherDate", object: nil)
+    }
+    
+    func networkStatusChanged(notification: NSNotification) {
+        let userInfo = notification.userInfo
+        print(userInfo)
     }
     
     //MARK: - Interface Handling
@@ -529,6 +538,25 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
     private func downloadChanges(date: NSDate, choosenInPicker: Bool, completionHandler:(finish: Bool, success: Bool) -> Void) {
         
+        let status = Reach().connectionStatus()
+        
+        switch status {
+        case .Unknown, .Offline:
+            let userInfo = [NSLocalizedDescriptionKey : "Немає доступу до Інтернету."]
+            let error = NSError(domain: "ConnectionError", code: -1009, userInfo: userInfo)
+            processError(error){[unowned self] (void) in
+                self.downloadChanges(date, choosenInPicker: choosenInPicker, completionHandler: completionHandler)
+            }
+            
+            completionHandler(finish: true, success: false)
+            self.isLoading = false
+            
+            return
+            
+        default:
+            break
+        }
+        
         isLoading = true
         if let rootView = rootView as LTNewsFeedRootView! {
             rootView.fillSearchButton(date)
@@ -570,6 +598,25 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     private func loadData(completionHandler:(finish: Bool, success: Bool) -> Void) {
         if nil == rootView {
             return
+        }
+        
+        let status = Reach().connectionStatus()
+        
+        switch status {
+        case .Unknown, .Offline:
+            let userInfo = [NSLocalizedDescriptionKey : "Немає доступу до Інтернету."]
+            let error = NSError(domain: "ConnectionError", code: -1009, userInfo: userInfo)
+            processError(error){[unowned self] (void) in
+                self.loadData(completionHandler)
+            }
+            
+            completionHandler(finish: true, success: false)
+            self.isLoading = false
+            
+            return
+            
+        default:
+            break
         }
         
         isLoading = true
@@ -736,6 +783,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
             
         case -1017:
             title = "Некоректна структура відповіді сервера."
+            break
+            
+        case 3840:
+            title = "Некоректний формат даних."
             break
             
         default:
