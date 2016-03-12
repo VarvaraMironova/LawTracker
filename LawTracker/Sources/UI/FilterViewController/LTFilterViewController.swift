@@ -15,21 +15,22 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         static let Laws       = "Номер або назва законопроекту"
     }
     
-    weak var delegate: LTNewsFeedViewController!
+    //weak var delegate: LTNewsFeedViewController!
     
     var filters      : [LTSectionModel]?
     var filteredArray = [LTSectionModel]()
+    var type         : LTType!
     
     var placeholderString: String {
         get {
-            switch delegate.filterType {
-            case .byCommittees:
+            switch type.rawValue {
+            case 0:
                 return PlaceHolder.Committees
             
-            case .byInitiators:
+            case 1:
                 return PlaceHolder.Initiators
                 
-            case .byLaws:
+            default:
                 return PlaceHolder.Laws
             }
         }
@@ -66,7 +67,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         setFilters { (finished) -> Void in
             if finished {
                 dispatch_async(dispatch_get_main_queue()) {
-                    self.delegate.filtersDidApplied()
+                    NSNotificationCenter.defaultCenter().postNotificationName("filtersDidApplied", object: nil)
                     
                     self.dismissViewControllerAnimated(true, completion: nil)
                 }
@@ -86,9 +87,10 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
             CoreDataStackManager.sharedInstance().saveContext()
         }
         
-        delegate.filtersDidApplied()
-        
-        dismissViewControllerAnimated(true, completion: nil)
+        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+            NSNotificationCenter.defaultCenter().postNotificationName("filtersDidApplied", object: nil)
+            self.dismissViewControllerAnimated(true, completion: nil)
+        }
     }
     
     @IBAction func onSelectAllButton(sender: AnyObject) {

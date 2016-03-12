@@ -170,7 +170,8 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     @IBAction func onFilterButton(sender: UIButton) {
         dispatch_async(dispatch_get_main_queue()) {[unowned self, weak storyboard = storyboard, weak rootView = rootView] in
             let filterController = storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
-            filterController.delegate = self
+            filterController.type = self.filterType
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("filtersDidApplied"), name: "filtersDidApplied", object: nil)
             
             if !self.isLoading {
                 var entityName = String()
@@ -681,64 +682,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         })
     }
     
-//    private func clearData(completionHandler:(success: Bool, error: NSError?) -> Void) {
-//        if nil == rootView {
-//            completionHandler(success: false, error: nil)
-//        }
-//        
-//        rootView!.showLoadingViewInViewWithMessage(rootView!.contentView, message: "Зачекайте, будь ласка.\nТриває очищення данних...")
-//        let manager = CoreDataStackManager.sharedInstance()
-//        manager.clearEntity("LTChangeModel") {[unowned self, weak rootView = rootView] (success, error) -> Void in
-//            if success {
-//                manager.clearEntity("LTLawModel", completionHandler: { (success, error) -> Void in
-//                    if success {
-//                        manager.clearEntity("LTInitiatorModel", completionHandler: { (success, error) -> Void in
-//                            if success {
-//                                manager.clearEntity("LTInitiatorTypeModel", completionHandler: { (success, error) -> Void in
-//                                    if success {
-//                                        manager.clearEntity("LTCommitteeModel", completionHandler: { (success, error) -> Void in
-//                                            if success {
-//                                                rootView!.hideLoadingView()
-//                                                print("coreData is clean!")
-//                                                completionHandler(success: true, error: nil)
-//                                            } else {
-//                                                completionHandler(success: false, error: error!)
-//                                                self.processError(error!){[unowned self] void in
-//                                                    self.clearData(completionHandler)
-//                                                }
-//                                            }
-//                                        })
-//                                        
-//                                    } else {
-//                                        completionHandler(success: false, error: error!)
-//                                        self.processError(error!){[unowned self] void in
-//                                            self.clearData(completionHandler)
-//                                        }
-//                                    }
-//                                })
-//                            } else {
-//                                completionHandler(success: false, error: error!)
-//                                self.processError(error!){[unowned self] void in
-//                                    self.clearData(completionHandler)
-//                                }
-//                            }
-//                        })
-//                    } else {
-//                        completionHandler(success: false, error: error!)
-//                        self.processError(error!){[unowned self] void in
-//                            self.clearData(completionHandler)
-//                        }
-//                    }
-//                })
-//            } else {
-//                completionHandler(success: false, error: error!)
-//                self.processError(error!){[unowned self] void in
-//                    self.clearData(completionHandler)
-//                }
-//            }
-//        }
-//    }
-    
     private func processError(error:NSError, completionHandler:(UIAlertAction) -> Void) {
         rootView!.hideLoadingView()
         isLoading = false
@@ -804,12 +747,10 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-//    private func setCurrentController(controller: LTMainContentViewController) {
-//        setCurrentController(controller, animated: false, forwardDirection: false)
-//    }
-    
     //MARK: - LTFilterDelegate methods
     func filtersDidApplied() {
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "filtersDidApplied", object: nil)
+        
         if isLoading {
             return
         }
