@@ -407,6 +407,7 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         }
         //create section and newsModel from changeModel
         if let changeModel = anObject as? LTChangeModel {
+            print(changeModel.date, arrayModel!.date)
             createSectionByKey(changeModel, key: self.type!, completionHandler: {[weak arrayModel = arrayModel, weak rootView = rootView] (newsModel, sectionModel, finish) -> Void in
                 if let newsModel = newsModel as LTNewsModel! {
                     if let sectionModel = sectionModel as LTSectionModel! {
@@ -422,10 +423,10 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
                                 section = arrayModel!.count() - 1
                                 
                                 //insert row and section to tableView
-                                dispatch_async(dispatch_get_main_queue()) {
+                                dispatch_async(dispatch_get_main_queue()) {[weak tableView = rootView!.contentTableView] in
                                     if arrayModel!.count() == section + 1 {
-                                        rootView!.contentTableView.insertSections(NSIndexSet(index: section), withRowAnimation: .Fade)
-                                        rootView!.contentTableView.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
+                                        tableView!.insertSections(NSIndexSet(index: section), withRowAnimation: .Fade)
+                                        tableView!.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
                                     }
                                 }
                             } else {
@@ -436,10 +437,10 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
                                     section = arrayModel!.changes.indexOf(existedSectionModel!)!
                                     
                                     //insert row to tableView
-                                    dispatch_async(dispatch_get_main_queue()) {
+                                    dispatch_async(dispatch_get_main_queue()) {[weak tableView = rootView!.contentTableView] in
                                         let indexPath = NSIndexPath(forRow: row, inSection: section)
                                         if arrayModel!.changes[section].count() == row + 1 {
-                                            rootView!.contentTableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                                            tableView!.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
                                         }
                                     }
                                 }
