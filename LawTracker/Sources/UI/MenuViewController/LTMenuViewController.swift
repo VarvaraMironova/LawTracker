@@ -18,7 +18,7 @@ enum LTMenuCells: Int {
 };
 
 class LTMenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    weak var delegate: LTNewsFeedViewController!
+    var menuDelegate: LTMenuDelegate?
     
     //MARK: - UITableViewDataSource methods
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -47,29 +47,31 @@ class LTMenuViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        self.delegate.rootView!.hideMenu(){[weak storyboard = self.storyboard, weak navigationController = navigationController] (finished) in
-            if finished {
-                switch indexPath.row {
-                case 0:
-                    dispatch_async(dispatch_get_main_queue()) {
-                        let helpViewController = storyboard!.instantiateViewControllerWithIdentifier("LTHelpController") as! LTHelpController
-                        navigationController!.presentViewController(helpViewController, animated: true, completion: nil)
-                        //navigationController!.pushViewController(helpViewController, animated: true)
+        if let menuDelegate = menuDelegate {
+            menuDelegate.hideMenu() {[weak storyboard = self.storyboard, weak navigationController = navigationController] (finished) in
+                if finished {
+                    switch indexPath.row {
+                    case 0:
+                        dispatch_async(dispatch_get_main_queue()) {
+                            let helpViewController = storyboard!.instantiateViewControllerWithIdentifier("LTHelpController") as! LTHelpController
+                            navigationController!.presentViewController(helpViewController, animated: true, completion: nil)
+                            //navigationController!.pushViewController(helpViewController, animated: true)
+                        }
+                        
+                        break
+                        
+                    case 1:
+                        let url = NSURL(string: kLTChesnoURL)
+                        let app = UIApplication.sharedApplication()
+                        if app.canOpenURL(url!) {
+                            app.openURL(url!)
+                        }
+                        
+                        break
+                        
+                    default:
+                        break
                     }
-                    
-                    break
-                    
-                case 1:
-                    let url = NSURL(string: kLTChesnoURL)
-                    let app = UIApplication.sharedApplication()
-                    if app.canOpenURL(url!) {
-                        app.openURL(url!)
-                    }
-                    
-                    break
-                    
-                default:
-                    break
                 }
             }
         }

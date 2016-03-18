@@ -15,7 +15,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         static let Laws       = "Номер або назва законопроекту"
     }
     
-    //weak var delegate: LTNewsFeedViewController!
+    var filterDelegate: LTFilterDelegate?
     
     var filters      : [LTSectionModel]?
     var filteredArray = [LTSectionModel]()
@@ -64,10 +64,12 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         
     //MARK: - Interface Handling
     @IBAction func onOkButton(sender: AnyObject) {
-        setFilters { (finished) -> Void in
+        setFilters {[unowned self] (finished) -> Void in
             if finished {
                 dispatch_async(dispatch_get_main_queue()) {
-                    NSNotificationCenter.defaultCenter().postNotificationName("filtersDidApplied", object: nil)
+                    if let filterDelegate = self.filterDelegate {
+                        filterDelegate.filtersDidApplied()
+                    }
                     
                     self.dismissViewControllerAnimated(true, completion: nil)
                 }
@@ -88,7 +90,10 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         }
         
         dispatch_async(dispatch_get_main_queue()) {[unowned self] in
-            NSNotificationCenter.defaultCenter().postNotificationName("filtersDidApplied", object: nil)
+            if let filterDelegate = self.filterDelegate {
+                filterDelegate.filtersDidApplied()
+            }
+            
             self.dismissViewControllerAnimated(true, completion: nil)
         }
     }

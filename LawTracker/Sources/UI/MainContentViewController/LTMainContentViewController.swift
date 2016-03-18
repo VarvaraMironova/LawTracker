@@ -154,9 +154,13 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         let cell = tableView.reusableCell(cellClass, indexPath: indexPath) as! LTMainContentTableViewCell
         
         if let arrayModel = arrayModel as LTChangesModel! {
-            let model = arrayModel.changes[indexPath.section]
-            dispatch_async(dispatch_get_main_queue()) {
-                cell.fillWithModel(model.changes[indexPath.row])
+            if arrayModel.changes.count > indexPath.section {
+                let model = arrayModel.changes[indexPath.section]
+                dispatch_async(dispatch_get_main_queue()) {
+                    if model.changes.count > indexPath.row {
+                        cell.fillWithModel(model.changes[indexPath.row])
+                    }
+                }
             }
         }
         
@@ -165,7 +169,9 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if let arrayModel = arrayModel as LTChangesModel! {
-            return arrayModel.changes[section].title
+            if arrayModel.changes.count > section {
+                return arrayModel.changes[section].title
+            }
         }
         
         return nil
@@ -175,7 +181,9 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
         if let arrayModel = arrayModel as LTChangesModel! {
             let headerView = LTCellHeaderView.headerView() as LTCellHeaderView
             dispatch_async(dispatch_get_main_queue()) {
-                headerView.fillWithString(arrayModel.changes[section].title)
+                if arrayModel.changes.count > section {
+                    headerView.fillWithString(arrayModel.changes[section].title)
+                }
             }
             
             
@@ -188,12 +196,16 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     //MARK: - UITableViewDelegate methods
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if let arrayModel = arrayModel as LTChangesModel! {
-            let sectionModel = arrayModel.changes[indexPath.section]
-            let changeModel = sectionModel.changes[indexPath.row].entity
-            if let url = NSURL(string: changeModel.law.url) as NSURL! {
-                let app = UIApplication.sharedApplication()
-                if app.canOpenURL(url) {
-                    app.openURL(url)
+            if arrayModel.changes.count > indexPath.section {
+                let sectionModel = arrayModel.changes[indexPath.section]
+                if sectionModel.changes.count > indexPath.row {
+                    let changeModel = sectionModel.changes[indexPath.row].entity
+                    if let url = NSURL(string: changeModel.law.url) as NSURL! {
+                        let app = UIApplication.sharedApplication()
+                        if app.canOpenURL(url) {
+                            app.openURL(url)
+                        }
+                    }
                 }
             }
         }
@@ -201,44 +213,21 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         if let arrayModel = arrayModel as LTChangesModel! {
-            let changes = arrayModel.changes[indexPath.section].changes
-            let changeModel = changes[indexPath.row]
-            let width = CGRectGetWidth(tableView.frame) - 20.0
-            let descriptionFont = UIFont(name: "Arial-BoldMT", size: 14.0)
-            let lawNameHeight = changeModel.billName.getHeight(width, font: descriptionFont!)
-            let descriptionHeight = changeModel.status.getHeight(width, font: descriptionFont!)
-            
-            return lawNameHeight + descriptionHeight + 25.0
-        }
-        
-        return 0.0
-    }
-    
-    //MARK: - NSNotificationCenter
-    func contentDidChange(notification: NSNotification) {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak tableView = rootView!.contentTableView] in
-            if let userInfo = notification.userInfo as [NSObject: AnyObject]! {
-                if let changesModel = userInfo["changesModel"] as? LTChangesModel {
-                    if changesModel.type == self.arrayModel!.type {
-                        self.arrayModel = changesModel
-                        if let indexPath = userInfo["indexPath"] as? NSIndexPath {
-                            tableView!.beginUpdates()
-                            if indexPath.row == 0 {
-                                //insert new section
-                                print(tableView!.numberOfSections, indexPath.section)
-                                tableView!.insertSections(NSIndexSet(index: indexPath.row), withRowAnimation: .Fade)
-                            }
-                            
-                            //insert row
-                            print(tableView!.numberOfRowsInSection(indexPath.section), indexPath.row)
-                            tableView!.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-                            
-                            tableView!.endUpdates()
-                        }
-                    }
+            if arrayModel.changes.count > indexPath.section {
+                let changes = arrayModel.changes[indexPath.section].changes
+                if changes.count > indexPath.row {
+                    let changeModel = changes[indexPath.row]
+                    let width = CGRectGetWidth(tableView.frame) - 20.0
+                    let descriptionFont = UIFont(name: "Arial-BoldMT", size: 14.0)
+                    let lawNameHeight = changeModel.billName.getHeight(width, font: descriptionFont!)
+                    let descriptionHeight = changeModel.status.getHeight(width, font: descriptionFont!)
+                    
+                    return lawNameHeight + descriptionHeight + 25.0
                 }
             }
         }
+        
+        return 0.0
     }
     
     //MARK: - Public
@@ -391,74 +380,53 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     //MARK: - NSFetchedResultsControllerDelegate
-    func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        if nil == rootView {
-            return
-        }
-        
-        dispatch_async(dispatch_get_main_queue()) {[weak tableView = rootView!.contentTableView] in
-            tableView!.beginUpdates()
-        }
-    }
-    
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         if nil == self.type {
             return
         }
         //create section and newsModel from changeModel
         if let changeModel = anObject as? LTChangeModel {
-            print(changeModel.date, arrayModel!.date)
-            createSectionByKey(changeModel, key: self.type!, completionHandler: {[weak arrayModel = arrayModel, weak rootView = rootView] (newsModel, sectionModel, finish) -> Void in
+            createSectionByKey(changeModel, key: self.type!, completionHandler: {[weak arrayModel = arrayModel, weak tableView = rootView!.contentTableView] (newsModel, sectionModel, finish) -> Void in
                 if let newsModel = newsModel as LTNewsModel! {
                     if let sectionModel = sectionModel as LTSectionModel! {
                         //apply filters for section model if needed
                         if (arrayModel!.filtersApplied && sectionModel.filtersSet) || !arrayModel!.filtersApplied {
-                            let existedSectionModel = arrayModel!.sectionWithEntities(sectionModel.entities)
-                            var row = 0
-                            var section = 0
-                            
-                            if nil == existedSectionModel {
-                                //add new sectionModel to arrayModel
-                                arrayModel!.addModel(sectionModel)
-                                section = arrayModel!.count() - 1
-                                
-                                //insert row and section to tableView
-                                dispatch_async(dispatch_get_main_queue()) {[weak tableView = rootView!.contentTableView] in
+                            dispatch_async(dispatch_get_main_queue()) {
+                                let existedSectionModel = arrayModel!.sectionWithEntities(sectionModel.entities)
+                                var row = 0
+                                var section = 0
+                                tableView!.beginUpdates()
+                                if nil == existedSectionModel {
+                                    //add new sectionModel to arrayModel
+                                    arrayModel!.addModel(sectionModel)
+                                    section = arrayModel!.count() - 1
+                                    
+                                    //insert row and section to tableView
                                     if arrayModel!.count() == section + 1 {
                                         tableView!.insertSections(NSIndexSet(index: section), withRowAnimation: .Fade)
                                         tableView!.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
                                     }
-                                }
-                            } else {
-                                //add newsModel to existedSectionModel
-                                if nil == existedSectionModel!.newsModelWithEntity(newsModel.entity) {
-                                    existedSectionModel!.addModel(newsModel)
-                                    row = existedSectionModel!.count() - 1
-                                    section = arrayModel!.changes.indexOf(existedSectionModel!)!
-                                    
-                                    //insert row to tableView
-                                    dispatch_async(dispatch_get_main_queue()) {[weak tableView = rootView!.contentTableView] in
+                                } else {
+                                    //add newsModel to existedSectionModel
+                                    if nil == existedSectionModel!.newsModelWithEntity(newsModel.entity) {
+                                        existedSectionModel!.addModel(newsModel)
+                                        row = existedSectionModel!.count() - 1
+                                        section = arrayModel!.changes.indexOf(existedSectionModel!)!
+                                        
+                                        //insert row to tableView
                                         let indexPath = NSIndexPath(forRow: row, inSection: section)
                                         if arrayModel!.changes[section].count() == row + 1 {
                                             tableView!.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
                                         }
                                     }
                                 }
+                                
+                                tableView!.endUpdates()
                             }
                         }
                     }
                 }
             })
-        }
-    }
-    
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        if nil == rootView {
-            return
-        }
-        
-        dispatch_async(dispatch_get_main_queue()) {[weak tableView = rootView!.contentTableView] in
-            tableView!.endUpdates()
         }
     }
     

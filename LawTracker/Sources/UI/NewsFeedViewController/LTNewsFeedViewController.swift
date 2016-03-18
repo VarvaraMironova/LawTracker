@@ -9,7 +9,7 @@
 import UIKit
 let kLTMaxLoadingCount = 30
 
-class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
+class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LTMenuDelegate, LTFilterDelegate {
     @IBOutlet var navigationGesture: LTPanGestureRacognizer!
     
     var currentController     : LTMainContentViewController?
@@ -46,7 +46,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     var menuViewController: LTMenuViewController {
         get {
             let menuViewController = self.storyboard!.instantiateViewControllerWithIdentifier("LTMenuViewController") as! LTMenuViewController
-            menuViewController.delegate = self
+            menuViewController.menuDelegate = self
             
             return menuViewController
         }
@@ -171,7 +171,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         dispatch_async(dispatch_get_main_queue()) {[unowned self, weak storyboard = storyboard, weak rootView = rootView] in
             let filterController = storyboard!.instantiateViewControllerWithIdentifier("LTFilterViewController") as! LTFilterViewController
             filterController.type = self.filterType
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("filtersDidApplied"), name: "filtersDidApplied", object: nil)
+            filterController.filterDelegate = self
             
             if !self.isLoading {
                 var entityName = String()
@@ -747,11 +747,22 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
+    //MARK: - LTMenuDelegate methods
+    func hideMenu(completionHandler: (finished: Bool) -> Void) {
+        if let rootView = rootView {
+            rootView.hideMenu({ (finished) -> Void in
+                completionHandler(finished: finished)
+            })
+            
+            return
+        }
+        
+        completionHandler(finished: false)
+    }
+    
     //MARK: - LTFilterDelegate methods
     func filtersDidApplied() {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "filtersDidApplied", object: nil)
-        
-        if isLoading {
+       if isLoading {
             return
         }
         

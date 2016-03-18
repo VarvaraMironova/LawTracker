@@ -12,6 +12,7 @@ extension LTClient {
     func downloadConvocations(completionHandler:(success: Bool, error: NSError?) -> Void) {
         //http://www.chesno.org/council/<Verkhovna Rada's id>/convocation/api/
         let urlVars = [kVTParameters.baseURL, kLTAPINames.council, kVTParameters.radaID, kLTMethodNames.convocation, kVTParameters.extras]
+        
         requestWithParameters(urlVars) { [unowned self] (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){data, error in
