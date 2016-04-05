@@ -133,7 +133,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "loadChangesForAnotherDate:", name: "loadChangesForAnotherDate", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(LTNewsFeedViewController.loadChangesForAnotherDate(_:)), name: "loadChangesForAnotherDate", object: nil)
     }
     
     override func viewWillDisappear(animated: Bool) {

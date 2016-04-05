@@ -99,13 +99,13 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
         super.viewWillAppear(animated)
         
         //add swipe gecture recognizers
-        let upGestureRecognizer = UISwipeGestureRecognizer(target: self, action: "onSwipe:")
+        let upGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(LTHelpController.onSwipe(_:)))
         upGestureRecognizer.direction = .Up
         
         pageViewController.view.addGestureRecognizer(upGestureRecognizer)
         upSwipeGestureRecognizer = upGestureRecognizer
         
-        let downGestureRecognizer = UISwipeGestureRecognizer(target: self, action: "onSwipe:")
+        let downGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(LTHelpController.onSwipe(_:)))
         downGestureRecognizer.direction = .Down
         
         pageViewController.view.addGestureRecognizer(downGestureRecognizer)
@@ -116,8 +116,8 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
         super.viewWillDisappear(animated)
         
         //remove swipe gecture recognizers
-        upSwipeGestureRecognizer.removeTarget(self, action: "onSwipe:")
-        downSwipeGestureRecognizer.removeTarget(self, action: "onSwipe:")
+        upSwipeGestureRecognizer.removeTarget(self, action: #selector(LTHelpController.onSwipe(_:)))
+        downSwipeGestureRecognizer.removeTarget(self, action: #selector(LTHelpController.onSwipe(_:)))
         pageViewController.view.removeGestureRecognizer(upSwipeGestureRecognizer)
         pageViewController.view.removeGestureRecognizer(downSwipeGestureRecognizer)
     }
@@ -144,7 +144,7 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
     
     //MARK: - UIPageViewControllerDataSource
     func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-        var index: Int = (viewController as! LTHelpContentController).pageIndex - 1
+        let index: Int = (viewController as! LTHelpContentController).pageIndex - 1
         
         if pageIsAnimating || NSNotFound == index {
             return nil
@@ -154,13 +154,13 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
             return itemViewControllers.first
         }
         
-        let destinationController = itemViewControllers[++index]
+        let destinationController = itemViewControllers[index+1]
         
         return destinationController
     }
     
     func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
-        var index: Int = (viewController as! LTHelpContentController).pageIndex - 1
+        let index: Int = (viewController as! LTHelpContentController).pageIndex - 1
         
         if pageIsAnimating || NSNotFound == index {
             return nil
@@ -170,7 +170,7 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
             return itemViewControllers.last
         }
         
-        let destinationController = itemViewControllers[--index]
+        let destinationController = itemViewControllers[index-1]
         
         return destinationController
     }

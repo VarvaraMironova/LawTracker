@@ -187,7 +187,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
             headerView.fillWithString(title)
             let button = UIButton()
             button.frame = headerView.frame
-            button.addTarget(self, action: "headerTapped", forControlEvents: .TouchUpInside)
+            button.addTarget(self, action: #selector(LTFilterViewController.headerTapped), forControlEvents: .TouchUpInside)
             headerView.addSubview(button)
             
             return headerView
