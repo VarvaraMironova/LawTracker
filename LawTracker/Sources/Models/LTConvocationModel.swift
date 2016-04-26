@@ -20,7 +20,7 @@ class LTConvocationModel: LTEntityModel {
         let predicate = NSPredicate(format:"number == %@", number)
         let fetchRequest = NSFetchRequest(entityName: "LTConvocationModel")
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTConvocationModel]! {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTConvocationModel] {
             if models.count > 0 {
                 return models.first!
             } else {
@@ -35,7 +35,7 @@ class LTConvocationModel: LTEntityModel {
         let predicate = NSPredicate(format:"current == %@", true)
         let fetchRequest = NSFetchRequest(entityName: "LTConvocationModel")
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTConvocationModel]! {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTConvocationModel] {
             if models.count > 0 {
                 return models.first!
             } else {

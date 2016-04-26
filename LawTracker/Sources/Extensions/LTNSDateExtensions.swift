@@ -10,9 +10,17 @@ import Foundation
 
 extension NSDate {
     
-    func string(format: String) -> String {
+    func string(format: String, timeZone: String?) -> String {
         let dateFormatter = NSDateFormatter()
         dateFormatter.calendar = NSCalendar.currentCalendar()
+        dateFormatter.locale = NSLocale.currentLocale()
+        
+        if let timeZone = timeZone {
+            dateFormatter.timeZone = NSTimeZone(name: timeZone)
+        } else {
+            dateFormatter.timeZone = NSTimeZone.systemTimeZone()
+        }
+        
         dateFormatter.dateFormat = format
         
         if let result = dateFormatter.stringFromDate(self) as String! {

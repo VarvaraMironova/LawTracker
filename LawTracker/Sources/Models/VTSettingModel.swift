@@ -26,20 +26,6 @@ class VTSettingModel: NSObject {
         }
     }
     
-    var lastDownloadDate : NSDate? {
-        set {
-            defaults.setObject(newValue!.dateWithoutTime(), forKey: Keys.Date)
-        }
-        
-        get {
-            if let date = defaults.objectForKey(Keys.Date) as? NSDate {
-                return date.dateWithoutTime()
-            } else {
-                return nil
-            }
-        }
-    }
-    
     deinit {
         self.defaults.synchronize()
     }
@@ -64,7 +50,4 @@ class VTSettingModel: NSObject {
         })
     }
     
-    func setup() {
-        firstLaunch = true
-    }
 }

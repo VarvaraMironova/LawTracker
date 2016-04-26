@@ -39,9 +39,13 @@ extension LTClient {
     
     struct KLTMessages {
         static let parseJSONError       = "Неможливо прочитати дані "
-        static let noCurrentConvocation = "Try reload data"
+        static let noCurrentConvocation = "Не вдалося завантажити інформацію про скликання Верховної Ради "
         static let nsURLError           = "Неможливо згенерувати URL зі строки "
         static let nsRequestError       = "Неможливо згенерувати запит із URL "
+    }
+    
+    struct kLTConstants {
+        static let startDate = "Sat, 01 Jan 2000 00:00:00 GMT"
     }
     
 }

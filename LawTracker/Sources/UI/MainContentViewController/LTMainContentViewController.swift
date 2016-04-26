@@ -42,7 +42,7 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
     var type : LTType? {
         didSet {
             //get model only if tabButton tapped
-            if oldValue != type && oldValue != nil {
+            if oldValue != type && nil != oldValue && nil != loadingDate {
                 arrayModelFromChanges()
             }
         }
@@ -142,7 +142,7 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
                 let count = model.changes.count
                 rootView.noSubscriptionsLabel.hidden = count > 0
                 rootView.noSubscriptionsLabel.text = "Немає данних щодо змін статусів законопроектів на цей день."
-                
+                print("Changes count = ", count)
                 return count
             }
         }
@@ -219,6 +219,7 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
                     let changeModel = changes[indexPath.row]
                     let width = CGRectGetWidth(tableView.frame) - 20.0
                     let descriptionFont = UIFont(name: "Arial-BoldMT", size: 14.0)
+                    
                     let lawNameHeight = changeModel.billName.getHeight(width, font: descriptionFont!)
                     let descriptionHeight = changeModel.status.getHeight(width, font: descriptionFont!)
                     
@@ -390,38 +391,40 @@ class LTMainContentViewController: UIViewController, UITableViewDataSource, UITa
                 if let newsModel = newsModel as LTNewsModel! {
                     if let sectionModel = sectionModel as LTSectionModel! {
                         //apply filters for section model if needed
-                        if (arrayModel!.filtersApplied && sectionModel.filtersSet) || !arrayModel!.filtersApplied {
-                            dispatch_async(dispatch_get_main_queue()) {
-                                let existedSectionModel = arrayModel!.sectionWithEntities(sectionModel.entities)
-                                var row = 0
-                                var section = 0
-                                tableView!.beginUpdates()
-                                if nil == existedSectionModel {
-                                    //add new sectionModel to arrayModel
-                                    arrayModel!.addModel(sectionModel)
-                                    section = arrayModel!.count() - 1
-                                    
-                                    //insert row and section to tableView
-                                    if arrayModel!.count() == section + 1 {
-                                        tableView!.insertSections(NSIndexSet(index: section), withRowAnimation: .Fade)
-                                        tableView!.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
-                                    }
-                                } else {
-                                    //add newsModel to existedSectionModel
-                                    if nil == existedSectionModel!.newsModelWithEntity(newsModel.entity) {
-                                        existedSectionModel!.addModel(newsModel)
-                                        row = existedSectionModel!.count() - 1
-                                        section = arrayModel!.changes.indexOf(existedSectionModel!)!
+                        if let arrayModel = arrayModel {
+                            if (arrayModel.filtersApplied && sectionModel.filtersSet) || !arrayModel.filtersApplied {
+                                dispatch_async(dispatch_get_main_queue()) {
+                                    let existedSectionModel = arrayModel.sectionWithEntities(sectionModel.entities)
+                                    var row = 0
+                                    var section = 0
+                                    tableView!.beginUpdates()
+                                    if nil == existedSectionModel {
+                                        //add new sectionModel to arrayModel
+                                        arrayModel.addModel(sectionModel)
+                                        section = arrayModel.count() - 1
                                         
-                                        //insert row to tableView
-                                        let indexPath = NSIndexPath(forRow: row, inSection: section)
-                                        if arrayModel!.changes[section].count() == row + 1 {
-                                            tableView!.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                                        //insert row and section to tableView
+                                        if arrayModel.count() == section + 1 {
+                                            tableView!.insertSections(NSIndexSet(index: section), withRowAnimation: .Fade)
+                                            tableView!.insertRowsAtIndexPaths([NSIndexPath(forRow: row, inSection: section)], withRowAnimation: .Fade)
+                                        }
+                                    } else {
+                                        //add newsModel to existedSectionModel
+                                        if nil == existedSectionModel!.newsModelWithEntity(newsModel.entity) {
+                                            existedSectionModel!.addModel(newsModel)
+                                            row = existedSectionModel!.count() - 1
+                                            section = arrayModel.changes.indexOf(existedSectionModel!)!
+                                            
+                                            //insert row to tableView
+                                            let indexPath = NSIndexPath(forRow: row, inSection: section)
+                                            if arrayModel.changes[section].count() == row + 1 {
+                                                tableView!.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                                            }
                                         }
                                     }
+                                    
+                                    tableView!.endUpdates()
                                 }
-                                
-                                tableView!.endUpdates()
                             }
                         }
                     }

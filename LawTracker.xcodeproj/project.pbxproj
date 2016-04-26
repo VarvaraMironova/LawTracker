@@ -19,6 +19,8 @@
 		C71A07A91C23F9F600235D78 /* OTMLoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C71A07A61C23F9F600235D78 /* OTMLoadingView.xib */; };
 		C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72800F81C1194010090C2B8 /* LTChangeModel.swift */; };
 		C73520DA1C1EC62500993AEB /* LTLawModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73520D91C1EC62500993AEB /* LTLawModel.swift */; };
+		C744E4691CB685CF00ECA278 /* LTLastDownloadDateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C744E4681CB685CF00ECA278 /* LTLastDownloadDateModel.swift */; };
+		C744E46B1CBD426500ECA278 /* LTString+DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C744E46A1CBD426500ECA278 /* LTString+DateExtension.swift */; };
 		C75D9BBA1C706FAC0057136C /* LTAttributedStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75D9BB91C706FAC0057136C /* LTAttributedStringExtensions.swift */; };
 		C76174AE1C4D431900C344FA /* LTInitiatorTypeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76174AD1C4D431900C344FA /* LTInitiatorTypeModel.swift */; };
 		C76174B01C4D445700C344FA /* LTPersonModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76174AF1C4D445700C344FA /* LTPersonModel.swift */; };
@@ -52,6 +54,9 @@
 		C7A29E561C0C9EAD001B0EF5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E541C0C9EAD001B0EF5 /* Main.storyboard */; };
 		C7A29E5B1C0C9EAD001B0EF5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7A29E591C0C9EAD001B0EF5 /* LaunchScreen.storyboard */; };
 		C7A29E661C0C9EAD001B0EF5 /* LawTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A29E651C0C9EAD001B0EF5 /* LawTrackerTests.swift */; };
+		C7B453171CC956CB007FD7E9 /* NewsFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B453161CC956CB007FD7E9 /* NewsFeedViewController.swift */; };
+		C7B4531B1CC95E4F007FD7E9 /* NewsFeedRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B4531A1CC95E4F007FD7E9 /* NewsFeedRootView.swift */; };
+		C7B4531D1CCCB936007FD7E9 /* LTContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7B4531C1CCCB936007FD7E9 /* LTContext.swift */; };
 		C7CFB5AE1C1FFFDB00211C6B /* LTMainContentRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A61C1FFFDB00211C6B /* LTMainContentRootView.swift */; };
 		C7CFB5AF1C1FFFDB00211C6B /* LTMainContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A71C1FFFDB00211C6B /* LTMainContentTableViewCell.swift */; };
 		C7CFB5B01C1FFFDB00211C6B /* LTMainContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CFB5A81C1FFFDB00211C6B /* LTMainContentViewController.swift */; };
@@ -97,6 +102,8 @@
 		C71A07A61C23F9F600235D78 /* OTMLoadingView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OTMLoadingView.xib; sourceTree = "<group>"; };
 		C72800F81C1194010090C2B8 /* LTChangeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTChangeModel.swift; sourceTree = "<group>"; };
 		C73520D91C1EC62500993AEB /* LTLawModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTLawModel.swift; sourceTree = "<group>"; };
+		C744E4681CB685CF00ECA278 /* LTLastDownloadDateModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTLastDownloadDateModel.swift; sourceTree = "<group>"; };
+		C744E46A1CBD426500ECA278 /* LTString+DateExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LTString+DateExtension.swift"; sourceTree = "<group>"; };
 		C75D9BB91C706FAC0057136C /* LTAttributedStringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTAttributedStringExtensions.swift; sourceTree = "<group>"; };
 		C76174AD1C4D431900C344FA /* LTInitiatorTypeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTInitiatorTypeModel.swift; sourceTree = "<group>"; };
 		C76174AF1C4D445700C344FA /* LTPersonModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTPersonModel.swift; sourceTree = "<group>"; };
@@ -134,6 +141,9 @@
 		C7A29E611C0C9EAD001B0EF5 /* LawTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LawTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7A29E651C0C9EAD001B0EF5 /* LawTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LawTrackerTests.swift; sourceTree = "<group>"; };
 		C7A29E671C0C9EAD001B0EF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7B453161CC956CB007FD7E9 /* NewsFeedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsFeedViewController.swift; sourceTree = "<group>"; };
+		C7B4531A1CC95E4F007FD7E9 /* NewsFeedRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsFeedRootView.swift; sourceTree = "<group>"; };
+		C7B4531C1CCCB936007FD7E9 /* LTContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTContext.swift; sourceTree = "<group>"; };
 		C7CFB5A61C1FFFDB00211C6B /* LTMainContentRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentRootView.swift; sourceTree = "<group>"; };
 		C7CFB5A71C1FFFDB00211C6B /* LTMainContentTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentTableViewCell.swift; sourceTree = "<group>"; };
 		C7CFB5A81C1FFFDB00211C6B /* LTMainContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LTMainContentViewController.swift; sourceTree = "<group>"; };
@@ -231,6 +241,7 @@
 				C77397421C3AB9450093CBCC /* LTClientExtensions.swift */,
 				C77397411C3AB9450093CBCC /* LTClientConstants.swift */,
 				C7FABFA21C9319370011CE78 /* LTReach.swift */,
+				C7B4531C1CCCB936007FD7E9 /* LTContext.swift */,
 			);
 			path = Client;
 			sourceTree = "<group>";
@@ -246,6 +257,7 @@
 				C773973E1C3AB1180093CBCC /* LTNSDateExtensions.swift */,
 				C707CF491C581D58004A8640 /* LTNSObject.swift */,
 				C75D9BB91C706FAC0057136C /* LTAttributedStringExtensions.swift */,
+				C744E46A1CBD426500ECA278 /* LTString+DateExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -321,6 +333,7 @@
 				C76174B11C5394B400C344FA /* LTConvocationModel.swift */,
 				C707CF4B1C581EB3004A8640 /* LTArrayModel.swift */,
 				C77FD4541C7221A10037716A /* LTNewsModel.swift */,
+				C744E4681CB685CF00ECA278 /* LTLastDownloadDateModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -343,8 +356,16 @@
 		C7A29E741C0C9F97001B0EF5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C7B4531F1CCF555A007FD7E9 /* 4sManual */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		C7B4531F1CCF555A007FD7E9 /* 4sManual */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = 4sManual;
 			sourceTree = "<group>";
 		};
 		C7CFB5A31C1FFFDB00211C6B /* MainContentViewController */ = {
@@ -362,6 +383,8 @@
 		C7E61A7C1C632DAA00F0B79E /* NewsFeedViewController */ = {
 			isa = PBXGroup;
 			children = (
+				C7B453161CC956CB007FD7E9 /* NewsFeedViewController.swift */,
+				C7B4531A1CC95E4F007FD7E9 /* NewsFeedRootView.swift */,
 				C7E61A7D1C632DCD00F0B79E /* LTNewsFeedViewController.swift */,
 				C7E61A7F1C632DE600F0B79E /* LTNewsFeedRootView.swift */,
 				C76F84061C633F070085A12C /* LTSliderAnimator.swift */,
@@ -525,6 +548,7 @@
 				C7FABEF41C897A130011CE78 /* LTHelpView.swift in Sources */,
 				C77397391C3A9C2C0093CBCC /* LTInitiatorModel.swift in Sources */,
 				C7E61A831C6331DD00F0B79E /* LTPanGestureRacognizer.swift in Sources */,
+				C744E4691CB685CF00ECA278 /* LTLastDownloadDateModel.swift in Sources */,
 				C7FABEF21C897A130011CE78 /* LTHelpContentView.swift in Sources */,
 				C7740C291C9C515F0042272D /* LTFilterDelegate.swift in Sources */,
 				C707CF601C5B663C004A8640 /* LTSwitchButtonView.swift in Sources */,
@@ -546,14 +570,18 @@
 				C7FABFA31C9319370011CE78 /* LTReach.swift in Sources */,
 				C707CF6C1C5FD810004A8640 /* LTSelectAllButton.swift in Sources */,
 				C76F84071C633F070085A12C /* LTSliderAnimator.swift in Sources */,
+				C744E46B1CBD426500ECA278 /* LTString+DateExtension.swift in Sources */,
 				C76174B21C5394B400C344FA /* LTConvocationModel.swift in Sources */,
 				C7CFB5BC1C2008D500211C6B /* LTCellHeaderView.swift in Sources */,
 				C773974B1C40095C0093CBCC /* LTSectionModel.swift in Sources */,
+				C7B4531D1CCCB936007FD7E9 /* LTContext.swift in Sources */,
 				C7FABEF31C897A130011CE78 /* LTHelpController.swift in Sources */,
 				C7E792B21C18672C0031C55A /* LTFilterViewController.swift in Sources */,
 				C7CFB5B01C1FFFDB00211C6B /* LTMainContentViewController.swift in Sources */,
 				C7A29E4C1C0C9EAD001B0EF5 /* AppDelegate.swift in Sources */,
+				C7B453171CC956CB007FD7E9 /* NewsFeedViewController.swift in Sources */,
 				C78FA7561C6B2D95003D74E3 /* LTFilterCellModel.swift in Sources */,
+				C7B4531B1CC95E4F007FD7E9 /* NewsFeedRootView.swift in Sources */,
 				C76CE9311C1B7477006262E8 /* LTMenuTableViewCell.swift in Sources */,
 				C72800F91C1194010090C2B8 /* LTChangeModel.swift in Sources */,
 				C707CF4C1C581EB3004A8640 /* LTArrayModel.swift in Sources */,

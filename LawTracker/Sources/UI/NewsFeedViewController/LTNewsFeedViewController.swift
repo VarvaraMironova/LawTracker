@@ -9,17 +9,15 @@
 import UIKit
 let kLTMaxLoadingCount = 30
 
-class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LTMenuDelegate, LTFilterDelegate {
-    @IBOutlet var navigationGesture: LTPanGestureRacognizer!
+class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LTMenuDelegate, LTFilterDelegate {
     
-    var currentController     : LTMainContentViewController?
-    var destinationController : LTMainContentViewController?
-    var animator              : LTSliderAnimator?
-    var shownDate             : NSDate?
+    var shownDate : NSDate?
     
     var dateIsChoosenFromPicker : Bool = false
     var isLoading               : Bool = false
     var loadingCount            : Int = 0
+    
+    var context   : LTContext?
     
     var filterType: LTType = .byCommittees {
         didSet {
@@ -29,7 +27,6 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                 } else if let destinationController = destinationController as LTMainContentViewController! {
                     destinationController.type = filterType
                 }
-                
             }
         }
     }
@@ -52,7 +49,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-    var rootView : LTNewsFeedRootView? {
+    override var rootView : LTNewsFeedRootView? {
         get {
             if isViewLoaded() && view.isKindOfClass(LTNewsFeedRootView) {
                 return view as? LTNewsFeedRootView
@@ -62,59 +59,36 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
+    //MARK: - Initializations and Deallocations
+    deinit {
+        //remove internet connection observing
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: ReachabilityStatusChangedNotification, object: nil)
+    }
+    
     //MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if nil == rootView {
-            return
-        }
-        
         setupContent()
         
-        let date = NSDate().previousDay()
-        rootView!.fillSearchButton(date)
-        
         //observe internet connection
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("networkStatusChanged:"), name: ReachabilityStatusChangedNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(LTNewsFeedViewController.networkStatusChanged(_:)), name: ReachabilityStatusChangedNotification, object: nil)
         Reach().monitorReachabilityChanges()
         
-        let settingsModel = VTSettingModel()
-        if true != settingsModel.firstLaunch {
-            //download data from server
-            loadData({[unowned self, weak rootView = rootView, weak destinationController = destinationController, weak currentController = currentController] (finish, success) -> Void in
+        if let rootView = rootView {
+            let date = NSDate().previousDay()
+            
+            rootView.fillSearchButton(NSDate())
+            
+            loadData({[unowned self] (success) in
                 if success {
-                    rootView!.setFilterImages()
-                    self.downloadChanges(date, choosenInPicker: false, completionHandler: {(finish, success) -> Void in
-                        if success {
-                            if let destinationController = destinationController as LTMainContentViewController! {
-                                destinationController.loadingDate = date
-                                destinationController.type = self.filterType
-                            } else {
-                                currentController!.loadingDate = date
-                                currentController!.type = self.filterType
-                            }
-                        }
-                    })
+                    self.loadChanges(date, choosenInPicker: false)
                 }
             })
-        } else {
-            rootView!.setFilterImages()
-            self.downloadChanges(date, choosenInPicker: false, completionHandler: {[weak destinationController = destinationController, weak currentController = currentController] (finish, success) -> Void in
-                if success {
-                    if let destinationController = destinationController as LTMainContentViewController! {
-                        destinationController.loadingDate = date
-                        destinationController.type = self.filterType
-                    } else {
-                        currentController!.loadingDate = date
-                        currentController!.type = self.filterType
-                    }
-                }
-            })
+
+            //add menuViewController as a childViewController to menuContainerView
+            addChildViewControllerInView(menuViewController, view: rootView.menuContainerView)
         }
-        
-        //add menuViewController as a childViewController to menuContainerView
-        addChildViewControllerInView(menuViewController, view: rootView!.menuContainerView)
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
@@ -142,19 +116,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         NSNotificationCenter.defaultCenter().removeObserver(self, name: "loadChangesForAnotherDate", object: nil)
     }
     
-    func networkStatusChanged(notification: NSNotification) {
-        let userInfo = notification.userInfo
-        print(userInfo)
-    }
-    
     //MARK: - Interface Handling
-    @IBAction func onGesture(sender: LTPanGestureRacognizer) {
-        let direction = sender.direction
-        if direction != .Right {
-            handlePageSwitchingGesture(sender)
-        }
-    }
-    
     @IBAction func onDismissFilterViewButton(sender: UIButton) {
         dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
             rootView!.hideMenu() {finished in}
@@ -257,43 +219,29 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         
         isLoading = false
         
-        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView, weak destinationController = destinationController, weak currentController = currentController] in
-            rootView!.hideDatePicker()
-            
-            if self.isLoading {
-                return
-            }
-            
-            self.scrollToTop()
-            let date = rootView!.datePicker.date
-            
-            self.downloadChanges(date, choosenInPicker: true, completionHandler: {(finish, success) -> Void in
-                if success {
-                    if let destinationController = destinationController as LTMainContentViewController! {
-                        destinationController.loadingDate = date
-                    } else {
-                        currentController!.loadingDate = date
-                    }
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView] in
+            if let rootView = rootView {
+                rootView.hideDatePicker()
+                
+                if self.isLoading {
+                    return
                 }
-            })
+                
+                self.scrollToTop()
+                let date = self.dateInPicker()
+                
+                self.loadChanges(date, choosenInPicker: true)
+            }
         }
     }
     
     func refreshData() {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak date = rootView!.datePicker.date, weak destinationController = destinationController, weak currentController = currentController] in
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak date = dateInPicker()] in
             let alertViewController: UIAlertController = UIAlertController(title: "Оновити базу законопроектів, ініціаторів та комітетів?", message:"Це може зайняти кілька хвилин", preferredStyle: .Alert)
-            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: {(UIAlertAction) in
-                self.loadData({(finish, success) -> Void in
+            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: { (UIAlertAction) in
+                self.loadData({ (success) in
                     if success {
-                        self.downloadChanges(date!, choosenInPicker: false, completionHandler: {(finish, success) -> Void in
-                            if success {
-                                if let destinationController = destinationController as LTMainContentViewController! {
-                                    destinationController.loadingDate = date
-                                } else {
-                                    currentController!.loadingDate = date
-                                }
-                            }
-                        })
+                        self.loadChanges(date!, choosenInPicker: false)
                     }
                 })
             }))
@@ -305,67 +253,109 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     }
     
     // MARK: - UIGestureRecognizerDelegate
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return navigationGesture == gestureRecognizer || navigationGesture == otherGestureRecognizer
-    }
-    
-    func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+    override func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
         if isLoading {
             return false
         }
         
-        if nil == currentController {
+        let shouldBegin = super.gestureRecognizerShouldBegin(gestureRecognizer)
+        let tableView = currentController!.rootView!.contentTableView
+        let bounds = tableView.bounds
+        let date = dateInPicker().dateWithoutTime()
+        if !shouldBegin &&
+            (CGRectGetMinY(bounds) <= 0 &&
+                .Down == navigationGesture.direction &&
+                date.compare(NSDate().dateWithoutTime()) == .OrderedSame)
+        {
+            refreshData()
+        }
+        
+        if (.Up == navigationGesture.direction && date.compare(minDate) == .OrderedSame) {
             return false
         }
         
-        if nil == currentController!.rootView {
-            return false
-        }
-        
-        if nil == rootView {
-            return false
-        }
-        
-        navigationGesture.changeDirection()
-        if let navigationController = navigationController as UINavigationController! {
-            let shouldPop = navigationController.viewControllers.count > 1
-            var isNavigationGesture = false
-            if let gestureRecognizer = navigationGesture as LTPanGestureRacognizer! {
-                let direction = gestureRecognizer.direction
-                isNavigationGesture = .Right == direction
-            }
-            
-            if shouldPop && isNavigationGesture {
-                return true
-            }
-            
-            if self != navigationController.topViewController {
-                return false
-            }
-            
-            let tableView = currentController!.rootView!.contentTableView
-            let bounds = tableView.bounds
-            let dateInPicker = rootView!.datePicker.date
-            let shouldAnimateToTop = (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && dateInPicker.dateWithoutTime().compare(NSDate().dateWithoutTime()) == .OrderedAscending)
-            let shouldAnimateToBottom = ((CGRectGetMaxY(bounds) >= (tableView.contentSize.height - 1)) && .Up == navigationGesture.direction)
-            let shouldBegin = shouldAnimateToTop || shouldAnimateToBottom
-            
-            if !shouldBegin && (CGRectGetMinY(bounds) <= 0 && .Down == navigationGesture.direction && dateInPicker.dateWithoutTime().compare(NSDate().dateWithoutTime()) == .OrderedSame) {
-                refreshData()
-            }
-            
-            if (.Up == navigationGesture.direction && dateInPicker.dateWithoutTime().compare(minDate) == .OrderedSame) {
-                return false
-            }
-            
-            return shouldBegin
-        }
-        
-        return false
+        return shouldBegin
     }
     
-    // MARK: - Public
-    func setupContent() {
+    // MARK: - Private
+    private func loadData(completionHandler:(success: Bool) -> Void) {
+        let settingsModel = VTSettingModel()
+        let context = LTContext()
+        let firstLaunch = settingsModel.firstLaunch
+        let message = firstLaunch != true ? "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів..." : "Зачекайте, будь ласка.\nТриває оновлення даних"
+        
+        context.checkConnection {[unowned self, weak rootView = rootView] (isConnection, error) in
+            if isConnection {
+                //download data
+                self.isLoading = true
+                if let rootView = rootView {
+                    rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: message)
+                    context.loadData(firstLaunch) { (success, error) in
+                        self.isLoading = false
+                        rootView.hideLoadingView()
+                        
+                        if success {
+                            settingsModel.firstLaunch = true
+                            rootView.setFilterImages()
+                        } else {
+                            if let error = error {
+                                self.processError(error){[unowned self] void in
+                                    self.loadData(){ (success) in
+                                        
+                                    }
+                                }
+                            }
+                        }
+                        
+                        completionHandler(success: success)
+                    }
+                }
+            } else {
+                if firstLaunch {
+                    let date = NSDate().previousDay()
+                    self.loadChanges(date, choosenInPicker: false)
+                } else {
+                    if let error = error {
+                        self.processError(error){[unowned self] void in
+                            self.loadData(){ (success) in
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    private func loadChanges(date: NSDate, choosenInPicker: Bool) {
+        if let rootView = rootView {
+            dateIsChoosenFromPicker = choosenInPicker
+            rootView.fillSearchButton(date)
+            let context = LTContext()
+            self.isLoading = true
+            
+            rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
+            
+            context.loadChanges(date, choosenInPicker: choosenInPicker, completionHandler: {[unowned self] (success, error) in
+                self.isLoading = false
+                rootView.hideLoadingView()
+                
+                if success {
+                    self.setCurrentControllerWithDate(date)
+                } else {
+                    if let error = error {
+                        self.processError(error){void in
+                            context.loadChanges(date, choosenInPicker: choosenInPicker, completionHandler: { (success, error) in
+                            })
+                        }
+                    }
+                }
+            })
+        }
+    }
+    
+    private func setupContent() {
         if let rootView = rootView as LTNewsFeedRootView! {
             currentController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as? LTMainContentViewController
             let containerView = rootView.contentView
@@ -376,310 +366,14 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
-    // MARK: - Private
-    private func scrollToTop() {
-        if let currentController = currentController as LTMainContentViewController! {
-            if let currentControllerView = currentController.rootView as LTMainContentRootView! {
-                currentControllerView.contentTableView.setContentOffset(CGPointZero, animated: false)
-            }
-        } else if let destinationController = destinationController as LTMainContentViewController! {
-            if let destinationControllerView = destinationController.rootView as LTMainContentRootView! {
-                destinationControllerView.contentTableView.setContentOffset(CGPointZero, animated: false)
-            }
+    private func setCurrentControllerWithDate(date: NSDate) {
+        if let destinationController = destinationController as LTMainContentViewController! {
+            destinationController.type = filterType
+            destinationController.loadingDate = date
+        } else {
+            currentController!.type = filterType
+            currentController!.loadingDate = date
         }
-        
-    }
-    
-    private func handlePageSwitchingGesture(recognizer: LTPanGestureRacognizer) {
-        if nil == rootView {
-            return
-        }
-        
-        let recognizerView = recognizer.view
-        let location = recognizer.locationInView(recognizerView)
-        let direction = recognizer.direction
-        let translation = recognizer.translationInView(recognizerView)
-        let state = recognizer.state
-        
-        if .Changed == state {
-            let dx = recognizer.startLocation.x - location.x
-            let dy = recognizer.startLocation.y - location.y
-            
-            let distance = sqrt(dx*dx + dy*dy)
-            if distance >= 0.0 {
-                if let animator = animator as LTSliderAnimator! {
-                    let percent = (.Down == direction && location.y < recognizer.startLocation.y) || (.Up == direction && location.y > recognizer.startLocation.y) ? 0.0 : fabs(distance/CGRectGetHeight(recognizerView!.bounds))
-                    animator.updateInteractiveTransition(percent)
-                } else {
-                    animator = LTSliderAnimator()
-                    
-                    //instantiate LTMainContentViewController with LTChangesModel
-                    let nextController = storyboard!.instantiateViewControllerWithIdentifier("LTMainContentViewController") as! LTMainContentViewController
-                    setCurrentController(nextController, animated: true, forwardDirection: .Up == direction)
-                    
-                    let dateInPicker = rootView!.datePicker.date
-                    if .Down == direction && translation.y > 0 {
-                        if dateInPicker.compare(NSDate()) == .OrderedAscending {
-                            let date = dateInPicker.nextDay()
-                            downloadChanges(date, choosenInPicker: false, completionHandler: {[weak destinationController = destinationController, weak currentController = currentController] (finish, success) -> Void in
-                                if success {
-                                    if let destinationController = destinationController as LTMainContentViewController! {
-                                        destinationController.loadingDate = date
-                                        destinationController.type = self.filterType
-                                    } else {
-                                        currentController!.loadingDate = date
-                                        currentController!.type = self.filterType
-                                    }
-                                }
-                            })
-                        }
-                    } else if translation.y < 0 {
-                        let date = dateInPicker.previousDay()
-                        downloadChanges(date, choosenInPicker: false, completionHandler: {[weak destinationController = destinationController, weak currentController = currentController] (finish, success) -> Void in
-                            if success {
-                                if let destinationController = destinationController as LTMainContentViewController! {
-                                    destinationController.loadingDate = date
-                                    destinationController.type = self.filterType
-                                } else {
-                                    currentController!.loadingDate = date
-                                    currentController!.type = self.filterType
-                                }
-                            }
-                        })
-                    }
-                }
-            }
-        } else if .Ended == state {
-            let velocity = recognizer.velocityInView(recognizerView)
-            if (velocity.y > 0 && .Down == direction) || (velocity.y < 0 && .Up == direction) {
-                scrollToTop()
-                animator?.finishInteractiveTransition()
-            } else {
-                animator?.cancelInteractiveTransition()
-            }
-        } else if .Cancelled == state {
-            animator?.cancelInteractiveTransition()
-        }
-        
-        if .Cancelled == state || .Ended == state {
-            animator = nil
-        }
-    }
-    
-    func setCurrentController(controller: LTMainContentViewController, animated: Bool, forwardDirection: Bool) {
-        if currentController != controller {
-            destinationController = controller
-            transitionFromViewController(currentController, toViewController: controller, animated: animated, forward: forwardDirection)
-        }
-    }
-    
-    func transitionFromViewController(fromViewController: LTMainContentViewController?, toViewController: LTMainContentViewController, animated: Bool, forward: Bool) {
-        if false == isViewLoaded() {
-            return
-        }
-        
-        let containerView = rootView!.contentView
-        
-        toViewController.view.translatesAutoresizingMaskIntoConstraints = true
-        toViewController.view.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        
-        addChildViewControllerInView(toViewController, view:containerView)
-        
-        if nil == fromViewController {
-            commitFeedController(toViewController)
-            
-            return
-        }
-        
-        let context = LTTransitionContext(source: fromViewController, destination: toViewController, containerView: containerView, animated: animated, forward: forward)
-        context.animator = animator
-        
-        let interactiveFeedScrollController = false == context.isInteractive() ? LTSliderAnimator() : animator
-        if let interactiveFeedScrollController = interactiveFeedScrollController as LTSliderAnimator! {
-            interactiveFeedScrollController.operation = forward ? .Pop : .Push
-            interactiveFeedScrollController.duration = 0.5
-            context.completionBlock = {[unowned self] (complete) in
-                if true == complete {
-                    self.commitFeedController(toViewController)
-                } else {
-                    toViewController.view.removeFromSuperview()
-                    fromViewController!.view.frame = containerView.bounds
-                    self.currentController = fromViewController
-                    self.destinationController = nil
-                }
-                
-                interactiveFeedScrollController.animationEnded(complete)
-                containerView.userInteractionEnabled = true
-            }
-            
-            containerView.userInteractionEnabled = false
-            
-            if context.isInteractive() {
-                if let _ = animator as LTSliderAnimator! {
-                    context.animator!.startInteractiveTransition(context)
-                }
-            } else {
-                interactiveFeedScrollController.animateTransition(context)
-            }
-        }
-    }
-    
-    func commitFeedController(feedController: LTMainContentViewController) {
-        //remove rootView of previous currentController from superview
-        if currentController != feedController {
-            if nil != currentController {
-                removeChildController(currentController!)
-            }
-            
-            currentController = feedController
-            destinationController = nil
-            feedController.didMoveToParentViewController(self)
-        }
-    }
-    
-    private func downloadChanges(date: NSDate, choosenInPicker: Bool, completionHandler:(finish: Bool, success: Bool) -> Void) {
-        
-        let status = Reach().connectionStatus()
-        
-        switch status {
-        case .Unknown, .Offline:
-            let userInfo = [NSLocalizedDescriptionKey : "Немає доступу до Інтернету."]
-            let error = NSError(domain: "ConnectionError", code: -1009, userInfo: userInfo)
-            processError(error){[unowned self] (void) in
-                self.downloadChanges(date, choosenInPicker: choosenInPicker, completionHandler: completionHandler)
-            }
-            
-            completionHandler(finish: true, success: false)
-            self.isLoading = false
-            
-            return
-            
-        default:
-            break
-        }
-        
-        isLoading = true
-        if let rootView = rootView as LTNewsFeedRootView! {
-            rootView.fillSearchButton(date)
-            dateIsChoosenFromPicker = choosenInPicker
-            
-            dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self, weak rootView = rootView] in
-                if let changes = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
-                    if changes.count > 0 {
-                        completionHandler(finish: true, success: true)
-                        self.isLoading = false
-                        return
-                    }
-                }
-                
-                rootView!.showLoadingViewInViewWithMessage(rootView!.contentView, message: "Завантажую новини за \(date.longString()) \nЗалишилося кілька секунд...")
-                let client = LTClient.sharedInstance()
-                client.downloadChanges(date) {[unowned self] (success, error) -> Void in
-                    rootView!.hideLoadingView()
-                    self.isLoading = false
-                    if success {
-                        let settingsModel = VTSettingModel()
-                        settingsModel.firstLaunch = true
-                        settingsModel.lastDownloadDate = date
-                        
-                        completionHandler(finish: true, success: success)
-                    } else {
-                        self.processError(error!){[unowned self] (void) in
-                            self.downloadChanges(date, choosenInPicker: choosenInPicker, completionHandler: completionHandler)
-                        }
-                        
-                        completionHandler(finish: true, success: success)
-                        self.isLoading = false
-                    }
-                }
-            }
-        }
-    }
-    
-    private func loadData(completionHandler:(finish: Bool, success: Bool) -> Void) {
-        if nil == rootView {
-            return
-        }
-        
-        let status = Reach().connectionStatus()
-        
-        switch status {
-        case .Unknown, .Offline:
-            let userInfo = [NSLocalizedDescriptionKey : "Немає доступу до Інтернету."]
-            let error = NSError(domain: "ConnectionError", code: -1009, userInfo: userInfo)
-            processError(error){[unowned self] (void) in
-                self.loadData(completionHandler)
-            }
-            
-            completionHandler(finish: true, success: false)
-            self.isLoading = false
-            
-            return
-            
-        default:
-            break
-        }
-        
-        isLoading = true
-        rootView!.showLoadingViewInViewWithMessage(rootView!.contentView, message: "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів...")
-        
-        let client = LTClient.sharedInstance()
-        client.downloadConvocations({[unowned self, weak rootView = rootView] (success, error) -> Void in
-            self.isLoading = false
-            if success {
-                self.isLoading = true
-                client.downloadCommittees({ (success, error) -> Void in
-                    self.isLoading = false
-                    if success {
-                        self.isLoading = true
-                        client.downloadInitiatorTypes({ (success, error) -> Void in
-                            self.isLoading = false
-                            if success {
-                                self.isLoading = true
-                                client.downloadPersons({ (success, error) -> Void in
-                                    self.isLoading = false
-                                    if success {
-                                        self.isLoading = true
-                                        client.downloadLaws({ (success, error) -> Void in
-                                            self.isLoading = false
-                                            if success {
-                                                rootView!.hideLoadingView()
-                                                completionHandler(finish: true, success: true)
-                                            } else {
-                                                completionHandler(finish: true, success: false)
-                                                self.processError(error!){[unowned self] void in
-                                                    self.loadData(completionHandler)
-                                                }
-                                            }
-                                        })
-                                    } else {
-                                        completionHandler(finish: true, success: false)
-                                        self.processError(error!){[unowned self] void in
-                                            self.loadData(completionHandler)
-                                        }
-                                     }
-                                })
-                            } else {
-                                completionHandler(finish: true, success: false)
-                                self.processError(error!){[unowned self] void in
-                                    self.loadData(completionHandler)
-                                }
-                             }
-                        })
-                    } else {
-                        completionHandler(finish: true, success: false)
-                        self.processError(error!){[unowned self] void in
-                            self.loadData(completionHandler)
-                        }
-                    }
-                })
-            } else {
-                completionHandler(finish: true, success: false)
-                self.processError(error!){[unowned self] void in
-                    self.loadData(completionHandler)
-                }
-            }
-        })
     }
     
     private func processError(error:NSError, completionHandler:(UIAlertAction) -> Void) {
@@ -772,7 +466,39 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
         }
     }
     
+    //MARK: - NewsFeedController methods
+    override func downloadContent(forPreviousDay: Bool) {
+        super.downloadContent(forPreviousDay)
+        
+        let dip = dateInPicker()
+        let date = forPreviousDay ? dip.previousDay() : dip.nextDay()
+        
+        loadChanges(date, choosenInPicker: false)
+    }
+    
+    override func scrollToTop() {
+        super.scrollToTop()
+        if let currentController = currentController as LTMainContentViewController! {
+            if let currentControllerView = currentController.rootView as LTMainContentRootView! {
+                currentControllerView.contentTableView.setContentOffset(CGPointZero, animated: false)
+            }
+        } else if let destinationController = destinationController as LTMainContentViewController! {
+            if let destinationControllerView = destinationController.rootView as LTMainContentRootView! {
+                destinationControllerView.contentTableView.setContentOffset(CGPointZero, animated: false)
+            }
+        }
+    }
+    
+    override func dateInPicker() -> NSDate {
+        return rootView!.datePicker.date
+    }
+    
     //MARK: - NSNotificationCenter
+    func networkStatusChanged(notification: NSNotification) {
+        let userInfo = notification.userInfo
+        print(userInfo)
+    }
+    
     func loadChangesForAnotherDate(notification: NSNotification) {
         isLoading = false
         if nil == rootView {
@@ -781,28 +507,20 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
     
         let date = nil == shownDate ? NSDate().previousDay() : shownDate
         if let userInfo = notification.userInfo as NSDictionary! {
-            let dateInPicker = rootView!.datePicker.date
+            let dip = dateInPicker()
             
             if let needLoadChangesForAnotherDate = userInfo["needLoadChangesForAnotherDay"] as? Bool {
                 if needLoadChangesForAnotherDate {
-                    if !dateIsChoosenFromPicker && (dateInPicker.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (loadingCount < kLTMaxLoadingCount) && dateInPicker.compare(minDate) != .OrderedSame {
+                    if !dateIsChoosenFromPicker && (dip.compare(NSDate().dateWithoutTime()) != .OrderedSame) && (loadingCount < kLTMaxLoadingCount) && dip.compare(minDate) != .OrderedSame {
                         loadingCount += 1
                         var newDate = date
-                        if date!.dateWithoutTime().compare(dateInPicker.dateWithoutTime()) == .OrderedAscending {
-                            newDate = dateInPicker.nextDay()
+                        if date!.dateWithoutTime().compare(dip.dateWithoutTime()) == .OrderedAscending {
+                            newDate = dip.nextDay()
                         } else {
-                            newDate = dateInPicker.previousDay()
+                            newDate = dip.previousDay()
                         }
                         
-                        downloadChanges(newDate!, choosenInPicker: false, completionHandler: {[weak currentController = currentController, weak destinationController = destinationController] (finish, success) -> Void in
-                            if success {
-                                if let destinationController = destinationController as LTMainContentViewController! {
-                                    destinationController.loadingDate = newDate
-                                } else {
-                                    currentController!.loadingDate = newDate
-                                }
-                            }
-                        })
+                        self.loadChanges(newDate!, choosenInPicker: false)
                         
                         return
                     }
@@ -815,7 +533,7 @@ class LTNewsFeedViewController: UIViewController, UINavigationControllerDelegate
                     
                 }
                 
-                shownDate = dateInPicker
+                shownDate = dip
                 loadingCount = 0
             }
         }

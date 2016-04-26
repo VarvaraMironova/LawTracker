@@ -139,7 +139,7 @@
                                                                     <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                                                                     <subviews>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DFJ-3t-AmJ">
-                                                                            <rect key="frame" x="10" y="5" width="394" height="16"/>
+                                                                            <rect key="frame" x="10" y="5" width="380" height="16"/>
                                                                             <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="14"/>
                                                                             <color key="textColor" red="0.39215686274509803" green="0.39215686274509803" blue="0.39215686274509803" alpha="1" colorSpace="calibratedRGB"/>
                                                                             <nil key="highlightedColor"/>
@@ -150,15 +150,24 @@
                                                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
+                                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="forwardArrow4" translatesAutoresizingMaskIntoConstraints="NO" id="K6M-86-Swp">
+                                                                            <rect key="frame" x="394" y="3" width="20" height="20"/>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="width" secondItem="K6M-86-Swp" secondAttribute="height" multiplier="1:1" id="AyV-Oi-mCh"/>
+                                                                                <constraint firstAttribute="height" constant="20" id="LOS-rz-vF8"/>
+                                                                            </constraints>
+                                                                        </imageView>
                                                                     </subviews>
                                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                     <gestureRecognizers/>
                                                                     <constraints>
+                                                                        <constraint firstItem="K6M-86-Swp" firstAttribute="centerY" secondItem="DFJ-3t-AmJ" secondAttribute="centerY" id="1be-8N-IbK"/>
                                                                         <constraint firstAttribute="trailing" secondItem="Nkh-NF-xYL" secondAttribute="trailing" constant="10" id="1fJ-Sd-B47"/>
                                                                         <constraint firstItem="DFJ-3t-AmJ" firstAttribute="leading" secondItem="fLX-DC-nLA" secondAttribute="leading" constant="10" id="4MH-vM-5zu"/>
                                                                         <constraint firstAttribute="bottom" secondItem="Nkh-NF-xYL" secondAttribute="bottom" constant="10" id="9Np-Bl-7M4"/>
                                                                         <constraint firstItem="DFJ-3t-AmJ" firstAttribute="top" secondItem="fLX-DC-nLA" secondAttribute="top" constant="5" id="BWo-lh-hnp"/>
-                                                                        <constraint firstAttribute="trailing" secondItem="DFJ-3t-AmJ" secondAttribute="trailing" constant="10" id="e8g-bG-qS8"/>
+                                                                        <constraint firstAttribute="trailing" secondItem="K6M-86-Swp" secondAttribute="trailing" id="SPw-st-ZV2"/>
+                                                                        <constraint firstItem="K6M-86-Swp" firstAttribute="leading" secondItem="DFJ-3t-AmJ" secondAttribute="trailing" constant="4" id="YHu-xl-DKq"/>
                                                                         <constraint firstItem="Nkh-NF-xYL" firstAttribute="leading" secondItem="fLX-DC-nLA" secondAttribute="leading" constant="8" id="u1S-GS-Xae"/>
                                                                         <constraint firstItem="Nkh-NF-xYL" firstAttribute="top" secondItem="DFJ-3t-AmJ" secondAttribute="bottom" constant="10" id="wXy-Fa-S9q"/>
                                                                     </constraints>
@@ -797,6 +806,7 @@
         <image name="close" width="44" height="44"/>
         <image name="downArrow" width="128" height="128"/>
         <image name="filter" width="221" height="221"/>
+        <image name="forwardArrow4" width="512" height="512"/>
         <image name="menu" width="40" height="40"/>
     </resources>
 </document>

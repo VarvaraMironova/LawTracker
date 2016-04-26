@@ -57,4 +57,21 @@ class LTChangeModel: LTEntityModel  {
         }
     }
     
+    // MARK: - Public
+    override func update(dictionary: [String : AnyObject]) {
+        super.update(dictionary)
+        
+        if let date = dictionary[Keys.changeDate] as? NSDate {
+            self.date = date
+        }
+        
+        if let title = dictionary[Keys.status] as? String {
+            self.title = title
+        }
+        
+        if let billModel = dictionary[Keys.billModel] as? LTLawModel {
+            self.law = billModel
+        }
+    }
+    
 }

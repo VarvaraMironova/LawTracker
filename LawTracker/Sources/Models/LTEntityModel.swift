@@ -99,6 +99,11 @@ class LTEntityModel: NSManagedObject {
         }
     }
     
+    // MARK: - Public
+    func update(dictionary: [String : AnyObject]) {
+        
+    }
+    
     func addValueForKey(value: AnyObject, key: String) {
         if deleted {
             return

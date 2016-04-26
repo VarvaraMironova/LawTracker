@@ -52,7 +52,7 @@ class CoreDataStackManager {
         let coordinator: NSPersistentStoreCoordinator? = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
         let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent(kVTSQLFileName)
         
-        print("sqlite path: \(url.path!)")
+        //print("sqlite path: \(url.path!)")
         
         var failureReason = "There was an error creating or loading the application's saved data."
         do {
@@ -229,7 +229,7 @@ class CoreDataStackManager {
     func storeChanges(date: NSDate, changes: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
         let queue = CoreDataStackManager.coreDataQueue()
         dispatch_async(queue) {[unowned self, weak context = managedObjectContext] in
-            let dateString = date.string("yyyy-MM-dd")
+            let dateString = date.string("yyyy-MM-dd", timeZone: nil)
             for changeArray in changes {
                 var changeId = dateString
                 if let billID = changeArray["bill"] as? String {
@@ -238,15 +238,23 @@ class CoreDataStackManager {
                     changeId += "\(billID)"
                 }
                 
-                if nil == LTChangeModel.modelWithID(changeId, entityName: "LTChangeModel") {
-                    if var mutableChangeArray = changeArray as? [String : AnyObject] {
-                        mutableChangeArray["date"] = date
-                        mutableChangeArray["id"] = changeId
-                        
-                        //get lawModel
-                        if let lawNumber = mutableChangeArray["bill"] as? String {
-                            self.getLawWithNumber(lawNumber) { (result, finished) in
-                                mutableChangeArray["billModel"] = result
+                if var mutableChangeArray = changeArray as? [String : AnyObject] {
+                    mutableChangeArray["date"] = date
+                    mutableChangeArray["id"] = changeId
+                    
+                    //get lawModel
+                    if let lawNumber = mutableChangeArray["bill"] as? String {
+                        self.getLawWithNumber(lawNumber) { (result, finished) in
+                            mutableChangeArray["billModel"] = result
+                            
+                            if let changeModel = LTChangeModel.modelWithID(changeId, entityName: "LTChangeModel") {
+                                //update changeModel
+                                print("Update changees for ", changeModel)
+                                dispatch_async(queue) {
+                                    changeModel.update(mutableChangeArray)
+                                }
+                            } else {
+                                //create changeModel
                                 dispatch_async(queue) {
                                     _ = LTChangeModel(dictionary: mutableChangeArray, context: context!)
                                 }
@@ -258,6 +266,31 @@ class CoreDataStackManager {
             
             self.saveContext()
             completionHandler(finished: true)
+        }
+    }
+    
+    func getLastDownloadTime(date: String, completionHandler: (time: NSDate?, finished: Bool) -> Void) {
+        let queue = CoreDataStackManager.coreDataQueue()
+        dispatch_async(queue) {
+            if let lastDownloadDate = LTLastDownloadDateModel.timeForDate(date) {
+                completionHandler(time: lastDownloadDate.time, finished: true)
+            } else {
+                completionHandler(time: nil, finished: true)
+            }
+        }
+    }
+    
+    func stroreLastDownloadTime(date: String, time: NSDate) {
+        let queue = CoreDataStackManager.coreDataQueue()
+        dispatch_async(queue) {[unowned self, weak context = managedObjectContext] in
+            if let lastDownloadDate = LTLastDownloadDateModel.timeForDate(date) {
+                lastDownloadDate.time = time
+            } else {
+                let lastDownloadDate = LTLastDownloadDateModel(date: date, time: time, context: context!)
+                lastDownloadDate.time = time
+            }
+            
+            self.saveContext()
         }
     }
     

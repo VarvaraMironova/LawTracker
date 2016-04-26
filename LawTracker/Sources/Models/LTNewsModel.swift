@@ -7,29 +7,30 @@
 //
 
 import  Foundation
+import  UIKit
 
 class LTNewsModel: NSObject {
     var billName: String!
-    var status : String!
-    var entity : LTChangeModel!
+    var status  : String!
+    var entity  : LTChangeModel!
     
     var state  : LTState = .notLoaded
     
     init(entity: LTChangeModel, type: LTType) {
         super.init()
         
+        let bill = entity.law
         self.entity = entity
+        self.status = entity.title
+        
         switch type {
         case .byLaws:
-            self.status = entity.title
-            self.billName = entity.law.title
+            self.billName = bill.title
             
             break
             
         default:
-            self.status = entity.title
-            let law = entity.law
-            self.billName = "№ " + law.number + ". " + law.title
+            self.billName = "№ " + bill.number + ". " + bill.title
             
             break
         }

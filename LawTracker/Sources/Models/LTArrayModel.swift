@@ -22,7 +22,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     lazy var fetchedResultsController: NSFetchedResultsController = {
         let fetchRequest = NSFetchRequest(entityName: self.entityName)
         fetchRequest.predicate = self.predicate
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: false)]
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
             managedObjectContext: CoreDataStackManager.sharedInstance().managedObjectContext,

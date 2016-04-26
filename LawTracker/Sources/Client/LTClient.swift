@@ -21,13 +21,7 @@ class LTClient: NSObject {
         "extras"        : String()
     ]
     
-    lazy var currentConvocation: LTConvocationModel? = {
-        if let convocationModel = LTConvocationModel.currentConvocation() as LTConvocationModel! {
-            return convocationModel
-        }
-        
-        return nil
-    }()
+    var currentConvocation: LTConvocationModel!
     
     typealias CompletionHander = (result: AnyObject!, error: NSError?) -> Void
     
@@ -73,13 +67,25 @@ class LTClient: NSObject {
     }
     
     // MARK: - All purpose tasks
-    func task(request: NSURLRequest, completionHandler: (result: NSData!, error: NSError?) -> Void) -> NSURLSessionDataTask
+    func task(request: NSURLRequest, completionHandler: (lastModified:String?, result: NSData!, error: NSError?) -> Void) -> NSURLSessionDataTask
     {
         let task = session.dataTaskWithRequest(request) {data, response, downloadError in
             if let error = downloadError {
-                completionHandler(result: nil, error: error)
+                completionHandler(lastModified:nil, result: nil, error: error)
             } else {
-                completionHandler(result: data, error: nil)
+                if let response = response as? NSHTTPURLResponse {
+                    print("StatusCode: ", response.statusCode)
+                    var lastModified : String? = nil
+                    if let allHeaderFields = response.allHeaderFields as? [String: AnyObject] {
+                        lastModified = allHeaderFields["Last-Modified"] as? String
+                    }
+                    
+                    if 304 == response.statusCode {
+                        completionHandler(lastModified:lastModified, result: nil, error: nil)
+                    } else {
+                        completionHandler(lastModified:lastModified, result: data, error: nil)
+                    }
+                }
             }
         }
         
@@ -108,6 +114,26 @@ class LTClient: NSObject {
             if let url = result as NSURL! {
                 if let request = NSMutableURLRequest(URL: url) as NSMutableURLRequest! {
                     request.HTTPMethod = "GET"
+                    completionHandler(result: request, error: nil)
+                } else {
+                    let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsRequestError + "\(url.absoluteString)")
+                    completionHandler(result: nil, error: requestError)
+                }
+            } else if let error = error as NSError! {
+                completionHandler(result: nil, error: error)
+            }
+        }
+    }
+    
+    func requestWithParametersHeaders(params: [String], headers: [String: String], completionHandler: (result: NSURLRequest?, error: NSError?) -> Void) {
+        urlWithParameters(params) { (result, error) in
+            if let url = result as NSURL! {
+                if let request = NSMutableURLRequest(URL: url, cachePolicy: .ReloadIgnoringLocalCacheData, timeoutInterval: 60.0) as NSMutableURLRequest! {
+                    request.HTTPMethod = "GET"
+                    for (key, value) in headers {
+                        request.setValue(value, forHTTPHeaderField: key)
+                    }
+                    
                     completionHandler(result: request, error: nil)
                 } else {
                     let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsRequestError + "\(url.absoluteString)")
