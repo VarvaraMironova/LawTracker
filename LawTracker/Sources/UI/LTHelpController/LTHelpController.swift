@@ -8,27 +8,6 @@
 
 import UIKit
 
-private let kPortrait1 = "screenshot1_portrait"
-private let kPortrait2 = "screenshot2_portrait"
-private let kPortrait3 = "screenshot3_portrait"
-private let kPortrait4 = "screenshot4_portrait"
-private let kPortrait5 = "screenshot5_portrait"
-private let kPortrait6 = "screenshot6_portrait"
-private let kPortrait7 = "screenshot7_portrait"
-private let kPortrait8 = "screenshot8_portrait"
-private let kPortrait9 = "screenshot9_portrait"
-private let kPortrait10 = "screenshot10_portrait"
-private let kLandscape1 = "screenshot1_landscape"
-private let kLandscape2 = "screenshot2_landscape"
-private let kLandscape3 = "screenshot3_landscape"
-private let kLandscape4 = "screenshot4_landscape"
-private let kLandscape5 = "screenshot5_landscape"
-private let kLandscape6 = "screenshot6_landscape"
-private let kLandscape7 = "screenshot7_landscape"
-private let kLandscape8 = "screenshot8_landscape"
-private let kLandscape9 = "screenshot9_landscape"
-private let kLandscape10 = "screenshot10_landscape"
-
 class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
 
     var pageViewController : UIPageViewController!
@@ -49,7 +28,25 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
     
     var helpModel: [[String]]! {
         get {
-            return [[kPortrait1, kLandscape1], [kPortrait2, kLandscape2], [kPortrait3, kLandscape3], [kPortrait4, kLandscape4], [kPortrait5, kLandscape5], [kPortrait6, kLandscape6], [kPortrait7, kLandscape7], [kPortrait8, kLandscape8], [kPortrait9, kLandscape9], [kPortrait10, kLandscape10]]
+            return [[kLTManual.portrait1, kLTManual.landscape1], [kLTManual.portrait2, kLTManual.landscape2], [kLTManual.portrait3, kLTManual.landscape3], [kLTManual.portrait4, kLTManual.landscape4], [kLTManual.portrait5, kLTManual.landscape5], [kLTManual.portrait6, kLTManual.landscape6], [kLTManual.portrait7, kLTManual.landscape7], [kLTManual.portrait8, kLTManual.landscape8], [kLTManual.portrait9, kLTManual.landscape9], [kLTManual.portrait10, kLTManual.landscape10]]
+        }
+    }
+    
+    var helpModel4s: [[String]]! {
+        get {
+            return [[kLTiPhones4Manual.portrait1, kLTiPhones4Manual.landscape1], [kLTiPhones4Manual.portrait2, kLTiPhones4Manual.landscape2], [kLTiPhones4Manual.portrait3, kLTiPhones4Manual.landscape3], [kLTiPhones4Manual.portrait4, kLTiPhones4Manual.landscape4], [kLTiPhones4Manual.portrait5, kLTiPhones4Manual.landscape5], [kLTiPhones4Manual.portrait6, kLTiPhones4Manual.landscape6], [kLTiPhones4Manual.portrait7, kLTiPhones4Manual.landscape7], [kLTiPhones4Manual.portrait8, kLTiPhones4Manual.landscape8], [kLTiPhones4Manual.portrait9, kLTiPhones4Manual.landscape9], [kLTiPhones4Manual.portrait10, kLTiPhones4Manual.landscape10]]
+        }
+    }
+    
+    var helpModel5: [[String]]! {
+        get {
+            return [[kLTiPhones5Manual.portrait1, kLTiPhones5Manual.landscape1], [kLTiPhones5Manual.portrait2, kLTiPhones5Manual.landscape2], [kLTiPhones5Manual.portrait3, kLTiPhones5Manual.landscape3], [kLTiPhones5Manual.portrait4, kLTiPhones5Manual.landscape4], [kLTiPhones5Manual.portrait5, kLTiPhones5Manual.landscape5], [kLTiPhones5Manual.portrait6, kLTiPhones5Manual.landscape6], [kLTiPhones5Manual.portrait7, kLTiPhones5Manual.landscape7], [kLTiPhones5Manual.portrait8, kLTiPhones5Manual.landscape8], [kLTiPhones5Manual.portrait9, kLTiPhones5Manual.landscape9], [kLTiPhones5Manual.portrait10, kLTiPhones5Manual.landscape10]]
+        }
+    }
+    
+    var helpModelPro: [[String]]! {
+        get {
+            return [[kLTiPadsProManual.portrait1, kLTiPadsProManual.landscape1], [kLTiPadsProManual.portrait2, kLTiPadsProManual.landscape2], [kLTiPadsProManual.portrait3, kLTiPadsProManual.landscape3], [kLTiPadsProManual.portrait4, kLTiPadsProManual.landscape4], [kLTiPadsProManual.portrait5, kLTiPadsProManual.landscape5], [kLTiPadsProManual.portrait6, kLTiPadsProManual.landscape6], [kLTiPadsProManual.portrait7, kLTiPadsProManual.landscape7], [kLTiPadsProManual.portrait8, kLTiPadsProManual.landscape8], [kLTiPadsProManual.portrait9, kLTiPadsProManual.landscape9], [kLTiPadsProManual.portrait10, kLTiPadsProManual.landscape10]]
         }
     }
     
@@ -57,10 +54,23 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
     
     lazy var itemViewControllers: [LTHelpContentController] = {
         var controllers = [LTHelpContentController]()
+        
         for index in 1...10 {
             let contentController = LTHelpContentController(nibName: "LTHelpContentController", bundle: nil)
             contentController.pageIndex = index
-            contentController.model = self.helpModel[index - 1]
+            
+            var models = self.helpModel
+            let device = UIDevice.currentDevice()
+            
+            if device.isiPhone4() {
+                models = self.helpModel4s
+            } else if device.isiPhone5() {
+                models = self.helpModel5
+            } else if device.isiPadPro() {
+                models = self.helpModelPro
+            }
+            
+            contentController.model = models[index - 1]
             
             controllers.append(contentController)
         }
