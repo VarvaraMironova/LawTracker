@@ -132,27 +132,25 @@ class CoreDataStackManager {
                     lawId = "\(id)"
                 }
                 
-                if nil == LTLawModel.modelWithID(lawId, entityName: "LTLawModel") {
-                    if var mutableLawArray = lawArray as? [String : AnyObject] {
-                        mutableLawArray["convocation"] = convocation
-                        
-                        //store initiators
-                        self.storeInitiators(mutableLawArray) { (result, finished) in
-                            if finished {
-                                mutableLawArray["initiatorModels"] = result
-                                
-                                //storeCommittees
-                                if let committeeID = mutableLawArray["committee"] as? Int {
-                                    let committeeIDString = "\(committeeID)"
-                                    if let committeeModel = LTCommitteeModel.modelWithID(committeeIDString, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
-                                        mutableLawArray["committeeModel"] = committeeModel
-                                    } else {
-                                        LTClient.sharedInstance().getCommitteeWithId(committeeIDString){success, error in
-                                            if success {
-                                                dispatch_async(CoreDataStackManager.coreDataQueue()){
-                                                    if let committee = LTCommitteeModel.modelWithID(committeeIDString, entityName: "LTCommitteeModel") as? LTCommitteeModel! {
-                                                        mutableLawArray["committeeModel"] = committee
-                                                    }
+                if var mutableLawArray = lawArray as? [String : AnyObject] {
+                    mutableLawArray["convocation"] = convocation
+                    
+                    //store initiators
+                    self.storeInitiators(mutableLawArray) { (result, finished) in
+                        if finished {
+                            mutableLawArray["initiatorModels"] = result
+                            
+                            //storeCommittees
+                            if let committeeID = mutableLawArray["committee"] as? Int {
+                                let committeeIDString = "\(committeeID)"
+                                if let committeeModel = LTCommitteeModel.modelWithID(committeeIDString, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
+                                    mutableLawArray["committeeModel"] = committeeModel
+                                } else {
+                                    LTClient.sharedInstance().getCommitteeWithId(committeeIDString){success, error in
+                                        if success {
+                                            dispatch_async(CoreDataStackManager.coreDataQueue()){
+                                                if let committee = LTCommitteeModel.modelWithID(committeeIDString, entityName: "LTCommitteeModel") as? LTCommitteeModel! {
+                                                    mutableLawArray["committeeModel"] = committee
                                                 }
                                             }
                                         }
@@ -160,7 +158,11 @@ class CoreDataStackManager {
                                 }
                             }
                         }
-                        
+                    }
+                    
+                    if let lawModel = LTLawModel.modelWithID(lawId, entityName: "LTLawModel") {
+                        lawModel.update(mutableLawArray)
+                    } else {
                         _ = LTLawModel(dictionary: mutableLawArray, context: context!, entityName:"LTLawModel")
                     }
                 }
@@ -249,7 +251,6 @@ class CoreDataStackManager {
                             
                             if let changeModel = LTChangeModel.modelWithID(changeId, entityName: "LTChangeModel") {
                                 //update changeModel
-                                print("Update changees for ", changeModel)
                                 dispatch_async(queue) {
                                     changeModel.update(mutableChangeArray)
                                 }

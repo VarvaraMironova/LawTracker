@@ -55,6 +55,40 @@ class LTLawModel: LTEntityModel {
         }
     }
     
+    override func update(dictionary: [String : AnyObject]) {
+        if let title = dictionary[Keys.title] as? String {
+            self.title = title
+        }
+        
+        if let url = dictionary[Keys.url] as? String {
+            self.url = url
+        }
+        
+        if let convocationModel = dictionary[Keys.convocation] as? LTConvocationModel {
+            self.convocation = convocationModel
+        }
+        
+        if let dateString = dictionary[Keys.date] as? String {
+            if let date = dateString.date() as NSDate! {
+                self.presentationDate = date
+            }
+        }
+        
+        if let number = dictionary[Keys.number] as? String {
+            self.number = number
+        }
+        
+        if let committeeModel = dictionary["committeeModel"] as? LTCommitteeModel {
+            self.committee = committeeModel
+        }
+        
+        if let initiatorsModel = dictionary["initiatorModels"] as? [LTInitiatorModel] {
+            for initiator in initiatorsModel {
+                addValueForKey(initiator, key: Keys.initiators)
+            }
+        }
+    }
+    
     class func lawWithNumber(number: String) -> LTLawModel? {
         let predicate = NSPredicate(format:"number == %@", number)
         let fetchRequest = NSFetchRequest(entityName: "LTLawModel")

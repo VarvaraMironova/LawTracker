@@ -63,7 +63,12 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, kVTParameters.extras]
-        requestWithParameters(urlVars) {[unowned self, weak currentConvocation = currentConvocation!] (result, error) -> Void in
+        let savedTime = VTSettingModel().lastLawsDownloadDate
+        let lastDownloadTime = nil == savedTime ? kLTConstants.startDate.httpDateToNSDate() : savedTime
+        
+        let headers = ["If-Modified-Since":lastDownloadTime!.string("EEE, dd MMM yyyy HH:mm:ss z", timeZone: "GMT")]
+        
+        requestWithParametersHeaders(urlVars, headers: headers) {[unowned self, weak currentConvocation = currentConvocation!]  (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){lastModified, data, error in
                     if nil != error {
@@ -74,6 +79,12 @@ extension LTClient {
                                 if nil != error {
                                     completionHandler(success: false, error: error)
                                 } else {
+                                    if nil == data {
+                                        completionHandler(success: true, error: nil)
+                                        
+                                        return
+                                    }
+                                    
                                     LTClient.parseJSONWithCompletionHandler(data) {(result, error) in
                                         if nil != error {
                                             completionHandler(success: false, error: error)
@@ -81,6 +92,11 @@ extension LTClient {
                                             if let lawsDictionary = result as? [[String: AnyObject]] {
                                                 CoreDataStackManager.sharedInstance().storeLaws(lawsDictionary, convocation: currentConvocation!.id){finished in
                                                     if finished {
+                                                        if let lastModified = lastModified {
+                                                            VTSettingModel().lastLawsDownloadDate = lastModified.httpDateToNSDate()
+                                                            completionHandler(success: true, error: nil)
+                                                        }
+                                                        
                                                         completionHandler(success: true, error: nil)
                                                     }
                                                 }
@@ -96,6 +112,12 @@ extension LTClient {
                             completionHandler(success: false, error: error)
                         }
                     } else {
+                        if nil == data {
+                            completionHandler(success: true, error: nil)
+                            
+                            return
+                        }
+                        
                         LTClient.parseJSONWithCompletionHandler(data) {(result, error) in
                             if nil != error {
                                 completionHandler(success: false, error: error)
@@ -103,7 +125,11 @@ extension LTClient {
                                 if let lawsDictionary = result as? [[String: AnyObject]] {
                                     CoreDataStackManager.sharedInstance().storeLaws(lawsDictionary, convocation: currentConvocation!.id){finished in
                                         if finished {
-                                            completionHandler(success: true, error: nil)
+                                            if let lastModified = lastModified {
+                                                VTSettingModel().lastLawsDownloadDate = lastModified.httpDateToNSDate()
+                                                
+                                                completionHandler(success: true, error: nil)
+                                            }
                                         }
                                     }
                                 } else {
@@ -274,7 +300,6 @@ extension LTClient {
             self.requestWithParametersHeaders(urlVars, headers: headers) { (result, error) -> Void in
                 if let request = result as NSURLRequest! {
                     self.downloadTask = self.task(request){lastModified, data, error in
-                        print(lastModified)
                         if nil != error {
                             completionHandler(success: false, error: error)
                         } else {

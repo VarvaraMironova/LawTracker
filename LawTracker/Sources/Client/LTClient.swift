@@ -74,7 +74,6 @@ class LTClient: NSObject {
                 completionHandler(lastModified:nil, result: nil, error: error)
             } else {
                 if let response = response as? NSHTTPURLResponse {
-                    print("StatusCode: ", response.statusCode)
                     var lastModified : String? = nil
                     if let allHeaderFields = response.allHeaderFields as? [String: AnyObject] {
                         lastModified = allHeaderFields["Last-Modified"] as? String

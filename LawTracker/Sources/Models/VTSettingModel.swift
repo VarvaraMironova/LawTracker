@@ -26,6 +26,20 @@ class VTSettingModel: NSObject {
         }
     }
     
+    var lastLawsDownloadDate : NSDate? {
+        set {
+            defaults.setObject(newValue!, forKey: Keys.Date)
+        }
+        
+        get {
+            if let date = defaults.objectForKey(Keys.Date) as? NSDate {
+                return date
+            } else {
+                return nil
+            }
+        }
+    }
+    
     deinit {
         self.defaults.synchronize()
     }

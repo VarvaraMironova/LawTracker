@@ -139,36 +139,36 @@
                                                                     <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
                                                                     <subviews>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DFJ-3t-AmJ">
-                                                                            <rect key="frame" x="10" y="5" width="380" height="16"/>
+                                                                            <rect key="frame" x="10" y="5" width="390" height="16"/>
                                                                             <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="14"/>
                                                                             <color key="textColor" red="0.39215686274509803" green="0.39215686274509803" blue="0.39215686274509803" alpha="1" colorSpace="calibratedRGB"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nkh-NF-xYL">
-                                                                            <rect key="frame" x="8" y="31" width="396" height="15"/>
+                                                                            <rect key="frame" x="8" y="31" width="373" height="15"/>
                                                                             <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="13"/>
                                                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
                                                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="forwardArrow4" translatesAutoresizingMaskIntoConstraints="NO" id="K6M-86-Swp">
-                                                                            <rect key="frame" x="394" y="3" width="20" height="20"/>
+                                                                            <rect key="frame" x="389" y="28" width="20" height="20"/>
                                                                             <constraints>
-                                                                                <constraint firstAttribute="width" secondItem="K6M-86-Swp" secondAttribute="height" multiplier="1:1" id="AyV-Oi-mCh"/>
-                                                                                <constraint firstAttribute="height" constant="20" id="LOS-rz-vF8"/>
+                                                                                <constraint firstAttribute="width" secondItem="K6M-86-Swp" secondAttribute="height" multiplier="1:1" id="9fe-wz-Cjn"/>
+                                                                                <constraint firstAttribute="height" constant="20" id="eqp-Mk-noQ"/>
                                                                             </constraints>
                                                                         </imageView>
                                                                     </subviews>
                                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                                     <gestureRecognizers/>
                                                                     <constraints>
-                                                                        <constraint firstItem="K6M-86-Swp" firstAttribute="centerY" secondItem="DFJ-3t-AmJ" secondAttribute="centerY" id="1be-8N-IbK"/>
-                                                                        <constraint firstAttribute="trailing" secondItem="Nkh-NF-xYL" secondAttribute="trailing" constant="10" id="1fJ-Sd-B47"/>
+                                                                        <constraint firstAttribute="trailing" secondItem="K6M-86-Swp" secondAttribute="trailing" constant="5" id="1om-TB-2vU"/>
                                                                         <constraint firstItem="DFJ-3t-AmJ" firstAttribute="leading" secondItem="fLX-DC-nLA" secondAttribute="leading" constant="10" id="4MH-vM-5zu"/>
                                                                         <constraint firstAttribute="bottom" secondItem="Nkh-NF-xYL" secondAttribute="bottom" constant="10" id="9Np-Bl-7M4"/>
                                                                         <constraint firstItem="DFJ-3t-AmJ" firstAttribute="top" secondItem="fLX-DC-nLA" secondAttribute="top" constant="5" id="BWo-lh-hnp"/>
-                                                                        <constraint firstAttribute="trailing" secondItem="K6M-86-Swp" secondAttribute="trailing" id="SPw-st-ZV2"/>
-                                                                        <constraint firstItem="K6M-86-Swp" firstAttribute="leading" secondItem="DFJ-3t-AmJ" secondAttribute="trailing" constant="4" id="YHu-xl-DKq"/>
+                                                                        <constraint firstItem="K6M-86-Swp" firstAttribute="leading" secondItem="Nkh-NF-xYL" secondAttribute="trailing" constant="8" id="hCa-GC-251"/>
+                                                                        <constraint firstItem="K6M-86-Swp" firstAttribute="centerY" secondItem="Nkh-NF-xYL" secondAttribute="centerY" id="hpZ-Xj-u2w"/>
                                                                         <constraint firstItem="Nkh-NF-xYL" firstAttribute="leading" secondItem="fLX-DC-nLA" secondAttribute="leading" constant="8" id="u1S-GS-Xae"/>
+                                                                        <constraint firstAttribute="trailing" secondItem="DFJ-3t-AmJ" secondAttribute="trailing" constant="14" id="vbi-zV-fUH"/>
                                                                         <constraint firstItem="Nkh-NF-xYL" firstAttribute="top" secondItem="DFJ-3t-AmJ" secondAttribute="bottom" constant="10" id="wXy-Fa-S9q"/>
                                                                     </constraints>
                                                                 </view>
@@ -193,7 +193,7 @@
                                                     <outletCollection property="gestureRecognizers" destination="wy5-WM-u9E" appends="YES" id="b8I-M4-8j8"/>
                                                 </connections>
                                             </tableView>
-                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Немає данних щодо змін статусів законопроектів на цей день." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GY9-2s-Vkv">
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Немає даних щодо змін статусів законопроектів на цей день." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GY9-2s-Vkv">
                                                 <rect key="frame" x="0.0" y="350" width="414" height="36"/>
                                                 <fontDescription key="fontDescription" name="Arial-BoldMT" family="Arial" pointSize="16"/>
                                                 <color key="textColor" red="0.23921568630000001" green="0.1137254902" blue="0.36078431370000003" alpha="1" colorSpace="calibratedRGB"/>

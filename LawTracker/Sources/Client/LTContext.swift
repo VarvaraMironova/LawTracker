@@ -48,9 +48,10 @@ class LTContext: NSObject {
     }
     
     func loadChanges(date: NSDate, choosenInPicker: Bool, completionHandler:(success: Bool, error: NSError?) -> Void) {
+        let queue = CoreDataStackManager.coreDataQueue()
         checkConnection { (isConnection, error) in
             if !isConnection {
-                dispatch_async(CoreDataStackManager.coreDataQueue()) {
+                dispatch_async(queue) {
                     if let changes = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
                         if changes.count > 0 {
                             completionHandler(success: true, error: nil)
@@ -61,14 +62,14 @@ class LTContext: NSObject {
                         
                         completionHandler(success: false, error: error)
                     }
+                    
+                    return
                 }
-                
-                return
             }
         }
         
         //get last download time for date
-        dispatch_async(CoreDataStackManager.coreDataQueue()) {[weak client = LTClient.sharedInstance()] in
+        dispatch_async(queue) {[weak client = LTClient.sharedInstance()] in
             client!.downloadChanges(date) { (success, error) -> Void in
                 completionHandler(success: success, error: error)
             }
