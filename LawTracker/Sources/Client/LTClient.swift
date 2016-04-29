@@ -11,6 +11,7 @@ import UIKit
 class LTClient: NSObject {
     var session         : NSURLSession
     var downloadTask    : NSURLSessionDataTask?
+    var downloadCount   : Int = 0
     
     var methodArguments = [
         "api"           : String(),
@@ -79,6 +80,7 @@ class LTClient: NSObject {
                         lastModified = allHeaderFields["Last-Modified"] as? String
                     }
                     
+                    print("StatusCode = ", response.statusCode)
                     if 304 == response.statusCode {
                         completionHandler(lastModified:lastModified, result: nil, error: nil)
                     } else {

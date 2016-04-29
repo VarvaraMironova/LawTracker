@@ -10,13 +10,13 @@ import CoreData
 
 class LTLastDownloadDateModel: NSManagedObject {
     @NSManaged var date : String
-    @NSManaged var time : NSDate
+    @NSManaged var time : String
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(date: String, time: NSDate, context: NSManagedObjectContext) {
+    init(date: String, time: String, context: NSManagedObjectContext) {
         // Core Data
         let entity =  NSEntityDescription.entityForName("LTLastDownloadDateModel", inManagedObjectContext: context)!
         super.init(entity: entity, insertIntoManagedObjectContext: context)

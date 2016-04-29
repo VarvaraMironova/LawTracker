@@ -9,32 +9,11 @@
 import UIKit
 
 class LTFilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
-    struct PlaceHolder {
-        static let Initiators = "ПІБ депутата або назва ініціатора"
-        static let Committees = "Назва комітету"
-        static let Laws       = "Номер або назва законопроекту"
-    }
-    
     var filterDelegate: LTFilterDelegate?
     
     var filters      : [LTSectionModel]?
     var filteredArray = [LTSectionModel]()
     var type         : LTType!
-    
-    var placeholderString: String {
-        get {
-            switch type.rawValue {
-            case 0:
-                return PlaceHolder.Committees
-            
-            case 1:
-                return PlaceHolder.Initiators
-                
-            default:
-                return PlaceHolder.Laws
-            }
-        }
-    }
     
     var rootView: LTFilterRootView! {
         get {
@@ -53,7 +32,10 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        rootView.fillSearchBarPlaceholder(placeholderString)
+        rootView.fillSearchBarPlaceholder(type)
+        
+        //check, if there are(is) selected item(s), set selectAllButton.on = true
+        rootView.setSelectAllButtonSelected(isSelectedFilter())
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -66,35 +48,42 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     @IBAction func onOkButton(sender: AnyObject) {
         setFilters {[unowned self] (finished) -> Void in
             if finished {
-                dispatch_async(dispatch_get_main_queue()) {
-                    if let filterDelegate = self.filterDelegate {
-                        filterDelegate.filtersDidApplied()
-                    }
-                    
-                    self.dismissViewControllerAnimated(true, completion: nil)
-                }
+                self.dismiss()
             }
         }
     }
     
     @IBAction func onCancelButton(sender: AnyObject) {
-        //clear filters in Settings
-        if let filters = filters as [LTSectionModel]! {
-            for sectionModel in filters {
-                for filter in sectionModel.filters {
-                    filter.entity.filterSet = false
-                }
+        if isSelectedFilter() {
+            //show alert
+            dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+                let alertViewController: UIAlertController = UIAlertController(title: "Скасувати обрані фільтри?", message:"", preferredStyle: .Alert)
+                alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: { (UIAlertAction) in
+                    //clear filters
+                    let queue = CoreDataStackManager.coreDataQueue()
+                    dispatch_async(queue) {
+                        if let filters = self.filters as [LTSectionModel]! {
+                            for sectionModel in filters {
+                                for filter in sectionModel.filters {
+                                    filter.entity.filterSet = false
+                                }
+                            }
+                            
+                            CoreDataStackManager.sharedInstance().saveContext()
+                        }
+                    }
+                    
+                    self.dismiss()
+                }))
+                
+                alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: { (UIAlertAction) in
+                    self.dismiss()
+                }))
+                
+                self.presentViewController(alertViewController, animated: true, completion: nil)
             }
-            
-            CoreDataStackManager.sharedInstance().saveContext()
-        }
-        
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
-            if let filterDelegate = self.filterDelegate {
-                filterDelegate.filtersDidApplied()
-            }
-            
-            self.dismissViewControllerAnimated(true, completion: nil)
+        } else {
+            dismiss()
         }
     }
     
@@ -103,7 +92,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         
         if let filters = filters as [LTSectionModel]! {
             let select = !rootView.selectAllButton.on
-            rootView.selectAllButton.on = select
+            rootView.setSelectAllButtonSelected(select)
             
             for sectionModel in filters {
                 for filterModel in sectionModel.filters {
@@ -209,15 +198,23 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     //MARK: - UITableViewDelegate methods
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView] in
-            rootView!.endEditing(true)
-            if let filters = self.filters as [LTSectionModel]! {
-                let searchBar = rootView!.searchBar
-                let array = rootView!.searchBarActive ? self.filteredArray[indexPath.section].filters : filters[indexPath.section].filters
-                let cell = tableView.cellForRowAtIndexPath(indexPath) as! LTFilterTableViewCell
-                let selectedModel = array[indexPath.row]
-                selectedModel.selected = !cell.filtered
-                
-                self.filterContentForSearchText(searchBar.text!, scope: searchBar.selectedScopeButtonIndex)
+            if let rootView = rootView {
+                rootView.endEditing(true)
+                if let filters = self.filters as [LTSectionModel]! {
+                    let searchBar = rootView.searchBar
+                    let array = rootView.searchBarActive ? self.filteredArray[indexPath.section].filters : filters[indexPath.section].filters
+                    let cell = tableView.cellForRowAtIndexPath(indexPath) as! LTFilterTableViewCell
+                    let selectedModel = array[indexPath.row]
+                    selectedModel.selected = !cell.filtered
+                    
+                    if true == !cell.filtered {
+                        rootView.setSelectAllButtonSelected(true)
+                    } else {
+                        rootView.setSelectAllButtonSelected(self.isSelectedFilter())
+                    }
+                    
+                    self.filterContentForSearchText(searchBar.text!, scope: searchBar.selectedScopeButtonIndex)
+                }
             }
         }
     }
@@ -252,6 +249,36 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     //MARK: - Private methods
+    private func isSelectedFilter() -> Bool {
+        var selected = false
+        
+        if let filters = filters as [LTSectionModel]! {
+            let sections = rootView.searchBarActive ? filteredArray : filters
+            
+            for section in sections {
+                for filter in section.filters {
+                    if true == filter.selected {
+                        selected = true
+                        
+                        break
+                    }
+                }
+            }
+        }
+        
+        return selected
+    }
+    
+    private func dismiss() {
+        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+            if let filterDelegate = self.filterDelegate {
+                filterDelegate.filtersDidApplied()
+            }
+            
+            self.dismissViewControllerAnimated(true, completion: nil)
+        }
+    }
+    
     private func filterContentForSearchText(searchText: String, scope: Int = 0) {
         if let filters = filters as [LTSectionModel]! {
             filteredArray = [LTSectionModel]()

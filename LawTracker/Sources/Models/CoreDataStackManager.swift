@@ -270,7 +270,7 @@ class CoreDataStackManager {
         }
     }
     
-    func getLastDownloadTime(date: String, completionHandler: (time: NSDate?, finished: Bool) -> Void) {
+    func getLastDownloadTime(date: String, completionHandler: (time: String?, finished: Bool) -> Void) {
         let queue = CoreDataStackManager.coreDataQueue()
         dispatch_async(queue) {
             if let lastDownloadDate = LTLastDownloadDateModel.timeForDate(date) {
@@ -281,7 +281,7 @@ class CoreDataStackManager {
         }
     }
     
-    func stroreLastDownloadTime(date: String, time: NSDate) {
+    func stroreLastDownloadTime(date: String, time: String) {
         let queue = CoreDataStackManager.coreDataQueue()
         dispatch_async(queue) {[unowned self, weak context = managedObjectContext] in
             if let lastDownloadDate = LTLastDownloadDateModel.timeForDate(date) {

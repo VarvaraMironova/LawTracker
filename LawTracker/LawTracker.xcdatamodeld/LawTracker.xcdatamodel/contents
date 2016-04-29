@@ -42,7 +42,7 @@
     </entity>
     <entity name="LTLastDownloadDateModel" representedClassName=".LTLastDownloadDateModel" syncable="YES">
         <attribute name="date" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="time" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="LTLawModel" representedClassName=".LTLawModel" syncable="YES">
         <attribute name="filterSet" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
@@ -62,7 +62,7 @@
         <element name="LTConvocationModel" positionX="-126" positionY="45" width="128" height="148"/>
         <element name="LTInitiatorModel" positionX="-360" positionY="180" width="128" height="135"/>
         <element name="LTInitiatorTypeModel" positionX="-360" positionY="351" width="128" height="75"/>
-        <element name="LTLawModel" positionX="-153" positionY="351" width="128" height="195"/>
         <element name="LTLastDownloadDateModel" positionX="-153" positionY="198" width="128" height="75"/>
+        <element name="LTLawModel" positionX="-153" positionY="351" width="128" height="195"/>
     </elements>
 </model>

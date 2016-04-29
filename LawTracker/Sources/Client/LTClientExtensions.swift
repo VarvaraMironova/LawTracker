@@ -63,51 +63,23 @@ extension LTClient {
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, kVTParameters.extras]
-        let savedTime = VTSettingModel().lastLawsDownloadDate
-        let lastDownloadTime = nil == savedTime ? kLTConstants.startDate.httpDateToNSDate() : savedTime
-        
-        let headers = ["If-Modified-Since":lastDownloadTime!.string("EEE, dd MMM yyyy HH:mm:ss z", timeZone: "GMT")]
+        let savedTime = VTSettingModel().lastLawsModified
+        let lastDownloadTime = nil == savedTime ? kLTConstants.startDate : savedTime
+        print("Saved time = ", savedTime)
+        let headers = ["If-Modified-Since":lastDownloadTime!]
         
         requestWithParametersHeaders(urlVars, headers: headers) {[unowned self, weak currentConvocation = currentConvocation!]  (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){lastModified, data, error in
-                    if nil != error {
+                    print("lastModified = ", lastModified)
+                    self.downloadCount += 1
+                    if nil != error && self.downloadCount < 3 {
                         //dirty hack!!
                         print("ErrorCode: ", error!.code)
                         if error!.code == -1017 {
-                            self.downloadTask = self.task(request){lastModified, data, error in
-                                if nil != error {
-                                    completionHandler(success: false, error: error)
-                                } else {
-                                    if nil == data {
-                                        completionHandler(success: true, error: nil)
-                                        
-                                        return
-                                    }
-                                    
-                                    LTClient.parseJSONWithCompletionHandler(data) {(result, error) in
-                                        if nil != error {
-                                            completionHandler(success: false, error: error)
-                                        } else {
-                                            if let lawsDictionary = result as? [[String: AnyObject]] {
-                                                CoreDataStackManager.sharedInstance().storeLaws(lawsDictionary, convocation: currentConvocation!.id){finished in
-                                                    if finished {
-                                                        if let lastModified = lastModified {
-                                                            VTSettingModel().lastLawsDownloadDate = lastModified.httpDateToNSDate()
-                                                            completionHandler(success: true, error: nil)
-                                                        }
-                                                        
-                                                        completionHandler(success: true, error: nil)
-                                                    }
-                                                }
-                                            } else {
-                                                let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                                                completionHandler(success: false, error: contentError)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            self.downloadLaws({ (success, error) in
+                                completionHandler(success: success, error: error)
+                            })
                         } else {
                             completionHandler(success: false, error: error)
                         }
@@ -126,7 +98,7 @@ extension LTClient {
                                     CoreDataStackManager.sharedInstance().storeLaws(lawsDictionary, convocation: currentConvocation!.id){finished in
                                         if finished {
                                             if let lastModified = lastModified {
-                                                VTSettingModel().lastLawsDownloadDate = lastModified.httpDateToNSDate()
+                                                VTSettingModel().lastLawsModified = lastModified
                                                 
                                                 completionHandler(success: true, error: nil)
                                             }
@@ -290,12 +262,8 @@ extension LTClient {
         let coreDataStackManager = CoreDataStackManager.sharedInstance()
         
         coreDataStackManager.getLastDownloadTime(dateString) {[unowned self] (time, finished) in
-            if nil == time {
-                coreDataStackManager.stroreLastDownloadTime(dateString, time: date)
-            }
-            
-            let lastDownloadTime = nil == time ? kLTConstants.startDate.httpDateToNSDate() : time
-            let headers = ["If-Modified-Since":lastDownloadTime!.string("EEE, dd MMM yyyy HH:mm:ss z", timeZone: "GMT")]
+            let lastDownloadTime = nil == time ? "Sut, 01 Jan 2000 00:00:00 GMT" : time
+            let headers = ["If-Modified-Since":lastDownloadTime!]
             
             self.requestWithParametersHeaders(urlVars, headers: headers) { (result, error) -> Void in
                 if let request = result as NSURLRequest! {
@@ -309,10 +277,8 @@ extension LTClient {
                                 return
                             }
                             
-                            //convert lastModified to nsdate
-                            let modifiedDate = lastModified?.httpDateToNSDate()
-                            //if it is impossible to get nsdate from lastModified -> use currentDate
-                            let lastModifiedDate = nil == modifiedDate ? NSDate() : modifiedDate
+                            //if nil == lastModified -> use constant
+                            let lastModifiedDate = nil == lastModified ? kLTConstants.startDate : lastModified
                             LTClient.parseJSONWithCompletionHandler(data) {result, error in
                                 if nil != error {
                                     completionHandler(success: false, error: error)

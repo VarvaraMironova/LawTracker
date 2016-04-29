@@ -26,13 +26,15 @@ class VTSettingModel: NSObject {
         }
     }
     
-    var lastLawsDownloadDate : NSDate? {
+    var lastLawsModified : String? {
         set {
-            defaults.setObject(newValue!, forKey: Keys.Date)
+            if let newValue = newValue {
+                defaults.setObject(newValue, forKey: Keys.Date)
+            }
         }
         
         get {
-            if let date = defaults.objectForKey(Keys.Date) as? NSDate {
+            if let date = defaults.objectForKey(Keys.Date) as? String {
                 return date
             } else {
                 return nil
