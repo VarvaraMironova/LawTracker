@@ -55,23 +55,23 @@ class LTContext: NSObject {
                     if let changes = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
                         if changes.count > 0 {
                             completionHandler(success: true, error: nil)
+                            
+                            return
                         }
-                    } else {
-                        let userInfo = [NSLocalizedDescriptionKey : "Немає доступу до Інтернету."]
-                        let error = NSError(domain: "ConnectionError", code: -1009, userInfo: userInfo)
-                        
-                        completionHandler(success: false, error: error)
                     }
                     
-                    return
+                    let userInfo = [NSLocalizedDescriptionKey : "Немає доступу до Інтернету."]
+                    let error = NSError(domain: "ConnectionError", code: -1009, userInfo: userInfo)
+                    
+                    completionHandler(success: false, error: error)
                 }
-            }
-        }
-        
-        //get last download time for date
-        dispatch_async(queue) {[weak client = LTClient.sharedInstance()] in
-            client!.downloadChanges(date) { (success, error) -> Void in
-                completionHandler(success: success, error: error)
+            } else {
+                //get last download time for date
+                dispatch_async(queue) {[weak client = LTClient.sharedInstance()] in
+                    client!.downloadChanges(date) { (success, error) -> Void in
+                        completionHandler(success: success, error: error)
+                    }
+                }
             }
         }
     }

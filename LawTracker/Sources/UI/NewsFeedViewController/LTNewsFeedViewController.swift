@@ -80,6 +80,13 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
             
             rootView.fillSearchButton(NSDate())
             
+            let context = LTContext()
+            context.checkConnection {[unowned self] (isConnection, error) in
+                if let error = error {
+                    self.displayError(error)
+                }
+            }
+            
             loadData({[unowned self] (success) in
                 if success {
                     self.loadChanges(date, choosenInPicker: false)
@@ -299,7 +306,7 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
                             rootView.setFilterImages()
                         } else {
                             if let error = error {
-                                self.processError(error){[unowned self] void in
+                                self.processError(error){ void in
                                     self.loadData(){ (success) in
                                         
                                     }
@@ -341,16 +348,17 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
                 self.isLoading = false
                 rootView.hideLoadingView()
                 
-                if success {
-                    self.setCurrentControllerWithDate(date)
-                } else {
-                    if let error = error {
+                if let error = error {
+                    if -1009 != error.code {
                         self.processError(error){void in
-                            context.loadChanges(date, choosenInPicker: choosenInPicker, completionHandler: { (success, error) in
-                            })
+                            self.loadChanges(date, choosenInPicker: choosenInPicker)
                         }
+                        
+                        return
                     }
                 }
+                
+                self.setCurrentControllerWithDate(date)
             })
         }
     }
