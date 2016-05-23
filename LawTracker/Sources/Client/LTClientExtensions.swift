@@ -85,7 +85,7 @@ extension LTClient {
                         }
                     } else {
                         if nil == data {
-                            completionHandler(success: true, error: nil)
+                            completionHandler(success: false, error: nil)
                             
                             return
                         }

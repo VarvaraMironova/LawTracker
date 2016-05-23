@@ -76,10 +76,11 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
         Reach().monitorReachabilityChanges()
         
         if let rootView = rootView {
+            //set date
             let date = NSDate().previousDay()
-            
             rootView.fillSearchButton(NSDate())
             
+            //check connection
             let context = LTContext()
             context.checkConnection {[unowned self] (isConnection, error) in
                 if let error = error {
@@ -87,11 +88,29 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
                 }
             }
             
-            loadData({[unowned self] (success) in
-                if success {
-                    self.loadChanges(date, choosenInPicker: false)
+            //check saved changes
+            if let _ = LTChangeModel.changesForDate(date) as [LTChangeModel]! {
+                loadDataInBackground(date)
+            } else {
+                let settings = VTSettingModel()
+                
+                //check, if it is first launch -> load data, else -> load changes
+                if settings.firstLaunch != true {
+                    let message = "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів..."
+                    isLoading = true
+                    rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: message)
+                    
+                    self.loadData({[unowned self] (success, error) in
+                        self.isLoading = false
+                        rootView.hideLoadingView()
+                        if nil == error {
+                            self.loadChanges(date, choosenInPicker: false){finish in}
+                        }
+                    })
+                } else {
+                    loadDataInBackground(date)
                 }
-            })
+            }
 
             //add menuViewController as a childViewController to menuContainerView
             addChildViewControllerInView(menuViewController, view: rootView.menuContainerView)
@@ -102,9 +121,12 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         
         coordinator.animateAlongsideTransition({[weak rootView = rootView] (UIViewControllerTransitionCoordinatorContext) -> Void in
-            if rootView!.menuShown {
-                rootView!.showMenu()
-            }}, completion: {(UIViewControllerTransitionCoordinatorContext) -> Void in })
+            if let rootView = rootView {
+                if rootView.menuShown {
+                    rootView.showMenu()
+                }
+            }
+        }, completion: {(UIViewControllerTransitionCoordinatorContext) -> Void in })
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -237,25 +259,32 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
                 self.scrollToTop()
                 let date = self.dateInPicker()
                 
-                self.loadChanges(date, choosenInPicker: true)
+                self.loadChanges(date, choosenInPicker: true){finish in}
             }
         }
     }
     
     func refreshData() {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak date = dateInPicker()] in
-            let alertViewController: UIAlertController = UIAlertController(title: "Оновити базу законопроектів, ініціаторів та комітетів?", message:"Це може зайняти кілька хвилин", preferredStyle: .Alert)
-            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: { (UIAlertAction) in
-                self.loadData({ (success) in
-                    if success {
-                        self.loadChanges(date!, choosenInPicker: false)
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak date = dateInPicker(), weak rootView = rootView] in
+            if let date = date {
+                let alertViewController: UIAlertController = UIAlertController(title: "Оновити базу законопроектів, ініціаторів та комітетів?", message:"Це може зайняти кілька хвилин", preferredStyle: .Alert)
+                alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: { (UIAlertAction) in
+                    let message = "Зачекайте, будь ласка.\nТриває оновлення даних"
+                    if let rootView = rootView {
+                        rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: message)
+                        self.loadData({ (success, error) in
+                            rootView.hideLoadingView()
+                            if nil == error {
+                                self.loadChanges(date, choosenInPicker: false){finish in}
+                            }
+                        })
                     }
-                })
-            }))
-            
-            alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
-    
-            self.presentViewController(alertViewController, animated: true, completion: nil)
+                }))
+                
+                alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
+                
+                self.presentViewController(alertViewController, animated: true, completion: nil)
+            }
         }
     }
     
@@ -285,57 +314,64 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
     }
     
     // MARK: - Private
-    private func loadData(completionHandler:(success: Bool) -> Void) {
+    private func loadData(completionHandler:(success: Bool, error: NSError?) -> Void) {
         let settingsModel = VTSettingModel()
         let context = LTContext()
         let firstLaunch = settingsModel.firstLaunch
-        let message = firstLaunch != true ? "Зачекайте, будь ласка.\nТриває завантаження законопроектів, комітетів та ініціаторів..." : "Зачекайте, будь ласка.\nТриває оновлення даних"
-        
+
         context.checkConnection {[unowned self, weak rootView = rootView] (isConnection, error) in
             if isConnection {
                 //download data
-                self.isLoading = true
                 if let rootView = rootView {
-                    rootView.showLoadingViewInViewWithMessage(rootView.contentView, message: message)
                     context.loadData(firstLaunch) { (success, error) in
-                        self.isLoading = false
-                        rootView.hideLoadingView()
-                        
                         if success {
                             settingsModel.firstLaunch = true
                             rootView.setFilterImages()
                         } else {
                             if let error = error {
                                 self.processError(error){ void in
-                                    self.loadData(){ (success) in
-                                        
-                                    }
+                                    self.loadData(){ (success, error) in}
                                 }
                             }
                         }
                         
-                        completionHandler(success: success)
+                        completionHandler(success: success, error: error)
                     }
                 }
             } else {
                 if firstLaunch {
                     let date = NSDate().previousDay()
-                    self.loadChanges(date, choosenInPicker: false)
+                    self.loadChanges(date, choosenInPicker: false){finish in}
                 } else {
                     if let error = error {
                         self.processError(error){[unowned self] void in
-                            self.loadData(){ (success) in
-                                
-                            }
+                            self.loadData(){ (success, error) in}
                         }
                     }
                 }
             }
         }
-        
     }
     
-    private func loadChanges(date: NSDate, choosenInPicker: Bool) {
+    private func loadDataInBackground(date: NSDate) {
+        self.loadChanges(date, choosenInPicker: false) {[unowned self] (finish) in
+            //load bills in background
+            self.loadData({(success, error) in
+                if success {
+                    //show alert
+                    let userInfo = [NSLocalizedDescriptionKey : "Інформацію про законопроекти оновлено."]
+                    let error = NSError(domain: "Info", code: 2, userInfo: userInfo)
+                    
+                    self.displayError(error)
+                    
+                    //reload data
+                    self.setCurrentControllerWithDate(date)
+                }
+            })
+        }
+    }
+    
+    private func loadChanges(date: NSDate, choosenInPicker: Bool, completionHandler:(finish: Bool) -> Void) {
         if let rootView = rootView {
             dateIsChoosenFromPicker = choosenInPicker
             rootView.fillSearchButton(date)
@@ -351,7 +387,7 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
                 if let error = error {
                     if -1009 != error.code {
                         self.processError(error){void in
-                            self.loadChanges(date, choosenInPicker: choosenInPicker)
+                            self.loadChanges(date, choosenInPicker: choosenInPicker, completionHandler: completionHandler)
                         }
                         
                         return
@@ -359,6 +395,8 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
                 }
                 
                 self.setCurrentControllerWithDate(date)
+                
+                completionHandler(finish: true)
             })
         }
     }
@@ -439,13 +477,17 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
             break
         }
         
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
-            let alertViewController: UIAlertController = UIAlertController(title: title, message: "Повторити спробу завантаження?", preferredStyle: .Alert)
-            alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: completionHandler))
-            
-            alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: nil))
-            
-            self.presentViewController(alertViewController, animated: true, completion: nil)
+        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak date = dateInPicker()] in
+            if let date = date {
+                let alertViewController: UIAlertController = UIAlertController(title: title, message: "Повторити спробу завантаження?", preferredStyle: .Alert)
+                alertViewController.addAction(UIAlertAction(title: "Так", style: .Default, handler: completionHandler))
+                
+                alertViewController.addAction(UIAlertAction(title: "Ні", style: .Default, handler: {(UIAlertAction) in
+                    self.setCurrentControllerWithDate(date)
+                }))
+                
+                self.presentViewController(alertViewController, animated: true, completion: nil)
+            }
         }
     }
     
@@ -481,7 +523,7 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
         let dip = dateInPicker()
         let date = forPreviousDay ? dip.previousDay() : dip.nextDay()
         
-        loadChanges(date, choosenInPicker: false)
+        loadChanges(date, choosenInPicker: false){finish in}
     }
     
     override func scrollToTop() {
@@ -528,14 +570,14 @@ class LTNewsFeedViewController: NewsFeedViewController, UINavigationControllerDe
                             newDate = dip.previousDay()
                         }
                         
-                        self.loadChanges(newDate!, choosenInPicker: false)
+                        self.loadChanges(newDate!, choosenInPicker: false){finish in}
                         
                         return
                     }
                     
                     if loadingCount == kLTMaxLoadingCount {
                         if let currentController = currentController as LTMainContentViewController! {
-                            currentController.rootView!.noSubscriptionsLabel.text = "За встановленими фільтрами немає змін протягом останніх \(kLTMaxLoadingCount) днів"
+                            currentController.rootView!.noSubscriptionsLabel.text = "Немає даних для відображення протягом останніх \(kLTMaxLoadingCount) днів"
                         }
                     }
                     
