@@ -80,11 +80,23 @@ class LTClient: NSObject {
                         lastModified = allHeaderFields["Last-Modified"] as? String
                     }
                     
-                    print("StatusCode = ", response.statusCode)
-                    if 304 == response.statusCode {
+                    //print("StatusCode = ", response.statusCode, "URL = ", request.URL)
+                    switch response.statusCode {
+                    case 304:
                         completionHandler(lastModified:lastModified, result: nil, error: nil)
-                    } else {
+                        
+                        break
+                        
+                    case 200:
                         completionHandler(lastModified:lastModified, result: data, error: nil)
+                        
+                        break
+                        
+                    default:
+                        let contentError = LTClient.errorForMessage(LTClient.KLTMessages.emptyDataError)
+                        completionHandler(lastModified:lastModified, result: nil, error: contentError)
+                        
+                        break
                     }
                 }
             }

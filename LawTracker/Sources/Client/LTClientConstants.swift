@@ -42,6 +42,7 @@ extension LTClient {
         static let noCurrentConvocation = "Не вдалося завантажити інформацію про скликання Верховної Ради "
         static let nsURLError           = "Неможливо згенерувати URL зі строки "
         static let nsRequestError       = "Неможливо згенерувати запит із URL "
+        static let emptyDataError       = "Дані з сервера не отримано "
     }
     
     struct kLTConstants {

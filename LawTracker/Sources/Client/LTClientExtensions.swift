@@ -53,7 +53,7 @@ extension LTClient {
         //http://www.chesno.org/legislation/<convocation's id>/bill/api/
         if nil == currentConvocation {
             if let convocationModel = LTConvocationModel.currentConvocation() as LTConvocationModel! {
-                self.currentConvocation = convocationModel
+                currentConvocation = convocationModel
             } else {
                 let currentConvocationError = LTClient.errorForMessage("Не вдалося завантажити законопроекти. ")
                 completionHandler(success: false, error: currentConvocationError)
@@ -65,23 +65,23 @@ extension LTClient {
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, kVTParameters.extras]
         let savedTime = VTSettingModel().lastLawsModified
         let lastDownloadTime = nil == savedTime ? kLTConstants.startDate : savedTime
-        print("Saved time = ", savedTime)
+        
         let headers = ["If-Modified-Since":lastDownloadTime!]
         
         requestWithParametersHeaders(urlVars, headers: headers) {[unowned self, weak currentConvocation = currentConvocation!]  (result, error) -> Void in
             if let request = result as NSURLRequest! {
                 self.downloadTask = self.task(request){lastModified, data, error in
-                    print("lastModified = ", lastModified)
                     self.downloadCount += 1
-                    if nil != error && self.downloadCount < 3 {
+                    if let error = error {
                         //dirty hack!!
-                        print("ErrorCode: ", error!.code)
-                        if error!.code == -1017 {
+                        if self.downloadCount < 3 {
                             self.downloadLaws({ (success, error) in
                                 completionHandler(success: success, error: error)
                             })
                         } else {
                             completionHandler(success: false, error: error)
+                            
+                            return
                         }
                     } else {
                         if nil == data {

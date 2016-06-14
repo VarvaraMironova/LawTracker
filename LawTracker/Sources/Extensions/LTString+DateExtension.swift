@@ -15,7 +15,7 @@ extension String {
         dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
         dateFormatter.timeZone = NSTimeZone(name: "GMT")
         dateFormatter.locale = NSLocale(localeIdentifier: "en_UA")
-        print(dateFormatter.dateFromString(self))
+        
         return dateFormatter.dateFromString(self)
     }
 }
