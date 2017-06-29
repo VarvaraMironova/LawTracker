@@ -108,6 +108,7 @@ class LTClient: NSObject {
             if let url = result as URL! {
                 if let request = NSMutableURLRequest(url: url) as NSMutableURLRequest! {
                     request.httpMethod = "GET"
+                    request.setValue("application/json", forHTTPHeaderField: "Accept")
                     completionHandler(request as URLRequest, nil)
                 } else {
                     let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsRequestError + "\(url.absoluteString)")
