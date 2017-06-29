@@ -11,26 +11,26 @@ import UIKit
 
 extension UIViewController {
     
-    func addChildViewControllerInView(childController: UIViewController, view: UIView) {
+    func addChildViewControllerInView(_ childController: UIViewController, view: UIView) {
         childController.view.frame = view.bounds
         view.addSubview(childController.view)
         addChildViewController(childController)
-        childController.didMoveToParentViewController(self)
+        childController.didMove(toParentViewController: self)
     }
     
-    func removeChildController(childController: UIViewController) {
-        dispatch_async(dispatch_get_main_queue()) {
-            childController.willMoveToParentViewController(nil)
+    func removeChildController(_ childController: UIViewController) {
+        DispatchQueue.main.async {
+            childController.willMove(toParentViewController: nil)
             childController.view.removeFromSuperview()
             childController.removeFromParentViewController()
         }
     }
     
-    func displayError(error: NSError) {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
-            let alertViewController: UIAlertController = UIAlertController(title: "", message: error.localizedDescription, preferredStyle: .Alert)
-            alertViewController.addAction(UIAlertAction(title: "Продовжити", style: .Default, handler: nil))
-            self.presentViewController(alertViewController, animated: true, completion: nil)
+    func displayError(_ error: NSError) {
+        DispatchQueue.main.async {[unowned self] in
+            let alertViewController: UIAlertController = UIAlertController(title: "", message: error.localizedDescription, preferredStyle: .alert)
+            alertViewController.addAction(UIAlertAction(title: "Продовжити", style: .default, handler: nil))
+            self.present(alertViewController, animated: true, completion: nil)
         }
     }
 }

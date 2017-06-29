@@ -39,7 +39,7 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
     
     var rootView: LTHelpView? {
         get {
-            if isViewLoaded() && view.isKindOfClass(LTHelpView) {
+            if isViewLoaded && view.isKind(of: LTHelpView.self) {
                 return view as? LTHelpView
             } else {
                 return nil
@@ -73,16 +73,16 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
         super.viewDidLoad()
         
         automaticallyAdjustsScrollViewInsets = false
-        let pageViewController = storyboard!.instantiateViewControllerWithIdentifier("PageViewController") as! UIPageViewController
+        let pageViewController = storyboard!.instantiateViewController(withIdentifier: "PageViewController") as! UIPageViewController
         pageViewController.delegate = self
         pageViewController.dataSource = self
         
         if let firstItem = itemViewControllers.first as LTHelpContentController! {
-            pageViewController.setViewControllers([firstItem], direction: .Forward, animated: true) {[weak pageViewController = pageViewController] (finished) -> Void in
+            pageViewController.setViewControllers([firstItem], direction: .forward, animated: true) {[weak pageViewController = pageViewController] (finished) -> Void in
                 if finished {
                     if let pageViewController = pageViewController as UIPageViewController! {
-                        dispatch_async(dispatch_get_main_queue()) {
-                            pageViewController.setViewControllers([firstItem], direction: .Forward, animated: false, completion: nil)
+                        DispatchQueue.main.async {
+                            pageViewController.setViewControllers([firstItem], direction: .forward, animated: false, completion: nil)
                         }
                     }
                 }
@@ -95,55 +95,55 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         //add swipe gecture recognizers
-        let upGestureRecognizer = UISwipeGestureRecognizer(target: self, action: "onSwipe:")
-        upGestureRecognizer.direction = .Up
+        let upGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(LTHelpController.onSwipe(_:)))
+        upGestureRecognizer.direction = .up
         
         pageViewController.view.addGestureRecognizer(upGestureRecognizer)
         upSwipeGestureRecognizer = upGestureRecognizer
         
-        let downGestureRecognizer = UISwipeGestureRecognizer(target: self, action: "onSwipe:")
-        downGestureRecognizer.direction = .Down
+        let downGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(LTHelpController.onSwipe(_:)))
+        downGestureRecognizer.direction = .down
         
         pageViewController.view.addGestureRecognizer(downGestureRecognizer)
         downSwipeGestureRecognizer = downGestureRecognizer
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         //remove swipe gecture recognizers
-        upSwipeGestureRecognizer.removeTarget(self, action: "onSwipe:")
-        downSwipeGestureRecognizer.removeTarget(self, action: "onSwipe:")
+        upSwipeGestureRecognizer.removeTarget(self, action: #selector(LTHelpController.onSwipe(_:)))
+        downSwipeGestureRecognizer.removeTarget(self, action: #selector(LTHelpController.onSwipe(_:)))
         pageViewController.view.removeGestureRecognizer(upSwipeGestureRecognizer)
         pageViewController.view.removeGestureRecognizer(downSwipeGestureRecognizer)
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true
     }
     
     //MARK: - Interface Handling
-    @IBAction func onSwipe(sender: UISwipeGestureRecognizer) {
-        if .Up == sender.direction || .Down == sender.direction {
+    @IBAction func onSwipe(_ sender: UISwipeGestureRecognizer) {
+        if .up == sender.direction || .down == sender.direction {
             onCloseButton(sender)
         }
     }
     
-    @IBAction func onCloseButton(sender: AnyObject) {
+    @IBAction func onCloseButton(_ sender: AnyObject) {
         if let navigationController = navigationController as UINavigationController! {
-            let newsFeedController = self.storyboard!.instantiateViewControllerWithIdentifier("LTNewsFeedViewController") as! LTNewsFeedViewController
+            let newsFeedController = self.storyboard!.instantiateViewController(withIdentifier: "LTNewsFeedViewController") as! LTNewsFeedViewController
             navigationController.viewControllers = [newsFeedController]
         } else {
-            dismissViewControllerAnimated(true, completion: nil)
+            dismiss(animated: true, completion: nil)
         }
     }
     
     //MARK: - UIPageViewControllerDataSource
-    func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         var index: Int = (viewController as! LTHelpContentController).pageIndex - 1
         
         if pageIsAnimating || NSNotFound == index {
@@ -153,13 +153,14 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
         if index == itemViewControllers.count - 1 {
             return itemViewControllers.first
         }
-        
-        let destinationController = itemViewControllers[++index]
+
+        index += 1
+        let destinationController = itemViewControllers[index]
         
         return destinationController
     }
     
-    func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         var index: Int = (viewController as! LTHelpContentController).pageIndex - 1
         
         if pageIsAnimating || NSNotFound == index {
@@ -169,21 +170,22 @@ class LTHelpController: UIViewController, UIPageViewControllerDataSource, UIPage
         if index == 0 {
             return itemViewControllers.last
         }
-        
-        let destinationController = itemViewControllers[--index]
+
+        index -= 1
+        let destinationController = itemViewControllers[index]
         
         return destinationController
     }
     
     //MARK: - UIPageViewControllerDelegate
-    func pageViewController(pageViewController: UIPageViewController, willTransitionToViewControllers pendingViewControllers: [UIViewController]) {
+    func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         pageIsAnimating = true
         if let controller = pendingViewControllers.first as? LTHelpContentController! {
             pendingIndex = controller.pageIndex
         }
     }
     
-    func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         if finished && completed {
             pageIsAnimating = false
             if let rootView = rootView as LTHelpView! {

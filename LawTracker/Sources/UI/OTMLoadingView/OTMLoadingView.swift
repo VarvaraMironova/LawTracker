@@ -14,25 +14,25 @@ class OTMLoadingView: UIView {
 
     weak var rootView: UIView!
     
-    class func loadingView(rootView: UIView) -> OTMLoadingView {
-        let loadingView = NSBundle.mainBundle().loadNibNamed("OTMLoadingView", owner: self, options: nil).first as! OTMLoadingView
+    class func loadingView(_ rootView: UIView) -> OTMLoadingView {
+        let loadingView = Bundle.main.loadNibNamed("OTMLoadingView", owner: self, options: nil)?.first as! OTMLoadingView
 
         loadingView.show(rootView)
         
         return loadingView
     }
     
-    class func loadingView(rootView: UIView, message: String) -> OTMLoadingView {
-        let loadingView = NSBundle.mainBundle().loadNibNamed("OTMLoadingView", owner: self, options: nil).first as! OTMLoadingView
+    class func loadingView(_ rootView: UIView, message: String) -> OTMLoadingView {
+        let loadingView = Bundle.main.loadNibNamed("OTMLoadingView", owner: self, options: nil)?.first as! OTMLoadingView
         
         loadingView.showWithMessage(rootView, message: message)
         
         return loadingView
     }
     
-    private func show(rootView: UIView) {
+    fileprivate func show(_ rootView: UIView) {
         var frame = rootView.frame as CGRect
-        frame.origin = CGPointZero;
+        frame.origin = CGPoint.zero;
         self.frame = frame;
         
         rootView.addSubview(self)
@@ -43,27 +43,27 @@ class OTMLoadingView: UIView {
         animate(1.0)
     }
     
-    private func animate(alpha: CGFloat) {
-        UIView.animateWithDuration(0.4, animations: {
+    fileprivate func animate(_ alpha: CGFloat) {
+        UIView.animate(withDuration: 0.4, animations: {
             self.alpha = alpha
             }, completion: {(finished: Bool) -> Void in
                 
         })
     }
     
-    private func showWithMessage(rootView: UIView, message: String) {
+    fileprivate func showWithMessage(_ rootView: UIView, message: String) {
         show(rootView)
         
-        loadingLabel.hidden = false
+        loadingLabel.isHidden = false
         loadingLabel.text = message
     }
     
-    func changeMessage(message: String) {
+    func changeMessage(_ message: String) {
         loadingLabel.text = message
     }
     
     func hide() {
-        if isDescendantOfView(rootView) {
+        if isDescendant(of: rootView) {
             animate(0.0)
             spinner.stopAnimating()
             removeFromSuperview()

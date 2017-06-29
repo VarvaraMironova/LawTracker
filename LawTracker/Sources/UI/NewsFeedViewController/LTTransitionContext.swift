@@ -8,15 +8,16 @@
 
 import UIKit
 
-typealias LTCompletionBlock = (complete: Bool!) -> Void
+typealias LTCompletionBlock = (_ complete: Bool) -> Void
 
 class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
+
     var completionBlock : LTCompletionBlock?
     weak var animator   : LTSliderAnimator?
     
-    internal var viewControllers = [String: UIViewController]()
-    internal var container       : UIView?
-    internal var animated        : Bool!
+    internal var viewControllers = [UITransitionContextViewControllerKey: UIViewController]()
+    internal var container       : UIView
+    internal var _animated       : Bool!
     internal var forward         : Bool!
     
     var cancelled                : Bool = false
@@ -24,70 +25,70 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
     internal var percentComplete : CGFloat!
     
     init(source: UIViewController?, destination: UIViewController?, containerView: UIView, animated: Bool, forward: Bool) {
-        super.init()
-        
         if nil != source {
-            viewControllers[UITransitionContextFromViewControllerKey] = source
+            viewControllers[UITransitionContextViewControllerKey.from] = source
         }
         
         if nil != destination {
-            viewControllers[UITransitionContextToViewControllerKey] = destination
+            viewControllers[UITransitionContextViewControllerKey.to] = destination
         }
         
         self.container = containerView
-        self.animated = animated
+        self._animated = animated
         self.forward = forward
         self.percentComplete = 1.0
+
+        super.init()
     }
     
     // MARK: - UIViewControllerContextTransitioning
-    func containerView() -> UIView? {
+    var containerView : UIView {
         return container
     }
     
-    func isAnimated() -> Bool {
-        return animated
+    var isAnimated : Bool {
+        return _animated
     }
     
-    func isInteractive() -> Bool {
+    var isInteractive : Bool {
         return nil != animator
     }
     
-    func transitionWasCancelled() -> Bool {
+    var transitionWasCancelled : Bool {
         return cancelled
     }
     
-    func presentationStyle() -> UIModalPresentationStyle {
-        return .Custom
+    var presentationStyle : UIModalPresentationStyle {
+        return .custom
     }
     
-    func targetTransform() -> CGAffineTransform {
-        return CGAffineTransformIdentity
+    var targetTransform : CGAffineTransform {
+        return CGAffineTransform.identity
     }
     
-    func viewControllerForKey(key: String) -> UIViewController? {
+    func viewController(forKey key: UITransitionContextViewControllerKey) -> UIViewController? {
         return viewControllers[key]
     }
     
-    func viewForKey(key: String) -> UIView? {
+    func view(forKey key: UITransitionContextViewKey) -> UIView? {
         switch key {
-        case UITransitionContextFromViewKey:
-            return viewControllerForKey(key)?.view
+        case UITransitionContextViewKey.from:
+            return viewController(forKey: UITransitionContextViewControllerKey.from)?.view
             
-        case UITransitionContextToViewKey:
-            return viewControllerForKey(key)?.view
+        case UITransitionContextViewKey.to:
+            return viewController(forKey: UITransitionContextViewControllerKey.to)?.view
             
         default:
             return nil
         }
     }
     
-    func initialFrameForViewController(vc: UIViewController) -> CGRect {
-        var result = CGRectZero
-        if let containerView = containerView() as UIView! {
-            if let key = allKeysForValue(viewControllers, value: vc).first as String! {
+    func initialFrame(for vc: UIViewController) -> CGRect {
+        var result = CGRect.zero
+        if let containerView = containerView as UIView! {
+            if let key = allKeysForValue(viewControllers, value: vc).first {
                 switch key {
-                case UITransitionContextToViewControllerKey:
+                case UITransitionContextViewControllerKey.to:
                     result = containerView.bounds
                     
                     if false == forward {
@@ -96,7 +97,7 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
                     
                     break
                     
-                case UITransitionContextFromViewControllerKey:
+                case UITransitionContextViewControllerKey.from:
                     result = containerView.bounds
                     break
                     
@@ -109,12 +110,12 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
         return result
     }
     
-    func finalFrameForViewController(vc: UIViewController) -> CGRect {
-        var result = CGRectZero
-        if let containerView = containerView() as UIView! {
-            if let key = allKeysForValue(viewControllers, value: vc).first as String! {
+    func finalFrame(for vc: UIViewController) -> CGRect {
+        var result = CGRect.zero
+        if let containerView = containerView as UIView! {
+            if let key = allKeysForValue(viewControllers, value: vc).first {
                 switch key {
-                case UITransitionContextFromViewControllerKey:
+                case UITransitionContextViewControllerKey.from:
                     result = containerView.bounds
                     
                     if true == forward {
@@ -123,7 +124,7 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
                     
                     break
                     
-                case UITransitionContextToViewControllerKey:
+                case UITransitionContextViewControllerKey.to:
                     result = containerView.bounds
                     break
                     
@@ -133,28 +134,33 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
             }
         }
         
-        let initialFrame = initialFrameForViewController(vc)
-        let offsetX = CGRectGetMinX(result) - CGRectGetMinX(initialFrame)
-        let offsetY = CGRectGetMinY(result) - CGRectGetMinY(initialFrame)
-        let offsetWidth = CGRectGetWidth(result) - CGRectGetWidth(initialFrame)
-        let offsetHeight = CGRectGetHeight(result) - CGRectGetHeight(initialFrame)
+        let initialFrame = self.initialFrame(for: vc)
+        let offsetX = result.minX - initialFrame.minX
+        let offsetY = result.minY - initialFrame.minY
+        let offsetWidth = result.width - initialFrame.width
+        let offsetHeight = result.height - initialFrame.height
         
-        let percents = isInteractive() ? percentComplete : 1.0
-        result = CGRectOffset(initialFrame, offsetX * percents, offsetY * percents)
-        result.size.width += offsetWidth * percents
-        result.size.height += offsetHeight * percents
+        let percents = isInteractive ? percentComplete : 1.0
+        result = initialFrame.offsetBy(dx: offsetX * percents!, dy: offsetY * percents!)
+        result.size.width += offsetWidth * percents!
+        result.size.height += offsetHeight * percents!
         
         return result
     }
     
-    func completeTransition(didComplete: Bool) {
+    func completeTransition(_ didComplete: Bool) {
         if let completionBlock = completionBlock as LTCompletionBlock! {
-            completionBlock(complete: didComplete)
+            completionBlock(didComplete)
         }
     }
     
-    func updateInteractiveTransition(complete: CGFloat) {
+    func updateInteractiveTransition(_ complete: CGFloat) {
         percentComplete = complete
+    }
+
+    @available(iOS 10.0, *)
+    func pauseInteractiveTransition() {
+        // FIXME?
     }
     
     func finishInteractiveTransition() {
@@ -165,7 +171,7 @@ class LTTransitionContext: NSObject, UIViewControllerContextTransitioning {
          cancelled = true
     }
     
-    func allKeysForValue<K, V : Equatable>(dictionary: [K : V], value: V) -> [K] {
+    func allKeysForValue<K, V : Equatable>(_ dictionary: [K : V], value: V) -> [K] {
         return dictionary.filter{ $0.1 == value }.map{ $0.0 }
     }
     

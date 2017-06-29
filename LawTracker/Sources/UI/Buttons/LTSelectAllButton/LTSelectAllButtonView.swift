@@ -20,7 +20,7 @@ class LTSelectAllButtonView: UIView {
     
     weak var rootView: UIView!
     
-    func setOn(on: Bool) {
+    func setOn(_ on: Bool) {
         if on {
             checkboxImageView.image = UIImage(named:selectedImageName)
             titleLabel.text = selectedTitle
@@ -30,15 +30,15 @@ class LTSelectAllButtonView: UIView {
         }
     }
     
-    class func selectAllButtonView(rootView: UIView, selectedImageName: String, deselectedImageName: String, selectedTitle: String, deselectedTitle: String) -> LTSelectAllButtonView {
-        let selectAllButtonView = NSBundle.mainBundle().loadNibNamed("LTSelectAllButtonView", owner: self, options: nil).first as! LTSelectAllButtonView
+    class func selectAllButtonView(_ rootView: UIView, selectedImageName: String, deselectedImageName: String, selectedTitle: String, deselectedTitle: String) -> LTSelectAllButtonView {
+        let selectAllButtonView = Bundle.main.loadNibNamed("LTSelectAllButtonView", owner: self, options: nil)?.first as! LTSelectAllButtonView
         selectAllButtonView.selectedTitle = selectedTitle
         selectAllButtonView.deselectedTitle = deselectedTitle
         selectAllButtonView.selectedImageName = selectedImageName
         selectAllButtonView.deselectedImageName = deselectedImageName
         
         var frame = rootView.frame as CGRect
-        frame.origin = CGPointZero;
+        frame.origin = CGPoint.zero;
         selectAllButtonView.frame = frame;
         
         rootView.addSubview(selectAllButtonView)

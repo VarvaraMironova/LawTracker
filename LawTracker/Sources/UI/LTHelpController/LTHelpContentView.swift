@@ -12,8 +12,8 @@ class LTHelpContentView: UIView {
 
     @IBOutlet var contentImageView: UIImageView!
     
-    func fill(model: [String]) {
-        if .Portrait == UIApplication.sharedApplication().statusBarOrientation {
+    func fill(_ model: [String]) {
+        if .portrait == UIApplication.shared.statusBarOrientation {
             contentImageView.image = UIImage(named: model.first!)
         } else {
             contentImageView.image = UIImage(named: model.last!)

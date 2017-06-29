@@ -25,7 +25,7 @@ class LTFilterRootView: UIView {
         super.awakeFromNib()
         
         //setup searchBar
-        searchBar.returnKeyType = .Done
+        searchBar.returnKeyType = .done
         searchBar.scopeButtonTitles = ["Всі", "Обрані", "Необрані"]
         
         if let label = okButton.titleLabel {
@@ -37,11 +37,11 @@ class LTFilterRootView: UIView {
         }
     }
     
-    func fillSearchBar(text: String?) {
+    func fillSearchBar(_ text: String?) {
         searchBar.text = text
     }
     
-    func fillSearchBarPlaceholder(string: String) {
+    func fillSearchBarPlaceholder(_ string: String) {
         searchBar.placeholder = string
     }
     

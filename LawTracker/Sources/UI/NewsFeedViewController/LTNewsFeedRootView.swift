@@ -41,8 +41,8 @@ class LTNewsFeedRootView: OTMView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        datePicker.date = NSDate().previousDay()
-        datePicker.maximumDate = NSDate()
+        datePicker.date = Date().previousDay()
+        datePicker.maximumDate = Date()
         
         selectedButton = byCommitteesButton
         if let label = searchDateButton.titleLabel {
@@ -52,54 +52,54 @@ class LTNewsFeedRootView: OTMView {
     
     func showMenu() {
         //horizontal
-        let width = CGRectGetWidth(menuContainerView.frame) < 250.0 ? CGRectGetWidth(menuContainerView.frame) : 250.0;
+        let width = menuContainerView.frame.width < 250.0 ? menuContainerView.frame.width : 250.0;
         animateMenu(width, show: !menuShown)
     }
     
-    func hideMenu(completionHandler: (finished: Bool) -> Void) {
+    func hideMenu(_ completionHandler: @escaping (_ finished: Bool) -> Void) {
         if menuShown {
-            let width = CGRectGetWidth(menuContainerView.frame) < 250.0 ? CGRectGetWidth(menuContainerView.frame) : 250.0;
+            let width = menuContainerView.frame.width < 250.0 ? menuContainerView.frame.width : 250.0;
             let menuContainer = menuContainerView
-            UIView.animateWithDuration(0.4, animations: {
-                var center = menuContainer.center
-                center.x = -width / 2.0
-                menuContainer.center = center
+            UIView.animate(withDuration: 0.4, animations: {
+                var center = menuContainer?.center
+                center?.x = -width / 2.0
+                menuContainer?.center = center!
                 self.dismissChildControllersButton.alpha = 0.0
                 }, completion: {(finished: Bool) -> Void in
                     self.menuShown = !self.menuShown
-                    completionHandler(finished: finished)
+                    completionHandler(finished)
             })
         }
     }
     
     func showDatePicker() {
-        datePickerContainer.hidden = false
+        datePickerContainer.isHidden = false
         datePickerShown = true
     }
     
     func hideDatePicker() {
-        datePickerContainer.hidden = true
+        datePickerContainer.isHidden = true
         datePickerShown = false
     }
     
-    func fillSearchButton(date: NSDate) {
-        dispatch_async(dispatch_get_main_queue()) {
-            self.searchDateButton.setTitle(date.longString(), forState: .Normal)
+    func fillSearchButton(_ date: Date) {
+        DispatchQueue.main.async {
+            self.searchDateButton.setTitle(date.longString(), for: UIControlState())
             self.datePicker.date = date
         }
     }
     
-    private func animateMenu(width: CGFloat, show: Bool) {
+    fileprivate func animateMenu(_ width: CGFloat, show: Bool) {
         let menuContainer = menuContainerView
         
         if show {
             hideDatePicker()
         }
         
-        UIView.animateWithDuration(0.4, animations: {
-            var center = menuContainer.center
-            center.x = show ?  width / 2.0 : -width / 2.0
-            menuContainer.center = center
+        UIView.animate(withDuration: 0.4, animations: {
+            var center = menuContainer?.center
+            center?.x = show ?  width / 2.0 : -width / 2.0
+            menuContainer?.center = center!
             self.dismissChildControllersButton.alpha = show ? 0.8 : 0.0
             }, completion: {(finished: Bool) -> Void in
                 self.menuShown = !self.menuShown

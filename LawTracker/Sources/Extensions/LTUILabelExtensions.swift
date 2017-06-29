@@ -13,7 +13,7 @@ extension UILabel {
     func fit() {
         numberOfLines = 0
         var rect = frame
-        let size = sizeThatFits(CGSizeMake(CGRectGetWidth(frame), 0))
+        let size = sizeThatFits(CGSize(width: frame.width, height: 0))
         rect.size.height = size.height
         frame = rect
     }

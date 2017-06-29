@@ -7,5 +7,5 @@
 //
 
 protocol LTMenuDelegate {
-    func hideMenu(completionHandler: (finished: Bool) -> Void)
+    func hideMenu(_ completionHandler: @escaping (_ finished: Bool) -> Void)
 }

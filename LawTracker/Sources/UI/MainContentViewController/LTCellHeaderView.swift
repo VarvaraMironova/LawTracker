@@ -12,7 +12,7 @@ class LTCellHeaderView: UIView {
     @IBOutlet var titleLabel: UILabel!
     
     class func headerView() -> LTCellHeaderView {
-        let headerView = NSBundle.mainBundle().loadNibNamed("LTCellHeaderView", owner: self, options: nil).first as! LTCellHeaderView
+        let headerView = Bundle.main.loadNibNamed("LTCellHeaderView", owner: self, options: nil)?.first as! LTCellHeaderView
         
         return headerView
     }
@@ -23,7 +23,7 @@ class LTCellHeaderView: UIView {
         titleLabel.text = ""
     }
 
-    func fillWithString(title: String) {
+    func fillWithString(_ title: String) {
         titleLabel.text = title
         titleLabel.fit()
     }

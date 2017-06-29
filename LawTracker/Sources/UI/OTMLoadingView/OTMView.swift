@@ -16,12 +16,12 @@ class OTMView: UIView {
         showLoadingViewInView(self)
     }
     
-    func showLoadingViewWithMessage(message: String) {
+    func showLoadingViewWithMessage(_ message: String) {
        showLoadingViewInViewWithMessage(self, message: message)
     }
     
-    func showLoadingViewInView(view: UIView) {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+    func showLoadingViewInView(_ view: UIView) {
+        DispatchQueue.main.async {[unowned self] in
             if !self.loadingViewShown {
                 self.loadingView = OTMLoadingView.loadingView(view)
                 self.loadingViewShown = true
@@ -29,8 +29,8 @@ class OTMView: UIView {
         }
     }
     
-    func showLoadingViewInViewWithMessage(view: UIView, message: String) {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+    func showLoadingViewInViewWithMessage(_ view: UIView, message: String) {
+        DispatchQueue.main.async {[unowned self] in
             if !self.loadingViewShown {
                 self.loadingView = OTMLoadingView.loadingView(view, message: message)
                 self.loadingViewShown = true
@@ -41,7 +41,7 @@ class OTMView: UIView {
     }
     
     func hideLoadingView() {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+        DispatchQueue.main.async {[unowned self] in
             if self.loadingViewShown {
                 self.loadingView.hide()
                 self.loadingView = nil

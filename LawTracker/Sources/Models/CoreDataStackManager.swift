@@ -14,54 +14,50 @@ private let kVTMomdFileName = "LawTracker"
 private let kLTQueueName    = "CoreDataQueue"
 
 class CoreDataStackManager {
-    
+
     // MARK: - Shared Instance
     class func sharedInstance() -> CoreDataStackManager {
         struct Static {
-            static let instance = CoreDataStackManager()
+            static let instance = { CoreDataStackManager() }()
         }
         
         return Static.instance
     }
     
-    class func coreDataQueue() -> dispatch_queue_t {
+    class func coreDataQueue() -> DispatchQueue {
         struct Static {
-            static var onceToken: dispatch_once_t = 0
-            static var instance: dispatch_queue_t? = nil
+            static var onceToken: Int = 0
+            static var instance = { DispatchQueue(label: kLTQueueName, attributes: []) }()
         }
         
-        dispatch_once(&Static.onceToken) {
-            Static.instance = dispatch_queue_create(kLTQueueName, DISPATCH_QUEUE_SERIAL)
-        }
-        
-        return Static.instance!
+        return Static.instance
     }
     
     // MARK: - The Core Data stack. The code has been moved, unaltered, from the AppDelegate.
-    lazy var applicationDocumentsDirectory: NSURL = {
-        let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
+    lazy var applicationDocumentsDirectory: URL = {
+        let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return urls[urls.count-1]
     }()
     
     lazy var managedObjectModel: NSManagedObjectModel = {
-        let modelURL = NSBundle.mainBundle().URLForResource(kVTMomdFileName, withExtension: "momd")!
-        return NSManagedObjectModel(contentsOfURL: modelURL)!
+        let modelURL = Bundle.main.url(forResource: kVTMomdFileName, withExtension: "momd")!
+        return NSManagedObjectModel(contentsOf: modelURL)!
     }()
     
     lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator? = {
         let coordinator: NSPersistentStoreCoordinator? = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
-        let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent(kVTSQLFileName)
+        let url = self.applicationDocumentsDirectory.appendingPathComponent(kVTSQLFileName)
         
-        print("sqlite path: \(url.path!)")
+        print("sqlite path: \(url.path)")
         
         var failureReason = "There was an error creating or loading the application's saved data."
         do {
-            try coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: nil)
+            try coordinator!.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: url, options: nil)
         } catch {
             // Report any error we got.
             var dict = [String: AnyObject]()
-            dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data"
-            dict[NSLocalizedFailureReasonErrorKey] = failureReason
+            dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data" as AnyObject
+            dict[NSLocalizedFailureReasonErrorKey] = failureReason as AnyObject
             
             dict[NSUnderlyingErrorKey] = error as NSError
             let wrappedError = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
@@ -76,7 +72,7 @@ class CoreDataStackManager {
     
     lazy var managedObjectContext: NSManagedObjectContext = {
         let coordinator = self.persistentStoreCoordinator
-        var managedObjectContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
+        var managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
         
         return managedObjectContext
@@ -95,13 +91,13 @@ class CoreDataStackManager {
         }
     }
     
-    func delete(object:NSManagedObject) {
-        managedObjectContext.deleteObject(object)
+    func delete(_ object:NSManagedObject) {
+        managedObjectContext.delete(object)
     }
     
-    func storeConvocations(convocations: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+    func storeConvocations(_ convocations: [[String: AnyObject]], completionHandler: @escaping (_ finished: Bool) -> Void) {
         let queue = CoreDataStackManager.coreDataQueue()
-        dispatch_async(queue) {
+        queue.async {
             for convocationArray in convocations {
                 var convocationID = String()
                 if let id = convocationArray["id"] as? String {
@@ -111,19 +107,19 @@ class CoreDataStackManager {
                 }
                 
                 if nil == LTConvocationModel.modelWithID(convocationID, entityName: "LTConvocationModel") {
-                    _ = LTConvocationModel(dictionary: convocationArray as! [String : AnyObject], context: self.managedObjectContext, entityName:"LTConvocationModel")
+                    _ = LTConvocationModel(dictionary: convocationArray, context: self.managedObjectContext, entityName:"LTConvocationModel")
                 }
             }
             
             self.saveContext()
             
-            completionHandler(finished: true)
+            completionHandler(true)
         }
     }
     
-    func storeLaws(laws: [NSDictionary], convocation: String, completionHandler: (finished: Bool) -> Void) {
+    func storeLaws(_ laws: [[String: AnyObject]], convocation: String, completionHandler: @escaping (_ finished: Bool) -> Void) {
         let queue = CoreDataStackManager.coreDataQueue()
-        dispatch_async(queue) { [unowned self, weak context = managedObjectContext] in
+        queue.async { [unowned self, weak context = managedObjectContext] in
             for lawArray in laws {
                 var lawId = String()
                 if let id = lawArray["id"] as? String {
@@ -133,26 +129,25 @@ class CoreDataStackManager {
                 }
                 
                 if nil == LTLawModel.modelWithID(lawId, entityName: "LTLawModel") {
-                    if var mutableLawArray = lawArray as? [String : AnyObject] {
-                        mutableLawArray["convocation"] = convocation
-                        
-                        //store initiators
-                        self.storeInitiators(mutableLawArray) { (result, finished) in
-                            if finished {
-                                mutableLawArray["initiatorModels"] = result
-                                
-                                //storeCommittees
-                                if let committeeID = mutableLawArray["committee"] as? Int {
-                                    let committeeIDString = "\(committeeID)"
-                                    if let committeeModel = LTCommitteeModel.modelWithID(committeeIDString, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
-                                        mutableLawArray["committeeModel"] = committeeModel
-                                    } else {
-                                        LTClient.sharedInstance().getCommitteeWithId(committeeIDString){success, error in
-                                            if success {
-                                                dispatch_async(CoreDataStackManager.coreDataQueue()){
-                                                    if let committee = LTCommitteeModel.modelWithID(committeeIDString, entityName: "LTCommitteeModel") as? LTCommitteeModel! {
-                                                        mutableLawArray["committeeModel"] = committee
-                                                    }
+                    var mutableLawArray = lawArray
+                    mutableLawArray["convocation"] = convocation as AnyObject
+                    
+                    //store initiators
+                    self.storeInitiators(mutableLawArray) { (result, finished) in
+                        if finished {
+                            mutableLawArray["initiatorModels"] = result as AnyObject
+                            
+                            //storeCommittees
+                            if let committeeID = mutableLawArray["committee"] as? Int {
+                                let committeeIDString = "\(committeeID)"
+                                if let committeeModel = LTCommitteeModel.modelWithID(committeeIDString, entityName:"LTCommitteeModel") as! LTCommitteeModel! {
+                                    mutableLawArray["committeeModel"] = committeeModel
+                                } else {
+                                    LTClient.sharedInstance().getCommitteeWithId(committeeIDString){success, error in
+                                        if success {
+                                            CoreDataStackManager.coreDataQueue().async{
+                                                if let committee = LTCommitteeModel.modelWithID(committeeIDString, entityName: "LTCommitteeModel") as? LTCommitteeModel! {
+                                                    mutableLawArray["committeeModel"] = committee
                                                 }
                                             }
                                         }
@@ -160,21 +155,21 @@ class CoreDataStackManager {
                                 }
                             }
                         }
-                        
-                        _ = LTLawModel(dictionary: mutableLawArray, context: context!, entityName:"LTLawModel")
                     }
+                    
+                    _ = LTLawModel(dictionary: mutableLawArray, context: context!, entityName:"LTLawModel")
                 }
             }
             
             self.saveContext()
             
-            completionHandler(finished: true)
+            completionHandler(true)
         }
     }
     
-    func storeCommittees(committees: [NSDictionary], convocation: String, completionHandler: (finished: Bool) -> Void) {
+    func storeCommittees(_ committees: [[String: AnyObject]], convocation: String, completionHandler: @escaping (_ finished: Bool) -> Void) {
         let queue = CoreDataStackManager.coreDataQueue()
-        dispatch_async(queue) {[unowned self, weak context = managedObjectContext] in
+        queue.async {[unowned self, weak context = managedObjectContext] in
             for committeeArray in committees {
                 var committeeId = String()
                 if let id = committeeArray["id"] as? String {
@@ -184,51 +179,50 @@ class CoreDataStackManager {
                 }
                 
                 if nil == LTCommitteeModel.modelWithID(committeeId, entityName: "LTCommitteeModel") {
-                    if var mutableCommitteeArray = committeeArray as? [String : AnyObject] {
-                        mutableCommitteeArray["convocation"] = convocation
-                        _ = LTCommitteeModel(dictionary: mutableCommitteeArray, context: context!, entityName:"LTCommitteeModel")
-                    }
+                    var mutableCommitteeArray = committeeArray
+                    mutableCommitteeArray["convocation"] = convocation as AnyObject
+                    _ = LTCommitteeModel(dictionary: mutableCommitteeArray, context: context!, entityName:"LTCommitteeModel")
                 }
             }
             
             self.saveContext()
             
-            completionHandler(finished: true)
+            completionHandler(true)
         }
     }
     
-    func storeInitiatorTypes(types: [String : AnyObject], completionHandler: (finished: Bool) -> Void) {
+    func storeInitiatorTypes(_ types: [String : AnyObject], completionHandler: @escaping (_ finished: Bool) -> Void) {
         let queue = CoreDataStackManager.coreDataQueue()
-        dispatch_async(queue) {[unowned self, weak context = managedObjectContext] in
+        queue.async {[unowned self, weak context = managedObjectContext] in
             for (key, value) in types {
                 if nil == LTInitiatorTypeModel.modelWithID(key, entityName: "LTInitiatorTypeModel") {
-                    let type = ["id": key, "title": value]
-                    _ = LTInitiatorTypeModel(dictionary: type, context: context!, entityName:"LTInitiatorTypeModel")
+                    let type = ["id": key, "title": value] as [String : Any]
+                    _ = LTInitiatorTypeModel(dictionary: type as [String : AnyObject], context: context!, entityName:"LTInitiatorTypeModel")
                 }
             }
             
             self.saveContext()
             
-            completionHandler(finished: true)
+            completionHandler(true)
         }
     }
     
-    func storePersons(persons: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+    func storePersons(_ persons: [[String: AnyObject]], completionHandler: @escaping (_ finished: Bool) -> Void) {
         let queue = CoreDataStackManager.coreDataQueue()
-        dispatch_async(queue) {[unowned self, weak context = managedObjectContext] in
+        queue.async {[unowned self, weak context = managedObjectContext] in
             for person in persons {
-            _ = LTPersonModel(dictionary: person as! [String : AnyObject], context: context!, entityName:"LTPersonModel")
+            _ = LTPersonModel(dictionary: person, context: context!, entityName:"LTPersonModel")
             }
             
             self.saveContext()
             
-            completionHandler(finished: true)
+            completionHandler(true)
         }
     }
     
-    func storeChanges(date: NSDate, changes: [NSDictionary], completionHandler: (finished: Bool) -> Void) {
+    func storeChanges(_ date: Date, changes: [[String: AnyObject]], completionHandler: @escaping (_ finished: Bool) -> Void) {
         let queue = CoreDataStackManager.coreDataQueue()
-        dispatch_async(queue) {[unowned self, weak context = managedObjectContext] in
+        queue.async {[unowned self, weak context = managedObjectContext] in
             let dateString = date.string("yyyy-MM-dd")
             for changeArray in changes {
                 var changeId = dateString
@@ -239,17 +233,16 @@ class CoreDataStackManager {
                 }
                 
                 if nil == LTChangeModel.modelWithID(changeId, entityName: "LTChangeModel") {
-                    if var mutableChangeArray = changeArray as? [String : AnyObject] {
-                        mutableChangeArray["date"] = date
-                        mutableChangeArray["id"] = changeId
-                        
-                        //get lawModel
-                        if let lawNumber = mutableChangeArray["bill"] as? String {
-                            self.getLawWithNumber(lawNumber) { (result, finished) in
-                                mutableChangeArray["billModel"] = result
-                                dispatch_async(queue) {
-                                    _ = LTChangeModel(dictionary: mutableChangeArray, context: context!)
-                                }
+                    var mutableChangeArray = changeArray
+                    mutableChangeArray["date"] = date as AnyObject
+                    mutableChangeArray["id"] = changeId as AnyObject
+                    
+                    //get lawModel
+                    if let lawNumber = mutableChangeArray["bill"] as? String {
+                        self.getLawWithNumber(lawNumber) { (result, finished) in
+                            mutableChangeArray["billModel"] = result
+                            queue.async {
+                                _ = LTChangeModel(dictionary: mutableChangeArray, context: context!)
                             }
                         }
                     }
@@ -257,36 +250,36 @@ class CoreDataStackManager {
             }
             
             self.saveContext()
-            completionHandler(finished: true)
+            completionHandler(true)
         }
     }
     
-    func clearEntity(entityName: String, completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func clearEntity(_ entityName: String, completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         let queue = CoreDataStackManager.coreDataQueue()
-        dispatch_async(queue) {[unowned self, weak context = managedObjectContext] in
-            let fetchRequest = NSFetchRequest(entityName: entityName)
+        queue.async {[unowned self, weak context = managedObjectContext] in
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
             let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
             do {
                 if let persistentStoreCoordinator = self.persistentStoreCoordinator  as NSPersistentStoreCoordinator! {
-                    try persistentStoreCoordinator.executeRequest(deleteRequest, withContext: context!)
-                    completionHandler(success: true, error: nil)
+                    try persistentStoreCoordinator.execute(deleteRequest, with: context!)
+                    completionHandler(true, nil)
                 }
             } catch let error as NSError {
-                completionHandler(success: true, error: error)
+                completionHandler(true, error)
             }
         }
     }
     
-    private func getLawWithNumber(lawNumber: String, completionHandler:(result: LTLawModel, finished: Bool) -> Void) {
+    fileprivate func getLawWithNumber(_ lawNumber: String, completionHandler:@escaping (_ result: LTLawModel, _ finished: Bool) -> Void) {
         if let lawModel = LTLawModel.lawWithNumber(lawNumber) as LTLawModel! {
-            completionHandler(result: lawModel, finished: true)
+            completionHandler(lawModel, true)
         } else {
             //there is no law with lawID so, make request to server
             LTClient.sharedInstance().getLawWithId(lawNumber) {success, error in
                 if success {
-                    dispatch_async(CoreDataStackManager.coreDataQueue()){
+                    CoreDataStackManager.coreDataQueue().async{
                         if let law = LTLawModel.lawWithNumber(lawNumber) as LTLawModel! {
-                            completionHandler(result: law, finished: true)
+                            completionHandler(law, true)
                         }
                     }
                 }
@@ -294,7 +287,7 @@ class CoreDataStackManager {
         }
     }
     
-    private func storeInitiators(array: [String : AnyObject], completionHandler:(result: [LTInitiatorModel], finished: Bool) -> Void) {
+    fileprivate func storeInitiators(_ array: [String : AnyObject], completionHandler:(_ result: [LTInitiatorModel], _ finished: Bool) -> Void) {
         var initiatorModels = [LTInitiatorModel]()
         let queue = CoreDataStackManager.coreDataQueue()
         if let typeID = array["initiator_type"] as? String {
@@ -307,7 +300,7 @@ class CoreDataStackManager {
                         } else {
                             LTClient.sharedInstance().getInitiatorWithId(idString){success, error in
                                 if success {
-                                    dispatch_async(queue){
+                                    queue.async{
                                         if let initiator = LTInitiatorModel.modelWithID(idString, entityName: "LTInitiatorModel") as? LTInitiatorModel! {
                                             initiatorModels.append(initiator)
                                         }
@@ -323,7 +316,7 @@ class CoreDataStackManager {
                 } else {
                     LTClient.sharedInstance().getInitiatorTypeWithId(typeID){success, error in
                         if success {
-                            dispatch_async(queue){
+                            queue.async{
                                 if let initiatorModel = LTInitiatorModel.modelWithID(typeID, entityName: "LTInitiatorModel") as? LTInitiatorModel! {
                                     initiatorModels.append(initiatorModel)
                                 }
@@ -334,10 +327,10 @@ class CoreDataStackManager {
             }
         }
         
-        completionHandler(result: initiatorModels, finished: true)
+        completionHandler(initiatorModels, true)
     }
     
-    func synchronized(lock: AnyObject, closure:() -> ()) {
+    func synchronized(_ lock: AnyObject, closure:() -> ()) {
         objc_sync_enter(lock)
         closure()
         objc_sync_exit(lock)

@@ -9,7 +9,7 @@
 import MapKit
 
 class VTSettingModel: NSObject {
-    var defaults    : NSUserDefaults
+    var defaults    : UserDefaults
     
     struct Keys {
         static let FirstLaunch = "firstLaunch"
@@ -18,21 +18,21 @@ class VTSettingModel: NSObject {
     
     var firstLaunch : Bool {
         get {
-            return defaults.boolForKey(Keys.FirstLaunch)
+            return defaults.bool(forKey: Keys.FirstLaunch)
         }
         
         set {
-            defaults.setBool(newValue, forKey: Keys.FirstLaunch)
+            defaults.set(newValue, forKey: Keys.FirstLaunch)
         }
     }
     
-    var lastDownloadDate : NSDate? {
+    var lastDownloadDate : Date? {
         set {
-            defaults.setObject(newValue!.dateWithoutTime(), forKey: Keys.Date)
+            defaults.set(newValue!.dateWithoutTime(), forKey: Keys.Date)
         }
         
         get {
-            if let date = defaults.objectForKey(Keys.Date) as? NSDate {
+            if let date = defaults.object(forKey: Keys.Date) as? Date {
                 return date.dateWithoutTime()
             } else {
                 return nil
@@ -45,19 +45,19 @@ class VTSettingModel: NSObject {
     }
     
     override init() {
-        self.defaults = NSUserDefaults.standardUserDefaults()
+        self.defaults = UserDefaults.standard
         
         super.init()
     }
     
-    override func setNilValueForKey(key: String) {
+    override func setNilValueForKey(_ key: String) {
         synchronized(self, closure: {
-            self.defaults.removeObjectForKey(key)
+            self.defaults.removeObject(forKey: key)
             self.defaults.synchronize()
         })
     }
     
-    override func setValue(value: AnyObject?, forKey key: String) {
+    override func setValue(_ value: Any?, forKey key: String) {
         synchronized(self, closure: {
             self.defaults.setValue(value, forKey: key)
             self.defaults.synchronize()

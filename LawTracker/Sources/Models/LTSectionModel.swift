@@ -44,14 +44,14 @@ class LTSectionModel: NSObject {
             }
         }
         
-        self.title = titles.joinWithSeparator("\n")
+        self.title = titles.joined(separator: "\n")
     }
     
-    func newsModelWithEntity(entity: LTEntityModel) -> LTNewsModel? {
+    func newsModelWithEntity(_ entity: LTEntityModel) -> LTNewsModel? {
         return self.changes.filter(){ $0.entity == entity }.first
     }
     
-    func addModel(model: LTNewsModel) {
+    func addModel(_ model: LTNewsModel) {
         changes.append(model)
     }
     

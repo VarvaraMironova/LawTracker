@@ -36,11 +36,11 @@ class LTEntityModel: NSManagedObject {
     
     var entityName: String!
     
-    class func modelWithID(id: String, entityName: String) -> LTEntityModel? {
+    class func modelWithID(_ id: String, entityName: String) -> LTEntityModel? {
         let predicate = NSPredicate(format:"id == %@", id)
-        let fetchRequest = NSFetchRequest(entityName: entityName)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTEntityModel] {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.fetch(fetchRequest)) as? [LTEntityModel] {
             if models.count > 0 {
                 return models.first!
             } else {
@@ -51,8 +51,8 @@ class LTEntityModel: NSManagedObject {
         }
     }
     
-    class func filteredEntities(key: LTType)  -> [LTEntityModel]? {
-        let predicate = NSPredicate(format:"filterSet == %@", true)
+    class func filteredEntities(_ key: LTType)  -> [LTEntityModel]? {
+        let predicate = NSPredicate(format:"filterSet == %@", true as CVarArg)
         var entityName = String()
         switch key {
         case .byLaws:
@@ -68,23 +68,23 @@ class LTEntityModel: NSManagedObject {
             break
         }
         
-        let fetchRequest = NSFetchRequest(entityName: entityName)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTEntityModel] {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.fetch(fetchRequest)) as? [LTEntityModel] {
             return models
         } else {
             return nil
         }
     }
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertInto: context)
     }
     
     init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
         // Core Data
-        let entity =  NSEntityDescription.entityForName(entityName, inManagedObjectContext: context)!
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        let entity =  NSEntityDescription.entity(forEntityName: entityName, in: context)!
+        super.init(entity: entity, insertInto: context)
         
         self.entityName = entityName
         
@@ -99,11 +99,11 @@ class LTEntityModel: NSManagedObject {
         }
     }
     
-    func addValueForKey(value: AnyObject, key: String) {
-        if deleted {
+    func addValueForKey(_ value: AnyObject, key: String) {
+        if isDeleted {
             return
         }
         
-        mutableSetValueForKey(key).addObject(value)
+        mutableSetValue(forKey: key).add(value)
     }
 }

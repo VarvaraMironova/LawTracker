@@ -15,18 +15,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
     {
         //check, if it is a first launch -> show helpViewController, else -> newsFeedViewController
         let window = UIWindow()
         
         let settings = VTSettingModel()
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let newsFeedController = storyboard.instantiateViewControllerWithIdentifier("LTNewsFeedViewController") as! LTNewsFeedViewController
-        let helpViewController = storyboard.instantiateViewControllerWithIdentifier("LTHelpController") as! LTHelpController
+        let newsFeedController = storyboard.instantiateViewController(withIdentifier: "LTNewsFeedViewController") as! LTNewsFeedViewController
+        let helpViewController = storyboard.instantiateViewController(withIdentifier: "LTHelpController") as! LTHelpController
         let rootController = settings.firstLaunch != true ? helpViewController : newsFeedController
         let navigationController = UINavigationController(rootViewController: rootController)
-        navigationController.navigationBarHidden = true
+        navigationController.isNavigationBarHidden = true
         
         window.rootViewController = navigationController
         self.window = window
@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func applicationWillTerminate(application: UIApplication) {
+    func applicationWillTerminate(_ application: UIApplication) {
         CoreDataStackManager.sharedInstance().saveContext()
     }
 }
