@@ -12,7 +12,7 @@ class LTHelpContentController: UIViewController {
 
     var rootView: LTHelpContentView? {
         get {
-            if isViewLoaded() && view.isKindOfClass(LTHelpContentView) {
+            if isViewLoaded && view.isKind(of: LTHelpContentView.self) {
                 return view as? LTHelpContentView
             } else {
                 return nil
@@ -24,20 +24,20 @@ class LTHelpContentController: UIViewController {
     
     var pageIndex : Int!
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         rootView!.fill(model)
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true
     }
     
-    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         
-        coordinator.animateAlongsideTransition({[weak rootView = rootView] (UIViewControllerTransitionCoordinatorContext) -> Void in
+        coordinator.animate(alongsideTransition: {[weak rootView = rootView] (UIViewControllerTransitionCoordinatorContext) -> Void in
             if let rootView = rootView as LTHelpContentView! {
                 rootView.fill(self.model)
             }}, completion: {(UIViewControllerTransitionCoordinatorContext) -> Void in })

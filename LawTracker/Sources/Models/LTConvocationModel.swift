@@ -16,11 +16,11 @@ class LTConvocationModel: LTEntityModel {
     @NSManaged var laws         : NSMutableSet
     @NSManaged var committees   : NSMutableSet
     
-    class func convocationWithNumber(number: String) -> LTConvocationModel? {
+    class func convocationWithNumber(_ number: String) -> LTConvocationModel? {
         let predicate = NSPredicate(format:"number == %@", number)
-        let fetchRequest = NSFetchRequest(entityName: "LTConvocationModel")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "LTConvocationModel")
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTConvocationModel]! {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.fetch(fetchRequest)) as! [LTConvocationModel]! {
             if models.count > 0 {
                 return models.first!
             } else {
@@ -32,10 +32,10 @@ class LTConvocationModel: LTEntityModel {
     }
     
     class func currentConvocation() -> LTConvocationModel? {
-        let predicate = NSPredicate(format:"current == %@", true)
-        let fetchRequest = NSFetchRequest(entityName: "LTConvocationModel")
+        let predicate = NSPredicate(format:"current == %@", true as CVarArg)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "LTConvocationModel")
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as! [LTConvocationModel]! {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.fetch(fetchRequest)) as! [LTConvocationModel]! {
             if models.count > 0 {
                 return models.first!
             } else {
@@ -48,17 +48,17 @@ class LTConvocationModel: LTEntityModel {
     
     class func convocations() -> [LTConvocationModel] {
         let predicate = NSPredicate(value: true)
-        let fetchRequest = NSFetchRequest(entityName: "LTConvocationModel")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "LTConvocationModel")
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTConvocationModel] {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.fetch(fetchRequest)) as? [LTConvocationModel] {
             return models
         } else {
             return []
         }
     }
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertInto: context)
     }
     
     override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {

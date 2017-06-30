@@ -16,7 +16,7 @@ class LTMainContentTableViewCell: UITableViewCell {
     
     var model        : LTNewsModel!
     
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         
     }
     
@@ -27,7 +27,7 @@ class LTMainContentTableViewCell: UITableViewCell {
         lawNameLabel.text = ""
     }
     
-    func fillWithModel(model: LTNewsModel) {
+    func fillWithModel(_ model: LTNewsModel) {
         self.model = model
         
         newsLabel.text = model.status
@@ -39,12 +39,12 @@ class LTMainContentTableViewCell: UITableViewCell {
         addSeparator()
     }
     
-    private func addSeparator() {
+    fileprivate func addSeparator() {
         if let separatorView = self.separatorView as UIView! {
             separatorView.removeFromSuperview()
         }
         
-        separatorView = UIView(frame: CGRectMake(0, CGRectGetHeight(contentView.frame) - 1.2, CGRectGetWidth(contentView.frame), 0.8))
+        separatorView = UIView(frame: CGRect(x: 0, y: contentView.frame.height - 1.2, width: contentView.frame.width, height: 0.8))
         separatorView!.backgroundColor = UIColor(red: 233.0/255.0, green: 235.0/255.0, blue: 233.0/255.0, alpha: 1.0)
         
         contentView.addSubview(separatorView!)

@@ -17,19 +17,19 @@ class LTChangeModel: LTEntityModel  {
         static let billModel    = "billModel"
     }
     
-    @NSManaged var date : NSDate
+    @NSManaged var date : Date
     @NSManaged dynamic var law  : LTLawModel
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertInto: context)
     }
     
     init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
         // Core Data
-        let entity =  NSEntityDescription.entityForName("LTChangeModel", inManagedObjectContext: context)!
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        let entity =  NSEntityDescription.entity(forEntityName: "LTChangeModel", in: context)!
+        super.init(entity: entity, insertInto: context)
         
-        if let date = dictionary[Keys.changeDate] as? NSDate {
+        if let date = dictionary[Keys.changeDate] as? Date {
             self.date = date
         }
         
@@ -46,11 +46,11 @@ class LTChangeModel: LTEntityModel  {
         }
     }
     
-    class func changesForDate(date: NSDate) -> [LTChangeModel]? {
-        let predicate = NSPredicate(format:"date == %@", date)
-        let fetchRequest = NSFetchRequest(entityName: "LTChangeModel")
+    class func changesForDate(_ date: Date) -> [LTChangeModel]? {
+        let predicate = NSPredicate(format:"date == %@", date as CVarArg)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "LTChangeModel")
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTChangeModel] {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.fetch(fetchRequest)) as? [LTChangeModel] {
             return models.count > 0 ? models : nil
         } else {
             return nil

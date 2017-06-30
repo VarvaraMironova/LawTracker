@@ -9,29 +9,29 @@
 import Foundation
 
 extension LTClient {
-    func downloadConvocations(completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func downloadConvocations(_ completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         //http://www.chesno.org/council/<Verkhovna Rada's id>/convocation/api/
         let urlVars = [kVTParameters.baseURL, kLTAPINames.council, kVTParameters.radaID, kLTMethodNames.convocation, kVTParameters.extras]
         
         requestWithParameters(urlVars) { [unowned self] (result, error) -> Void in
-            if let request = result as NSURLRequest! {
+            if let request = result as URLRequest! {
                 self.downloadTask = self.task(request){data, error in
-                    if nil != error {
-                        completionHandler(success: false, error: error)
+                    if nil == data {
+                        completionHandler(false, error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {(result, error) in
+                        LTClient.parseJSONWithCompletionHandler(data!) {(result, error) in
                             if nil != error {
-                                completionHandler(success: false, error: error)
+                                completionHandler(false, error)
                             } else {
                                 if let convocationsDictionary = result as? [[String: AnyObject]] {
                                     CoreDataStackManager.sharedInstance().storeConvocations(convocationsDictionary){finished in
                                         if finished {
-                                            completionHandler(success: true, error: nil)
+                                            completionHandler(true, nil)
                                         }
                                     }
                                 } else {
                                     let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                                    completionHandler(success: false, error: contentError)
+                                    completionHandler(false, contentError)
                                 }
                             }
                         }
@@ -41,175 +41,175 @@ extension LTClient {
         }
     }
     
-    func downloadLaws(completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func downloadLaws(_ completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/<convocation's id>/bill/api/
         if nil == currentConvocation {
             let contentError = LTClient.errorForMessage("Cannot download initiators. " + LTClient.KLTMessages.noCurrentConvocation)
-            completionHandler(success: false, error: contentError)
+            completionHandler(false, contentError)
             
             return
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, kVTParameters.extras]
         requestWithParameters(urlVars) {[unowned self, weak currentConvocation = currentConvocation!] (result, error) -> Void in
-            if let request = result as NSURLRequest! {
+            if let request = result as URLRequest! {
                 self.downloadTask = self.task(request){data, error in
-                    if nil != error {
-                        completionHandler(success: false, error: error)
+                    if nil == data {
+                        completionHandler(false, error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {(result, error) in
+                        LTClient.parseJSONWithCompletionHandler(data!) {(result, error) in
                             if nil != error {
-                                completionHandler(success: false, error: error)
+                                completionHandler(false, error)
                             } else {
                                 if let lawsDictionary = result as? [[String: AnyObject]] {
                                     CoreDataStackManager.sharedInstance().storeLaws(lawsDictionary, convocation: currentConvocation!.id){finished in
                                         if finished {
-                                            completionHandler(success: true, error: nil)
+                                            completionHandler(true, nil)
                                         }
                                     }
                                 } else {
                                     let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                                    completionHandler(success: false, error: contentError)
+                                    completionHandler(false, contentError)
                                 }
                             }
                         }
                     }
                 }
             } else {
-                completionHandler(success: false, error: error)
+                completionHandler(false, error)
             }
         }
     }
     
-    func downloadCommittees(completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func downloadCommittees(_ completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/<convocation's id>/committees/api/
         
         if nil == currentConvocation {
             let contentError = LTClient.errorForMessage("Cannot download committees. " + LTClient.KLTMessages.noCurrentConvocation)
-            completionHandler(success: false, error: contentError)
+            completionHandler(false, contentError)
             
             return
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.committees, kVTParameters.extras]
         requestWithParameters(urlVars) {[unowned self, weak currentConvocation = currentConvocation!] (result, error) -> Void in
-            if let request = result as NSURLRequest! {
+            if let request = result as URLRequest! {
                 self.downloadTask = self.task(request){data, error in
-                    if nil != error {
-                        completionHandler(success: false, error: error)
+                    if nil == data {
+                        completionHandler(false, error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {(result, error) in
+                        LTClient.parseJSONWithCompletionHandler(data!) {(result, error) in
                             if nil != error {
-                                completionHandler(success: false, error: error)
+                                completionHandler(false, error)
                             } else {
                                 if let committees = result as? [[String: AnyObject]] {
                                     CoreDataStackManager.sharedInstance().storeCommittees(committees, convocation: currentConvocation!.id){finished in
                                         if finished {
-                                            completionHandler(success: true, error: nil)
+                                            completionHandler(true, nil)
                                         }
                                     }
                                 } else {
                                     let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                                    completionHandler(success: false, error: contentError)
+                                    completionHandler(false, contentError)
                                 }
                             }
                         }
                     }
                 }
             } else {
-                completionHandler(success: false, error: error)
+                completionHandler(false, error)
             }
         }
     }
     
-    func downloadPersons(completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func downloadPersons(_ completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         //http://www.chesno.org/persons/json/deputies/<convocation's number>
         
         if nil == currentConvocation {
             let contentError = LTClient.errorForMessage("Cannot download initiators. " + LTClient.KLTMessages.noCurrentConvocation)
-            completionHandler(success: false, error: contentError)
+            completionHandler(false, contentError)
             
             return
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.persons, kVTParameters.format, kLTMethodNames.deputies, currentConvocation!.number]
         requestWithParameters(urlVars) {[unowned self] (result, error) -> Void in
-            if let request = result as NSURLRequest! {
+            if let request = result as URLRequest! {
                 self.downloadTask = self.task(request){data, error in
-                    if nil != error {
-                        completionHandler(success: false, error: error)
+                    if nil == data {
+                        completionHandler(false, error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                        LTClient.parseJSONWithCompletionHandler(data!) {result, error in
                             if nil != error {
-                                completionHandler(success: false, error: error)
+                                completionHandler(false, error)
                             } else {
                                 if let persons = result as? [[String: AnyObject]] {
                                     CoreDataStackManager.sharedInstance().storePersons(persons){finished in
                                         if finished {
-                                            completionHandler(success: true, error: nil)
+                                            completionHandler(true, nil)
                                         }
                                     }
                                 } else {
                                     let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                                    completionHandler(success: false, error: contentError)
+                                    completionHandler(false, contentError)
                                 }
                             }
                         }
                     }
                 }
             } else {
-                completionHandler(success: false, error: error)
+                completionHandler(false, error)
             }
         }
     }
     
-    func downloadInitiatorTypes(completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func downloadInitiatorTypes(_ completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/initiator-types/api/
         
         if nil == currentConvocation {
             let contentError = LTClient.errorForMessage("Cannot download initiators. " + LTClient.KLTMessages.noCurrentConvocation)
-            completionHandler(success: false, error: contentError)
+            completionHandler(false, contentError)
             
             return
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, kLTMethodNames.initiatorTypes, kVTParameters.extras]
         requestWithParameters(urlVars) {[unowned self] (result, error) -> Void in
-            if let request = result as NSURLRequest! {
+            if let request = result as URLRequest! {
                 self.downloadTask = self.task(request){data, error in
-                    if nil != error {
-                        completionHandler(success: false, error: error)
+                    if nil == data {
+                        completionHandler(false, error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                        LTClient.parseJSONWithCompletionHandler(data!) {result, error in
                             if nil != error {
-                                completionHandler(success: false, error: error)
+                                completionHandler(false, error)
                             } else {
                                 if let types = result as? [String: AnyObject] {
                                     CoreDataStackManager.sharedInstance().storeInitiatorTypes(types){finished in
                                         if finished {
-                                            completionHandler(success: true, error: nil)
+                                            completionHandler(true, nil)
                                         }
                                     }
                                 } else {
                                     let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                                    completionHandler(success: false, error: contentError)
+                                    completionHandler(false, contentError)
                                 }
                             }
                         }
                     }
                 }
             } else {
-                completionHandler(success: false, error: error)
+                completionHandler(false, error)
             }
         }
     }
     
-    func downloadChanges(date:NSDate, completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func downloadChanges(_ date:Date, completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/<convocation's id>/bill-statuses/<yyyy-MM-dd>/api/
         
         if nil == currentConvocation {
             let contentError = LTClient.errorForMessage("Cannot download status changes. " + LTClient.KLTMessages.noCurrentConvocation)
-            completionHandler(success: false, error: contentError)
+            completionHandler(false, contentError)
             
             return
         }
@@ -217,130 +217,125 @@ extension LTClient {
         let dateString = date.string("yyyy-MM-dd")
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.billStatuses, dateString, kVTParameters.extras]
         requestWithParameters(urlVars) {[unowned self] (result, error) -> Void in
-            if let request = result as NSURLRequest! {
+            if let request = result as URLRequest! {
                 self.downloadTask = self.task(request){data, error in
-                    if nil != error {
-                        completionHandler(success: false, error: error)
+                    if nil == data {
+                        completionHandler(false, error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                        LTClient.parseJSONWithCompletionHandler(data!) {result, error in
                             if nil != error {
-                                completionHandler(success: false, error: error)
+                                completionHandler(false, error)
                             } else {
                                 if let changes = result as? [[String: AnyObject]] {
                                     CoreDataStackManager.sharedInstance().storeChanges(date, changes: changes){finished in
                                         if finished {
-                                            completionHandler(success: true, error: nil)
+                                            completionHandler(true, nil)
                                         }
                                     }
                                 } else {
                                     let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                                    completionHandler(success: false, error: contentError)
+                                    completionHandler(false, contentError)
                                 }
                             }
                         }
                     }
                 }
             } else {
-                completionHandler(success: false, error: error)
+                completionHandler(false, error)
             }
         }
     }
     
-    func getLawWithId(id: String, completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func getLawWithId(_ id: String, completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/<convocation's id>/bill/<номер законопроекту>/api/
         if nil == currentConvocation {
             let contentError = LTClient.errorForMessage("Cannot download bills. " + LTClient.KLTMessages.noCurrentConvocation)
-            completionHandler(success: false, error: contentError)
+            completionHandler(false, contentError)
             
             return
         }
         
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, currentConvocation!.id, kLTMethodNames.bill, id, kVTParameters.extras]
         requestWithParameters(urlVars) {[unowned self, weak currentConvocation = currentConvocation!] (result, error) -> Void in
-            if let request = result as NSURLRequest! {
+            if let request = result as URLRequest! {
                 self.downloadTask = self.task(request){data, error in
-                    if nil != error {
-                        completionHandler(success: false, error: error)
+                    if nil == data {
+                        completionHandler(false, error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                        LTClient.parseJSONWithCompletionHandler(data!) {result, error in
                             if nil != error {
-                                completionHandler(success: false, error: error)
+                                completionHandler(false, error)
                             } else {
                                 if var lawDictionary = result as? [String: AnyObject] {
-                                    lawDictionary["number"] = id
-                                    var lawArray = [NSDictionary]()
-                                    lawArray.append(lawDictionary)
-                                    
-                                    CoreDataStackManager.sharedInstance().storeLaws(lawArray, convocation: currentConvocation!.id){finished in
+                                    lawDictionary["number"] = id as AnyObject
+                                    CoreDataStackManager.sharedInstance().storeLaws([lawDictionary], convocation: currentConvocation!.id){finished in
                                         if finished {
-                                            completionHandler(success: true, error: nil)
+                                            completionHandler(true, nil)
                                         }
                                     }
                                 } else {
                                     let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                                    completionHandler(success: false, error: contentError)
+                                    completionHandler(false, contentError)
                                 }
                             }
                         }
                     }
                 }
             } else {
-                completionHandler(success: false, error: error)
+                completionHandler(false, error)
             }
         }
     }
     
-    func getInitiatorWithId(id: String, completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func getInitiatorWithId(_ id: String, completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         //http://www.chesno.org/legislation/initiators/<person_id>/api/
         let urlVars = [kVTParameters.baseURL, kLTAPINames.legislation, kLTMethodNames.initiators, id, kVTParameters.extras]
         requestWithParameters(urlVars) {[unowned self] (result, error) -> Void in
-            if let request = result as NSURLRequest! {
+            if let request = result as URLRequest! {
                 self.downloadTask = self.task(request){data, error in
-                    if nil != error {
-                        completionHandler(success: false, error: error)
+                    if nil == data {
+                        completionHandler(false, error)
                     } else {
-                        LTClient.parseJSONWithCompletionHandler(data) {result, error in
+                        LTClient.parseJSONWithCompletionHandler(data!) {result, error in
                             if nil != error {
-                                completionHandler(success: false, error: error)
+                                completionHandler(false, error)
                             } else {
                                 if let person = result as? [String: AnyObject] {
-                                    var personArray = [NSDictionary]()
-                                    personArray.append(person)
-                                    CoreDataStackManager.sharedInstance().storePersons(personArray){finished in
+                                    CoreDataStackManager.sharedInstance().storePersons([person]){finished in
                                         if finished {
-                                            completionHandler(success: true, error: nil)
+                                            completionHandler(true, nil)
                                         }
                                     }
                                 } else {
                                     let contentError = LTClient.errorForMessage(LTClient.KLTMessages.parseJSONError + "\(result)")
-                                    completionHandler(success: false, error: contentError)
+                                    completionHandler(false, contentError)
                                 }
                             }
                         }
                     }
                 }
             } else {
-                completionHandler(success: false, error: error)
+                completionHandler(false, error)
             }
         }
     }
     
-    func getCommitteeWithId(id: String, completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func getCommitteeWithId(_ id: String, completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         downloadCommittees { (success, error) -> Void in
             if success {
-                completionHandler(success: success, error: nil)
+                completionHandler(success, nil)
             } else {
-                completionHandler(success: success, error: error)
+                completionHandler(success, error)
             }
         }
     }
     
-    func getInitiatorTypeWithId(id: String, completionHandler:(success: Bool, error: NSError?) -> Void) {
+    func getInitiatorTypeWithId(_ id: String, completionHandler:@escaping (_ success: Bool, _ error: NSError?) -> Void) {
         downloadInitiatorTypes { (success, error) -> Void in
             if success {
-                completionHandler(success: success, error: nil)
+                completionHandler(success, nil)
             } else {
-                completionHandler(success: success, error: error)
+                completionHandler(success, error)
             }
         }
     }

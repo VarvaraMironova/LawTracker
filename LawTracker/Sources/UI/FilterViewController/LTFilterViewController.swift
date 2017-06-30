@@ -38,7 +38,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     
     var rootView: LTFilterRootView! {
         get {
-            if isViewLoaded() && view.isKindOfClass(LTFilterRootView) {
+            if isViewLoaded && view.isKind(of: LTFilterRootView.self) {
                 return view as? LTFilterRootView
             } else {
                 return nil
@@ -46,38 +46,38 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         rootView.fillSearchBarPlaceholder(placeholderString)
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         rootView.endEditing(true)
     }
         
     //MARK: - Interface Handling
-    @IBAction func onOkButton(sender: AnyObject) {
+    @IBAction func onOkButton(_ sender: AnyObject) {
         setFilters {[unowned self] (finished) -> Void in
             if finished {
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     if let filterDelegate = self.filterDelegate {
                         filterDelegate.filtersDidApplied()
                     }
                     
-                    self.dismissViewControllerAnimated(true, completion: nil)
+                    self.dismiss(animated: true, completion: nil)
                 }
             }
         }
     }
     
-    @IBAction func onCancelButton(sender: AnyObject) {
+    @IBAction func onCancelButton(_ sender: AnyObject) {
         //clear filters in Settings
         if let filters = filters as [LTSectionModel]! {
             for sectionModel in filters {
@@ -89,16 +89,16 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
             CoreDataStackManager.sharedInstance().saveContext()
         }
         
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+        DispatchQueue.main.async {[unowned self] in
             if let filterDelegate = self.filterDelegate {
                 filterDelegate.filtersDidApplied()
             }
             
-            self.dismissViewControllerAnimated(true, completion: nil)
+            self.dismiss(animated: true, completion: nil)
         }
     }
     
-    @IBAction func onSelectAllButton(sender: AnyObject) {
+    @IBAction func onSelectAllButton(_ sender: AnyObject) {
         rootView.endEditing(true)
         
         if let filters = filters as [LTSectionModel]! {
@@ -126,7 +126,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     func headerTapped() {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView] in
+        DispatchQueue.main.async {[unowned self, weak rootView = rootView] in
             if let filters = self.filters as [LTSectionModel]! {
                 rootView!.endEditing(true)
                 let deputiesArray = filters.filter(){ $0.title == "Народні депутати України" }.first
@@ -137,13 +137,13 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
                 
                 let searchBar = rootView!.searchBar
-                self.filterContentForSearchText(searchBar.text!, scope: searchBar.selectedScopeButtonIndex)
+                self.filterContentForSearchText((searchBar?.text!)!, scope: (searchBar?.selectedScopeButtonIndex)!)
             }
         }
     }
     
     //MARK: - UITableViewDataSource methods
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let filters = filters as [LTSectionModel]! {
             let sectionModel = rootView.searchBarActive ? filteredArray[section] : filters[section]
             
@@ -153,7 +153,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         return 0
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         if let filters = filters as [LTSectionModel]! {
             return rootView.searchBarActive ? filteredArray.count : filters.count
         }
@@ -161,8 +161,8 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         return 0
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("LTFilterTableViewCell", forIndexPath: indexPath) as! LTFilterTableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LTFilterTableViewCell", for: indexPath) as! LTFilterTableViewCell
         if let filters = filters as [LTSectionModel]! {
             let model = rootView.searchBarActive ? filteredArray[indexPath.section].filters[indexPath.row] : filters[indexPath.section].filters[indexPath.row]
             
@@ -172,7 +172,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         return cell
     }
     
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if let filters = filters as [LTSectionModel]! {
             return rootView.searchBarActive ? filteredArray[section].title : filters[section].title
         }
@@ -180,14 +180,14 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         return nil
     }
     
-    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if let filters = filters as [LTSectionModel]! {
             let headerView = LTCellHeaderView.headerView() as LTCellHeaderView
             let title = rootView.searchBarActive ? filteredArray[section].title : filters[section].title
             headerView.fillWithString(title)
             let button = UIButton()
             button.frame = headerView.frame
-            button.addTarget(self, action: "headerTapped", forControlEvents: .TouchUpInside)
+            button.addTarget(self, action: #selector(LTFilterViewController.headerTapped), for: .touchUpInside)
             headerView.addSubview(button)
             
             return headerView
@@ -196,7 +196,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
         return nil
     }
     
-    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if let filters = filters as [LTSectionModel]! {
             let title = rootView.searchBarActive ? filteredArray[section].title : filters[section].title
             
@@ -207,52 +207,52 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     //MARK: - UITableViewDelegate methods
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self, weak rootView = rootView] in
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        DispatchQueue.main.async {[unowned self, weak rootView = rootView] in
             rootView!.endEditing(true)
             if let filters = self.filters as [LTSectionModel]! {
                 let searchBar = rootView!.searchBar
                 let array = rootView!.searchBarActive ? self.filteredArray[indexPath.section].filters : filters[indexPath.section].filters
-                let cell = tableView.cellForRowAtIndexPath(indexPath) as! LTFilterTableViewCell
+                let cell = tableView.cellForRow(at: indexPath) as! LTFilterTableViewCell
                 let selectedModel = array[indexPath.row]
                 selectedModel.selected = !cell.filtered
                 
-                self.filterContentForSearchText(searchBar.text!, scope: searchBar.selectedScopeButtonIndex)
+                self.filterContentForSearchText((searchBar?.text!)!, scope: (searchBar?.selectedScopeButtonIndex)!)
             }
         }
     }
     
     //MARK: - UISearchBarDelegate
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        DispatchQueue.main.async {[unowned self] in
             self.filterContentForSearchText(searchText, scope: searchBar.selectedScopeButtonIndex)
         }
         
     }
     
-    func searchBar(searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        dispatch_async(dispatch_get_main_queue()) {[unowned self] in
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        DispatchQueue.main.async {[unowned self] in
             self.filterContentForSearchText(searchBar.text!, scope: selectedScope)
         }
         
     }
     
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        dispatch_async(dispatch_get_main_queue()) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        DispatchQueue.main.async {
             searchBar.resignFirstResponder()
         }
         
     }
     
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
-        dispatch_async(dispatch_get_main_queue()) {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        DispatchQueue.main.async {
             searchBar.resignFirstResponder()
         }
         
     }
     
     //MARK: - Private methods
-    private func filterContentForSearchText(searchText: String, scope: Int = 0) {
+    fileprivate func filterContentForSearchText(_ searchText: String, scope: Int = 0) {
         if let filters = filters as [LTSectionModel]! {
             filteredArray = [LTSectionModel]()
             for sectionModel in filters {
@@ -260,9 +260,9 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                     let category = filter.selected == true ? 1 : 2
                     let categoryMatch = (scope == 0) || (category == scope)
                     if searchText != "" {
-                        let containsInTitle = filter.entity.title.lowercaseString.containsString(searchText.lowercaseString)
+                        let containsInTitle = filter.entity.title.lowercased().contains(searchText.lowercased())
                         if let entity = filter.entity as? LTLawModel {
-                            let containsInNumber = entity.number.lowercaseString.containsString(searchText.lowercaseString)
+                            let containsInNumber = entity.number.lowercased().contains(searchText.lowercased())
                             
                             return categoryMatch && (containsInTitle || containsInNumber)
                         } else {
@@ -282,15 +282,15 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
             }
             
-            dispatch_async(dispatch_get_main_queue()) {[weak rootView = rootView] in
+            DispatchQueue.main.async {[weak rootView = rootView] in
                 rootView!.tableView.reloadData()
             }
         }
     }
     
-    private func setFilters(completionHandler:(finished: Bool) -> Void) {
+    fileprivate func setFilters(_ completionHandler:@escaping (_ finished: Bool) -> Void) {
         let queue = CoreDataStackManager.coreDataQueue()
-        dispatch_async(queue) {
+        queue.async {
             if let filters = self.filters as [LTSectionModel]! {
                 for sectionModel in filters {
                     for filter in sectionModel.filters {
@@ -301,7 +301,7 @@ class LTFilterViewController: UIViewController, UITableViewDataSource, UITableVi
                 CoreDataStackManager.sharedInstance().saveContext()
             }
             
-            completionHandler(finished: true)
+            completionHandler(true)
         }
     }
     

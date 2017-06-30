@@ -10,7 +10,7 @@ import CoreData
 
 class LTLawModel: LTEntityModel {
     @NSManaged var number           : String
-    @NSManaged var presentationDate : NSDate?
+    @NSManaged var presentationDate : Date?
     @NSManaged var url              : String
     
     @NSManaged var changes          : NSMutableSet
@@ -19,8 +19,8 @@ class LTLawModel: LTEntityModel {
     @NSManaged var convocation      : LTConvocationModel
     @NSManaged var committee        : LTCommitteeModel
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertInto: context)
     }
     
     override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
@@ -35,7 +35,7 @@ class LTLawModel: LTEntityModel {
         }
         
         if let dateString = dictionary[Keys.date] as? String {
-            if let date = dateString.date() as NSDate! {
+            if let date = dateString.date() as Date! {
                 self.presentationDate = date
             }
         }
@@ -55,11 +55,11 @@ class LTLawModel: LTEntityModel {
         }
     }
     
-    class func lawWithNumber(number: String) -> LTLawModel? {
+    class func lawWithNumber(_ number: String) -> LTLawModel? {
         let predicate = NSPredicate(format:"number == %@", number)
-        let fetchRequest = NSFetchRequest(entityName: "LTLawModel")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "LTLawModel")
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTLawModel] {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.fetch(fetchRequest)) as? [LTLawModel] {
             if models.count > 0 {
                 return models.first!
             } else {
@@ -70,15 +70,15 @@ class LTLawModel: LTEntityModel {
         }
     }
     
-    class func changesForLaw(number: String) -> NSMutableSet? {
+    class func changesForLaw(_ number: String) -> NSMutableSet? {
         let predicate = NSPredicate(format:"number == %@", number)
-        let fetchRequest = NSFetchRequest(entityName: "LTLawModel")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "LTLawModel")
         fetchRequest.predicate = predicate
-        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.executeFetchRequest(fetchRequest)) as? [LTLawModel] {
+        if let models = (try? CoreDataStackManager.sharedInstance().managedObjectContext.fetch(fetchRequest)) as? [LTLawModel] {
             if models.count > 0 {
                 let changes = models.first!.changes
                 for change in changes {
-                    print("DATE =", change.date)
+                    print("DATE =", (change as AnyObject).date)
                 }
                 
                 return changes

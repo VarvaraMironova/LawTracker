@@ -9,8 +9,8 @@
 import UIKit
 
 class LTClient: NSObject {
-    var session         : NSURLSession
-    var downloadTask    : NSURLSessionDataTask?
+    var session         : URLSession
+    var downloadTask    : URLSessionDataTask?
     
     var methodArguments = [
         "api"           : String(),
@@ -29,10 +29,10 @@ class LTClient: NSObject {
         return nil
     }()
     
-    typealias CompletionHander = (result: AnyObject!, error: NSError?) -> Void
+    typealias CompletionHander = (_ result: AnyObject?, _ error: NSError?) -> Void
     
     override init() {
-        session = NSURLSession.sharedSession()
+        session = URLSession.shared
         
         super.init()
     }
@@ -48,89 +48,90 @@ class LTClient: NSObject {
     }
     
     // MARK: - Helpers
-    class func errorForMessage(message: String) -> NSError {
+    class func errorForMessage(_ message: String) -> NSError {
         let userInfo = [NSLocalizedDescriptionKey : message]
         
         return NSError(domain: "Application Error", code: 1, userInfo: userInfo)
     }
     
-    class func parseJSONWithCompletionHandler(data: NSData, completionHandler: CompletionHander) {
+    class func parseJSONWithCompletionHandler(_ data: Data, completionHandler: CompletionHander) {
         var parsingError: NSError? = nil
         
         let parsedResult: AnyObject?
         do {
-            parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
+            parsedResult = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments) as AnyObject
         } catch let error as NSError {
             parsingError = error
             parsedResult = nil
         }
         
         if let error = parsingError {
-            completionHandler(result: nil, error: error)
+            completionHandler(nil, error)
         } else {
-            completionHandler(result: parsedResult, error: nil)
+            completionHandler(parsedResult, nil)
         }
     }
     
     // MARK: - All purpose tasks
-    func task(request: NSURLRequest, completionHandler: (result: NSData!, error: NSError?) -> Void) -> NSURLSessionDataTask
+    func task(_ request: URLRequest, completionHandler: @escaping (_ result: Data?, _ error: NSError?) -> Void) -> URLSessionDataTask
     {
-        let task = session.dataTaskWithRequest(request) {data, response, downloadError in
+        let task = session.dataTask(with: request, completionHandler: {data, response, downloadError in
             if let error = downloadError {
-                completionHandler(result: nil, error: error)
+                completionHandler(nil, error as NSError)
             } else {
-                completionHandler(result: data, error: nil)
+                completionHandler(data, nil)
             }
-        }
+        }) 
         
         task.resume()
         
         return task
     }
     
-    func taskWithURL(url: NSURL, completionHandler: (result: NSData!, error: NSError?) -> Void) -> NSURLSessionDataTask
+    func taskWithURL(_ url: URL, completionHandler: @escaping (_ result: Data?, _ error: NSError?) -> Void) -> URLSessionDataTask
     {
-        let task = session.dataTaskWithURL(url) {data, response, downloadError in
+        let task = session.dataTask(with: url, completionHandler: {data, response, downloadError in
             if let error = downloadError {
-                completionHandler(result: nil, error: error)
+                completionHandler(nil, error as NSError)
             } else {
-                completionHandler(result: data, error: nil)
+                completionHandler(data, nil)
             }
-        }
+        }) 
         
         task.resume()
         
         return task
     }
     
-    func requestWithParameters(params: [String], completionHandler: (result: NSURLRequest?, error: NSError?) -> Void) {
+    func requestWithParameters(_ params: [String], completionHandler: (_ result: URLRequest?, _ error: NSError?) -> Void) {
         urlWithParameters(params) { (result, error) in
-            if let url = result as NSURL! {
-                if let request = NSMutableURLRequest(URL: url) as NSMutableURLRequest! {
-                    request.HTTPMethod = "GET"
-                    completionHandler(result: request, error: nil)
+            if let url = result as URL! {
+                if let request = NSMutableURLRequest(url: url) as NSMutableURLRequest! {
+                    request.httpMethod = "GET"
+                    request.setValue("application/json", forHTTPHeaderField: "Accept")
+                    completionHandler(request as URLRequest, nil)
                 } else {
                     let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsRequestError + "\(url.absoluteString)")
-                    completionHandler(result: nil, error: requestError)
+                    completionHandler(nil, requestError)
                 }
             } else if let error = error as NSError! {
-                completionHandler(result: nil, error: error)
+                completionHandler(nil, error)
             }
         }
     }
     
-    func urlWithParameters(params: [String], completionHandler: (result: NSURL?, error: NSError?) -> Void) {
-        let urlString = params.joinWithSeparator("/") + "/"
-        if let unescapedURLString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) {
-            if let url = NSURL(string: unescapedURLString) as NSURL! {
-                completionHandler(result: url, error: nil)
+    func urlWithParameters(_ params: [String], completionHandler: (_ result: URL?, _ error: NSError?) -> Void) {
+        let urlString = params.joined(separator: "/") + "/"
+        if let unescapedURLString = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) {
+            if let url = URL(string: unescapedURLString) as URL! {
+                completionHandler(url, nil)
             } else {
                 let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsURLError + "\( urlString)")
-                completionHandler(result: nil, error: requestError)
+                completionHandler(nil, requestError)
             }
         } else {
             let requestError = LTClient.errorForMessage(LTClient.KLTMessages.nsURLError + "\( urlString)")
-            completionHandler(result: nil, error: requestError)
+            completionHandler(nil, requestError)
         }
     }
 }

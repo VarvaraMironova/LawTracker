@@ -12,15 +12,15 @@ import Foundation
 class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     var entityName  : String!
     var predicate   : NSPredicate!
-    var downloadDate: NSDate!
+    var downloadDate: Date!
     
     lazy var models: [LTEntityModel]! = {
-        return self.fetchedResultsController.fetchedObjects as? [LTEntityModel]
+        return self.fetchedResultsController.fetchedObjects
     }()
     
     // MARK: - NSFetchedResultsController
-    lazy var fetchedResultsController: NSFetchedResultsController = {
-        let fetchRequest = NSFetchRequest(entityName: self.entityName)
+    lazy var fetchedResultsController: NSFetchedResultsController = { () -> NSFetchedResultsController<LTEntityModel> in
+        let fetchRequest = NSFetchRequest<LTEntityModel>(entityName: self.entityName)
         fetchRequest.predicate = self.predicate
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: false)]
         
@@ -32,7 +32,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
         return fetchedResultsController
     }()
     
-    init(entityName: String, predicate: NSPredicate, date: NSDate) {
+    init(entityName: String, predicate: NSPredicate, date: Date) {
         super.init()
         
         self.predicate = predicate
@@ -46,9 +46,9 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
     }
     
     //MARK: - Public
-    func filters(key: LTType, completionHandler:(result: [LTSectionModel], finish: Bool) -> Void) {
+    func filters(_ key: LTType, completionHandler:(_ result: [LTSectionModel], _ finish: Bool) -> Void) {
         if nil == models {
-            completionHandler(result: [LTSectionModel](), finish: true)
+            completionHandler([LTSectionModel](), true)
             return
         }
         
@@ -98,7 +98,7 @@ class LTArrayModel: NSObject, NSFetchedResultsControllerDelegate {
             }
         }
         
-        completionHandler(result: filters, finish: true)
+        completionHandler(filters, true)
     }
     
     func count() -> Int {

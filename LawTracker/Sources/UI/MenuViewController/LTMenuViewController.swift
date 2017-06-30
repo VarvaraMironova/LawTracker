@@ -11,22 +11,22 @@ import UIKit
 let kLTChesnoURL = "http://www.chesno.org"
 
 enum LTMenuCells: Int {
-    case Manual = 0,
-    WebSite     = 1
+    case manual = 0,
+    webSite     = 1
     
-    static let cellTypes = [Manual, WebSite]
+    static let cellTypes = [manual, webSite]
 };
 
 class LTMenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var menuDelegate: LTMenuDelegate?
     
     //MARK: - UITableViewDataSource methods
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return LTMenuCells.cellTypes.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("LTMenuTableViewCell", forIndexPath: indexPath) as! LTMenuTableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LTMenuTableViewCell", for: indexPath) as! LTMenuTableViewCell
         var string = ""
         switch indexPath.row {
         case 0:
@@ -46,23 +46,23 @@ class LTMenuViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let menuDelegate = menuDelegate {
             menuDelegate.hideMenu() {[weak storyboard = self.storyboard, weak navigationController = navigationController] (finished) in
                 if finished {
                     switch indexPath.row {
                     case 0:
-                        dispatch_async(dispatch_get_main_queue()) {
-                            let helpViewController = storyboard!.instantiateViewControllerWithIdentifier("LTHelpController") as! LTHelpController
-                            navigationController!.presentViewController(helpViewController, animated: true, completion: nil)
+                        DispatchQueue.main.async {
+                            let helpViewController = storyboard!.instantiateViewController(withIdentifier: "LTHelpController") as! LTHelpController
+                            navigationController!.present(helpViewController, animated: true, completion: nil)
                             //navigationController!.pushViewController(helpViewController, animated: true)
                         }
                         
                         break
                         
                     case 1:
-                        let url = NSURL(string: kLTChesnoURL)
-                        let app = UIApplication.sharedApplication()
+                        let url = URL(string: kLTChesnoURL)
+                        let app = UIApplication.shared
                         if app.canOpenURL(url!) {
                             app.openURL(url!)
                         }

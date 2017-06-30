@@ -12,11 +12,11 @@ class LTMenuTableViewCell: UITableViewCell {
     @IBOutlet var arrowImageView: UIImageView!
     @IBOutlet var titleLabel: UILabel!
     
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
 
     }
     
-    func fill(string: String) {
+    func fill(_ string: String) {
         titleLabel.text = string
         titleLabel.fit()
     }

@@ -12,7 +12,7 @@ class LTSwitchButton: UIButton {
     var switchButtonView    : LTSwitchButtonView!
     var on: Bool! = false {
         didSet {
-            selected = on
+            isSelected = on
             if let switchButtonView = switchButtonView as LTSwitchButtonView! {
                 switchButtonView.setOn(on)
             }
@@ -39,14 +39,14 @@ class LTSwitchButton: UIButton {
     }
     
     //MARK:- Public
-    func setFilterImage(key: LTType) {
-        dispatch_async(CoreDataStackManager.coreDataQueue()) {[unowned self] in
+    func setFilterImage(_ key: LTType) {
+        CoreDataStackManager.coreDataQueue().async {[unowned self] in
             if let filteredEntities = LTEntityModel.filteredEntities(key) as [LTEntityModel]! {
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     self.filtersSet = filteredEntities.count > 0
                 }
             } else {
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     self.filtersSet = false
                 }
             }

@@ -8,14 +8,14 @@
 
 import Foundation
 
-extension NSDate {
+extension Date {
     
-    func string(format: String) -> String {
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.calendar = NSCalendar.currentCalendar()
+    func string(_ format: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.calendar = Calendar.current
         dateFormatter.dateFormat = format
         
-        if let result = dateFormatter.stringFromDate(self) as String! {
+        if let result = dateFormatter.string(from: self) as String! {
             return result
         }
         
@@ -23,39 +23,37 @@ extension NSDate {
     }
     
     func longString() -> String {
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.calendar = NSCalendar.currentCalendar()
-        dateFormatter.dateStyle = .LongStyle
-        dateFormatter.locale = NSLocale(localeIdentifier: "uk-Cyrl")
+        let dateFormatter = DateFormatter()
+        dateFormatter.calendar = Calendar.current
+        dateFormatter.dateStyle = .long
+        dateFormatter.locale = Locale(identifier: "uk-Cyrl")
         
-        if let result = dateFormatter.stringFromDate(self) as String! {
+        if let result = dateFormatter.string(from: self) as String! {
             return result
         }
         
         return ""
     }
     
-    func previousDay() -> NSDate {
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components([.Year, .Month, .Day], fromDate: self)
-        components.day -= 1
-        
-        return calendar.dateFromComponents(components)!
+    func previousDay() -> Date {
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month, .day], from: self)
+        components.day = components.day! - 1
+        return calendar.date(from: components)!
     }
     
-    func nextDay() -> NSDate {
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components([.Year, .Month, .Day], fromDate: self)
-        components.day += 1
-        
-        return calendar.dateFromComponents(components)!
+    func nextDay() -> Date {
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month, .day], from: self)
+        components.day = components.day! + 1
+        return calendar.date(from: components)!
     }
     
-    func dateWithoutTime() -> NSDate {
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components([.Year, .Month, .Day], fromDate: self)
+    func dateWithoutTime() -> Date {
+        let calendar = Calendar.current
+        let components = (calendar as NSCalendar).components([.year, .month, .day], from: self)
         
-        return calendar.dateFromComponents(components)!
+        return calendar.date(from: components)!
     }
 
 }

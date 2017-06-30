@@ -10,7 +10,7 @@ import UIKit
 
 class LTSliderAnimator: NSObject, UIViewControllerAnimatedTransitioning, UIViewControllerInteractiveTransitioning {
     var operation : UINavigationControllerOperation!
-    var duration  : NSTimeInterval = 0.2
+    var duration  : TimeInterval = 0.2
     
     internal var shadowView  : UIView?
     internal weak var destination : UIViewController!
@@ -18,20 +18,20 @@ class LTSliderAnimator: NSObject, UIViewControllerAnimatedTransitioning, UIViewC
     
     internal var curve             : UIViewAnimationCurve {
         get {
-            return .EaseInOut
+            return .easeInOut
         }
     }
     
     internal var transitionContext : LTTransitionContext!
     
-    internal var timeInterval      : NSTimeInterval!
+    internal var timeInterval      : TimeInterval!
     internal var interacting       : Bool!
     
     // MARK: - Public
-    func updateInteractiveTransition(percentComplete: CGFloat) {
+    func updateInteractiveTransition(_ percentComplete: CGFloat) {
         let percent = max(0.0, min(1.0, percentComplete))
         
-        timeInterval = duration * NSTimeInterval(percent)
+        timeInterval = duration * TimeInterval(percent)
         
         transitionContext.updateInteractiveTransition(percent)
         contextChangedPercentComplete(transitionContext, percentComplete: percent, completionHandler: nil)
@@ -46,7 +46,7 @@ class LTSliderAnimator: NSObject, UIViewControllerAnimatedTransitioning, UIViewC
         
         contextChangedPercentComplete(transitionContext, percentComplete: percentComplete) {completed in
             let context = self.transitionContext
-            context.completeTransition(!context.transitionWasCancelled())
+            context?.completeTransition(context!.transitionWasCancelled)
         }
     }
     
@@ -59,83 +59,82 @@ class LTSliderAnimator: NSObject, UIViewControllerAnimatedTransitioning, UIViewC
         
         contextChangedPercentComplete(transitionContext, percentComplete: percentComplete) {completed in
             let context = self.transitionContext
-            context.completeTransition(!context.transitionWasCancelled())
+            context?.completeTransition(context!.transitionWasCancelled)
         }
     }
     
     // MARK: - Private
-    func prepareAnimationForTransition(transitionContext: LTTransitionContext) {
-        if let bounds = transitionContext.containerView()?.bounds as CGRect! {
+    func prepareAnimationForTransition(_ transitionContext: LTTransitionContext) {
+        if let bounds = transitionContext.containerView.bounds as CGRect! {
             let shadow = UIView(frame: bounds)
-            shadow.backgroundColor = UIColor.blackColor()
+            shadow.backgroundColor = UIColor.black
             
             shadowView = shadow
         }
         
-        if let destinationController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey) as UIViewController! {
+        if let destinationController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) as UIViewController! {
             let destinationView = destinationController.view
-            destinationView.frame = transitionContext.initialFrameForViewController(destinationController)
+            destinationView?.frame = transitionContext.initialFrame(for: destinationController)
             destination = destinationController
         }
         
-        if let sourceController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey) as UIViewController! {
+        if let sourceController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from) as UIViewController! {
             let sourceView = sourceController.view
-            sourceView.frame = transitionContext.initialFrameForViewController(sourceController)
+            sourceView?.frame = transitionContext.initialFrame(for: sourceController)
             source = sourceController
         }
-        
-        if let containerView = transitionContext.containerView() as UIView! {
-            if .Push == operation {
-                containerView.insertSubview(destination.view, aboveSubview: source.view)
-                if let shadowView = shadowView as UIView! {
-                    containerView.insertSubview(shadowView, aboveSubview: source.view)
-                    shadowView.alpha = 0.0
-                }
-            } else if .Pop == operation {
-                containerView.insertSubview(destination.view, belowSubview: source.view)
-                if let shadowView = shadowView as UIView! {
-                    containerView.insertSubview(shadowView, belowSubview: source.view)
-                    shadowView.alpha = 1.0
-                }
+
+        let containerView = transitionContext.containerView
+        if .push == operation {
+            containerView.insertSubview(destination.view, aboveSubview: source.view)
+            if let shadowView = shadowView as UIView! {
+                containerView.insertSubview(shadowView, aboveSubview: source.view)
+                shadowView.alpha = 0.0
+            }
+        } else if .pop == operation {
+            containerView.insertSubview(destination.view, belowSubview: source.view)
+            if let shadowView = shadowView as UIView! {
+                containerView.insertSubview(shadowView, belowSubview: source.view)
+                shadowView.alpha = 1.0
             }
         }
     }
     
-    func contextChangedPercentComplete(transitionContext: LTTransitionContext, percentComplete: CGFloat, completionHandler:LTCompletionBlock?) {
-        let duration = (transitionContext.isInteractive()) && (true == interacting) && (0 != timeInterval) ? 0 : transitionDuration(transitionContext) - timeInterval
-        var options : UIViewAnimationOptions = .BeginFromCurrentState
+    func contextChangedPercentComplete(_ transitionContext: LTTransitionContext, percentComplete: CGFloat, completionHandler:LTCompletionBlock?) {
+        let duration = (transitionContext.isInteractive) && (true == interacting) && (0 != timeInterval) ? 0 : transitionDuration(using: transitionContext) - timeInterval
+        var options : UIViewAnimationOptions = .beginFromCurrentState
         
-        if .EaseInOut == curve {
-            if .EaseIn == curve {
-                options = options.union(.CurveEaseIn)
-            } else if .EaseOut == curve {
-                options = options.union(.CurveEaseOut)
+        if .easeInOut == curve {
+            if .easeIn == curve {
+                options = options.union(.curveEaseIn)
+            } else if .easeOut == curve {
+                options = options.union(.curveEaseOut)
             } else {
-                options = [.CurveLinear, .BeginFromCurrentState]
+                options = [.curveLinear, .beginFromCurrentState]
             }
         }
         
-        UIView.animateWithDuration(duration, delay: 0, options: options, animations: {
-            self.destination.view.frame = transitionContext.finalFrameForViewController(self.destination)
-            self.source.view.frame = transitionContext.finalFrameForViewController(self.source)
+        UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+            self.destination.view.frame = transitionContext.finalFrame(for: self.destination)
+            self.source.view.frame = transitionContext.finalFrame(for: self.source)
             
             if let shadowView = self.shadowView as UIView! {
-                shadowView.alpha = .Push == self.operation ? percentComplete : 1.0 - percentComplete
+                shadowView.alpha = .push == self.operation ? percentComplete : 1.0 - percentComplete
             }
             }, completion: completionHandler)
 
     }
     
     //MARK: - UIViewControllerAnimatedTransitioning
-    func completionSpeed() -> CGFloat {
+    var completionSpeed : CGFloat {
         return 1.0
     }
     
-    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
-        let duration = self.duration / NSTimeInterval(completionSpeed());
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+        let duration = self.duration / TimeInterval(completionSpeed);
         
         if let transitionContext = transitionContext as UIViewControllerContextTransitioning! {
-            if transitionContext.isAnimated() && false == transitionContext.transitionWasCancelled() {
+            if transitionContext.isAnimated && false == transitionContext.transitionWasCancelled {
                 return duration
             }
         }
@@ -143,16 +142,16 @@ class LTSliderAnimator: NSObject, UIViewControllerAnimatedTransitioning, UIViewC
         return 0.0
     }
     
-    func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         if let context = transitionContext as? LTTransitionContext {
             prepareAnimationForTransition(context)
             contextChangedPercentComplete(context, percentComplete: 1.0) {complete in
-                context.completeTransition(!context.transitionWasCancelled())
+                context.completeTransition(context.transitionWasCancelled)
             }
         }
     }
     
-    func animationEnded(transitionCompleted: Bool) {
+    func animationEnded(_ transitionCompleted: Bool) {
         if let shadowView = shadowView as UIView! {
             shadowView.removeFromSuperview()
         }
@@ -161,7 +160,7 @@ class LTSliderAnimator: NSObject, UIViewControllerAnimatedTransitioning, UIViewC
     }
     
     //MARK: - UIViewControllerInteractiveTransitioning
-    func startInteractiveTransition(transitionContext: UIViewControllerContextTransitioning) {
+    func startInteractiveTransition(_ transitionContext: UIViewControllerContextTransitioning) {
         if let context = transitionContext as? LTTransitionContext {
             self.transitionContext = context
             interacting = true

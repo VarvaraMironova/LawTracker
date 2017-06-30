@@ -55,7 +55,7 @@ struct LTPersonModel {
                     if let firstName = firstName as String! {
                         if let secondName = secondName as String! {
                             if let lastName = lastName as String! {
-                                self.fullName = [lastName, firstName, secondName].joinWithSeparator(" ")
+                                self.fullName = [lastName, firstName, secondName].joined(separator: " ")
                             }
                         }
                     }
@@ -65,7 +65,7 @@ struct LTPersonModel {
                 if let convocationsArray = dictionary[Keys.convocations] as? [String] {
                     for convocation in convocationsArray {
                         if let convocationModel = LTConvocationModel.convocationWithNumber(convocation) {
-                            convocations.addObject(convocationModel)
+                            convocations.add(convocationModel)
                         } else {
                             print("Cannot find convocation with id \(convocation)")
                         }
@@ -78,8 +78,8 @@ struct LTPersonModel {
                 initiator = initiatorModel
             } else {
                 if let fullName = fullName as String! {
-                    let dictionary = ["id":id, "title":fullName, "isDeputy":"true", "convocations":convocations]
-                    initiator = LTInitiatorModel(dictionary: dictionary, context: context, entityName: "LTInitiatorModel")
+                    let dictionary = ["id":id, "title":fullName, "isDeputy":"true", "convocations":convocations] as [String : Any]
+                    initiator = LTInitiatorModel(dictionary: dictionary as [String : AnyObject], context: context, entityName: "LTInitiatorModel")
                 }
             }
         }

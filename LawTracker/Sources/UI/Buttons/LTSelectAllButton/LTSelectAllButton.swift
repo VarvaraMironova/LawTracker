@@ -12,7 +12,7 @@ class LTSelectAllButton: UIButton {
     var view    : LTSelectAllButtonView!
     var on: Bool! = false {
         didSet {
-            selected = on
+            isSelected = on
             if let selectAllButtonView = view as LTSelectAllButtonView! {
                 selectAllButtonView.setOn(on)
             }

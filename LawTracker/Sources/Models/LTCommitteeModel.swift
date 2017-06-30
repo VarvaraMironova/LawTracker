@@ -10,8 +10,8 @@ import CoreData
 
 class LTCommitteeModel: LTEntityModel {
     @NSManaged var url         : String
-    @NSManaged var starts      : NSDate?
-    @NSManaged var ends        : NSDate?
+    @NSManaged var starts      : Date?
+    @NSManaged var ends        : Date?
     @NSManaged var laws        : NSMutableSet
     @NSManaged var convocation : LTConvocationModel
     
@@ -21,8 +21,8 @@ class LTCommitteeModel: LTEntityModel {
         }
     }
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertInto: context)
     }
     
     override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
@@ -33,13 +33,13 @@ class LTCommitteeModel: LTEntityModel {
         }
         
         if let startsString = dictionary[Keys.starts] as? String {
-            if let startsDate = startsString.date() as NSDate! {
+            if let startsDate = startsString.date() as Date! {
                 starts = startsDate
             }
         }
         
         if let endsString = dictionary[Keys.ends] as? String {
-            if let endsDate = endsString.date() as NSDate! {
+            if let endsDate = endsString.date() as Date! {
                 ends = endsDate
             }
         }

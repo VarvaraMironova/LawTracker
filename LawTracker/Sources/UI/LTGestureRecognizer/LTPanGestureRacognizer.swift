@@ -9,13 +9,13 @@
 import UIKit
 
 enum LTPanDirection: Int {
-    case Unknown = 0,
-    Right,
-    Left,
-    Up,
-    Down
+    case unknown = 0,
+    right,
+    left,
+    up,
+    down
     
-    static let cellTypes = [Unknown, Right, Left, Up, Down]
+    static let cellTypes = [unknown, right, left, up, down]
 };
 
 class LTPanGestureRacognizer: UIPanGestureRecognizer {
@@ -24,28 +24,28 @@ class LTPanGestureRacognizer: UIPanGestureRecognizer {
     
     //MARK: - Public methods
     func changeDirection() {
-        let translation = translationInView(view)
-        direction = CGPointEqualToPoint(CGPointZero, translation) ? directionForTranslation(velocityInView(view)) : directionForTranslation(translation)
-        startLocation = locationInView(view)
+        let translation = self.translation(in: view)
+        direction = CGPoint.zero.equalTo(translation) ? directionForTranslation(velocity(in: view)) : directionForTranslation(translation)
+        startLocation = location(in: view)
     }
     
     func reset() {
-        direction = .Unknown
-        startLocation = CGPointZero
+        direction = .unknown
+        startLocation = CGPoint.zero
     }
     
     //MARK: - Private methods
-    func directionForTranslation(translation: CGPoint) -> LTPanDirection {
-        let frame = CGRectMake(0, 0, translation.x, translation.y)
-        let verticalOffset = CGRectGetHeight(frame)
-        let horizontalOffset = CGRectGetWidth(frame)
+    func directionForTranslation(_ translation: CGPoint) -> LTPanDirection {
+        let frame = CGRect(x: 0, y: 0, width: translation.x, height: translation.y)
+        let verticalOffset = frame.height
+        let horizontalOffset = frame.width
         
         if verticalOffset < horizontalOffset {
-            return translation.x > 0 ? .Right : .Left
+            return translation.x > 0 ? .right : .left
         } else if verticalOffset > horizontalOffset {
-            return translation.y > 0 ? .Down : .Up
+            return translation.y > 0 ? .down : .up
         }
 
-        return .Unknown
+        return .unknown
     }
 }

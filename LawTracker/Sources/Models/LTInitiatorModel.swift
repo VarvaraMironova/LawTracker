@@ -12,8 +12,8 @@ class LTInitiatorModel: LTEntityModel {
     @NSManaged var isDeputy     : Bool
     @NSManaged var convocations : NSMutableSet
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertInto: context)
     }
     
     override init(dictionary: [String : AnyObject], context: NSManagedObjectContext, entityName: String) {
